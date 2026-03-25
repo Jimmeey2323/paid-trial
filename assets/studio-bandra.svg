@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">Supreme Headquarters, Bandra</title>
+  <desc id="desc">Stylized studio illustration for the Bandra location.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#07101e"/>
+      <stop offset="100%" stop-color="#101a36"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#7c5cff"/>
+      <stop offset="100%" stop-color="#23357f"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="720" fill="url(#bg)"/>
+  <circle cx="980" cy="110" r="140" fill="rgba(124,92,255,0.18)"/>
+  <circle cx="160" cy="620" r="160" fill="rgba(45,212,191,0.12)"/>
+  <rect x="110" y="86" width="980" height="548" rx="44" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.12)" stroke-width="4"/>
+  <rect x="170" y="150" width="860" height="420" rx="34" fill="url(#panel)"/>
+  <rect x="250" y="220" width="330" height="280" rx="24" fill="rgba(255,255,255,0.1)"/>
+  <rect x="620" y="220" width="330" height="180" rx="24" fill="rgba(255,255,255,0.1)"/>
+  <rect x="620" y="430" width="250" height="70" rx="18" fill="rgba(255,255,255,0.14)"/>
+  <path d="M230 470 C320 330 440 540 520 390 S710 280 820 420" fill="none" stroke="rgba(250,245,239,0.46)" stroke-width="12" stroke-linecap="round"/>
+  <text x="170" y="102" fill="#dbeafe" font-family="Manrope, Arial, sans-serif" font-size="20" font-weight="700" letter-spacing="6">PHYSIQUE 57 INDIA</text>
+  <text x="170" y="610" fill="#eef2ff" font-family="Cormorant Garamond, Georgia, serif" font-size="58" font-weight="600">Supreme Headquarters</text>
+  <text x="170" y="654" fill="#a9b7d1" font-family="Manrope, Arial, sans-serif" font-size="24" font-weight="600">Bandra West • Barre 57 • powerCycle</text>
+</svg>

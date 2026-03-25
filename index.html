@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        window.APP_CONFIG = {};
+    </script>
+    <script id="app-config-data" type="application/json">{}</script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claim Your First Class | Physique 57 India</title>
+    <meta name="description" content="Reserve a Physique 57 India trial with your preferred studio, schedule window, and class format.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@25.12.1/build/css/intlTelInput.css">
+    <link rel="stylesheet" href="/styles/main.css">
+</head>
+<body>
+    <!-- __GTM_NOSCRIPT__ -->
+
+    <div class="page-shell">
+        <div class="theme-toggle-bar" aria-label="Appearance controls">
+            <button type="button" class="theme-toggle" id="theme-toggle" aria-pressed="false" aria-label="Switch to light mode">
+                <span class="theme-toggle-icon" aria-hidden="true">☀︎</span>
+                <span class="theme-toggle-label">Light mode</span>
+            </button>
+        </div>
+        <header class="hero-section" id="top">
+            <div class="hero-grid">
+                <section class="hero-copy" aria-labelledby="hero-title">
+                    <div class="hero-top">
+                        <p class="eyebrow">Physique 57 India</p>
+                        <h1 id="hero-title">A first class with signature energy, tailored to your rhythm.</h1>
+                        <p class="hero-text" id="hero-description">
+                            Reserve your trial in one place. Choose the studio, the time window that fits your week,
+                            and the format that feels right for your first signature experience.
+                        </p>
+                        <div class="hero-note">
+                            Low impact. High intensity. Precision-led sculpt, cardio, and strength in a premium boutique setting.
+                        </div>
+                    </div>
+
+                    <div class="hero-support-grid">
+                        <div class="hero-signals" id="hero-signals"></div>
+                    </div>
+                </section>
+
+                <aside class="booking-card" aria-labelledby="booking-title">
+                    <div class="brand-lockup">
+                        <img src="https://i.postimg.cc/6Qt8YppB/Photoroom-20251014-101748.png" alt="Physique 57 India">
+                        <div>
+                            <p class="eyebrow eyebrow-soft">First-Class Access</p>
+                            <h2 id="booking-title">Start strong at Physique 57</h2>
+                        </div>
+                    </div>
+
+                    <p class="booking-intro">
+                        Share your details and we’ll coordinate the best first class based on location, availability, and format fit.
+                    </p>
+
+                    <form id="lead-form">
+                        <div class="honeypot" aria-hidden="true">
+                            <label for="company">Company</label>
+                            <input type="text" id="company" name="company" tabindex="-1" autocomplete="off">
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="field-group">
+                                <label for="firstName">First name <span aria-hidden="true">*</span></label>
+                                <input type="text" id="firstName" name="firstName" autocomplete="given-name" required>
+                            </div>
+
+                            <div class="field-group">
+                                <label for="lastName">Last name <span aria-hidden="true">*</span></label>
+                                <input type="text" id="lastName" name="lastName" autocomplete="family-name" required>
+                            </div>
+
+                            <div class="field-group field-group-full">
+                                <label for="email">Email <span aria-hidden="true">*</span></label>
+                                <input type="email" id="email" name="email" autocomplete="email" required>
+                            </div>
+
+                            <div class="field-group field-group-full">
+                                <label for="phoneNumber">Phone number <span aria-hidden="true">*</span></label>
+                                <input type="tel" id="phoneNumber" name="phoneNumber" autocomplete="tel-national" inputmode="tel" placeholder="98765 43210" required>
+                                <input type="hidden" id="phoneCountry" name="phoneCountry" value="IN">
+                                <p class="field-note">Choose your country code, then enter your number.</p>
+                            </div>
+
+                            <div class="field-group field-group-full">
+                                <label for="time">Most realistic class window <span aria-hidden="true">*</span></label>
+                                <select id="time" name="time" required>
+                                    <option value="" selected disabled>Select a time window</option>
+                                    <option value="Early Morning (6 AM - 9 AM)">Early Morning (6 AM - 9 AM)</option>
+                                    <option value="Mid-Morning (9 AM - 12 PM)">Mid-Morning (9 AM - 12 PM)</option>
+                                    <option value="Afternoon (12 PM - 4 PM)">Afternoon (12 PM - 4 PM)</option>
+                                    <option value="Evening (4 PM - 8 PM)">Evening (4 PM - 8 PM)</option>
+                                    <option value="Flexible / Needs Recommendation">Flexible / Needs Recommendation</option>
+                                </select>
+                            </div>
+
+                            <div class="field-group field-group-full">
+                                <label for="center">Preferred studio <span aria-hidden="true">*</span></label>
+                                <select id="center" name="center" required>
+                                    <option value="" selected disabled>Select a studio</option>
+                                    <option value="Supreme Headquarters, Bandra">Supreme Headquarters, Bandra</option>
+                                    <option value="Kwality House, Kemps Corner">Kwality House, Kemps Corner</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <fieldset id="class-options" class="choice-fieldset" hidden>
+                            <legend>Choose your first format <span aria-hidden="true">*</span></legend>
+                            <p class="field-note">Choose the format that feels right for your first visit.</p>
+                            <div id="class-option-grid" class="class-option-grid"></div>
+                        </fieldset>
+
+                        <div class="consent-card">
+                            <p class="consent-copy">
+                                Review the <button type="button" class="text-button" id="waiver-link">trial waiver and booking terms</button>
+                                before confirming your request.
+                            </p>
+                            <label class="checkbox-row" for="waiverAccepted">
+                                <input type="checkbox" id="waiverAccepted" name="waiverAccepted" value="accepted" required>
+                                <span>I have read and accept the waiver and booking terms. <strong>*</strong></span>
+                            </label>
+                        </div>
+
+                        <div id="form-status" class="form-status" role="status" aria-live="polite" hidden></div>
+
+                        <div class="form-actions">
+                            <button type="button" class="secondary-button form-actions-secondary" id="schedule-modal-open">View class schedule</button>
+                            <button type="submit" id="submit-button" class="primary-button form-actions-primary">Reserve my trial</button>
+                        </div>
+                        <p class="form-footnote">Your details are used only for booking coordination, studio follow-up, and attribution tracking.</p>
+                    </form>
+                </aside>
+            </div>
+        </header>
+
+        <main>
+            <section class="content-section proof-section" id="why-it-works" aria-labelledby="proof-title">
+                <div class="section-heading">
+                    <p class="eyebrow eyebrow-soft">Why it works</p>
+                    <h2 id="proof-title">What makes the first experience distinct.</h2>
+                    <p>
+                        Precision-led instruction, signature studio energy, and a method built to create visible strength, stamina, and confidence.
+                    </p>
+                </div>
+                <div class="proof-grid" id="proof-grid"></div>
+                <div class="journey-strip">
+                    <div class="journey-copy">
+                        <p class="eyebrow eyebrow-soft">Your first visit</p>
+                        <h3>What happens next</h3>
+                        <p>From your first click to your first shake, every step is designed to feel curated, clear, and high-touch.</p>
+                        <figure class="journey-visual">
+                            <img src="https://i.postimg.cc/GtJNPK7P/hp-Img-1774213193.png" alt="Physique 57 India class experience">
+                            <figcaption>Expect boutique energy, polished guidance, and a first class that feels beautifully set up from the moment you arrive.</figcaption>
+                        </figure>
+                    </div>
+                    <div class="journey-steps-shell">
+                        <ol class="journey-steps" id="journey-steps"></ol>
+                    </div>
+                </div>
+            </section>
+
+            <section class="content-section studio-section" id="studios" aria-labelledby="studios-title">
+                <div class="section-heading">
+                    <p class="eyebrow eyebrow-soft">Studio selection</p>
+                    <h2 id="studios-title">Choose the studio that fits your routine.</h2>
+                    <p>
+                        Each location carries the same Physique 57 method, with its own neighborhood energy and format mix.
+                    </p>
+                </div>
+                <div class="studio-grid" id="studio-grid"></div>
+            </section>
+
+            <section class="content-section faq-section" id="faq" aria-labelledby="faq-title">
+                <div class="faq-layout">
+                    <div>
+                        <div class="section-heading">
+                            <p class="eyebrow eyebrow-soft">Questions</p>
+                            <h2 id="faq-title">Helpful answers before you book.</h2>
+                            <p>Everything you need before your first class, without losing the premium feel of the page.</p>
+                        </div>
+                        <div class="faq-list" id="faq-list"></div>
+                        <div class="section-actions">
+                            <button type="button" class="secondary-button secondary-button-small" id="faq-modal-open">View all FAQs</button>
+                        </div>
+                    </div>
+
+                    <aside class="policy-panel" aria-labelledby="policy-title">
+                        <p class="eyebrow eyebrow-soft">Policy highlights</p>
+                        <h3 id="policy-title">Important booking notes</h3>
+                        <ul class="policy-list" id="policy-list"></ul>
+                        <button type="button" class="secondary-button" id="waiver-link-footer">Read full waiver</button>
+                    </aside>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div class="modal" id="waiver-modal" aria-hidden="true" hidden>
+        <div class="modal-backdrop" data-modal-close></div>
+        <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="waiver-modal-title">
+            <button type="button" class="modal-close" id="waiver-modal-close" aria-label="Close waiver">Close</button>
+            <div class="modal-content">
+                <p class="eyebrow eyebrow-soft">Trial waiver</p>
+                <h2 id="waiver-modal-title">Read before confirming your request.</h2>
+                <p>
+                    By booking a trial, the guest confirms that they are fit to participate, understand the physical nature of the class,
+                    and will disclose any relevant medical, prenatal, postnatal, or injury information before attending.
+                </p>
+                <p>
+                    Trial reservations remain subject to studio availability, schedule confirmation, and the operational policies of AMP Fitness LLP / Physique 57 India.
+                    The guest is responsible for arriving on time, following instructor guidance, and communicating any concerns that may affect safe participation.
+                </p>
+                <p>
+                    Personal belongings are brought at the guest’s own risk. Trial bookings, late-cancellation rules, and late-entry restrictions apply in line with studio policy.
+                    Questions about the waiver or booking coordination can be sent to <a href="mailto:info@physique57india.com">info@physique57india.com</a>.
+                </p>
+                <ul class="policy-list policy-list-compact">
+                    <li>Cancellations should be made at least 12 hours before class where applicable.</li>
+                    <li>Late entry may not be permitted once the class has started.</li>
+                    <li>Instructor requests, preferred times, and preferred dates remain subject to availability.</li>
+                    <li>Submitting the form authorizes Physique 57 India to contact you about this booking request.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="format-modal" aria-hidden="true" hidden>
+        <div class="modal-backdrop" data-modal-close></div>
+        <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="format-modal-title">
+            <button type="button" class="modal-close" id="format-modal-close" aria-label="Close class format details">Close</button>
+            <div class="modal-content">
+                <p class="eyebrow eyebrow-soft">Class formats</p>
+                <h2 id="format-modal-title">Find the format that fits your first visit.</h2>
+                <p id="format-modal-copy">Explore the signature experiences available at each studio before making your selection.</p>
+                <div id="format-modal-body" class="modal-format-stack"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="faq-modal" aria-hidden="true" hidden>
+        <div class="modal-backdrop" data-modal-close></div>
+        <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="faq-modal-title">
+            <button type="button" class="modal-close" id="faq-modal-close" aria-label="Close FAQs">Close</button>
+            <div class="modal-content">
+                <p class="eyebrow eyebrow-soft">Frequently asked questions</p>
+                <h2 id="faq-modal-title">Everything before your first class.</h2>
+                <div id="faq-modal-list" class="faq-list faq-list-modal"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="schedule-modal" aria-hidden="true" hidden>
+        <div class="modal-backdrop" data-modal-close></div>
+        <div class="modal-dialog modal-dialog-schedule" role="dialog" aria-modal="true" aria-labelledby="schedule-modal-title">
+            <button type="button" class="modal-close" id="schedule-modal-close" aria-label="Close class schedule">Close</button>
+            <div class="modal-content">
+                <p class="eyebrow eyebrow-soft">Live schedule</p>
+                <h2 id="schedule-modal-title">Browse the Physique 57 class schedule.</h2>
+                <p>Review the live class grid, compare availability, and then come right back to finish your trial request.</p>
+                <div class="schedule-shell">
+                    <div class="schedule-toolbar" aria-label="Schedule tools">
+                        <div class="schedule-toolbar-group">
+                            <span class="schedule-toolbar-label">Quick view</span>
+                            <button type="button" class="schedule-chip" data-schedule-action="today">Today</button>
+                            <button type="button" class="schedule-chip" data-schedule-action="week">Week</button>
+                            <button type="button" class="schedule-chip" data-schedule-action="month">Month</button>
+                        </div>
+                        <div class="schedule-toolbar-group">
+                            <span class="schedule-toolbar-label">Choose studio</span>
+                            <button type="button" class="schedule-chip" data-center-target="Supreme Headquarters, Bandra">Bandra</button>
+                            <button type="button" class="schedule-chip" data-center-target="Kwality House, Kemps Corner">Kemps Corner</button>
+                            <a class="schedule-chip schedule-chip-link" id="schedule-open-external" href="#" target="_blank" rel="noopener noreferrer">Open full schedule</a>
+                        </div>
+                    </div>
+                    <div class="schedule-note" id="schedule-note">Live availability is powered directly by Momence.</div>
+                    <div id="ribbon-schedule" class="schedule-widget is-loading" aria-live="polite">
+                        <div class="schedule-loading-state" aria-hidden="true">
+                            <div class="schedule-loading-glow"></div>
+                            <div class="schedule-loading-lines">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="signal-modal" aria-hidden="true" hidden>
+        <div class="modal-backdrop" data-modal-close></div>
+        <div class="modal-dialog modal-dialog-signal" role="dialog" aria-modal="true" aria-labelledby="signal-modal-title">
+            <button type="button" class="modal-close" id="signal-modal-close" aria-label="Close feature details">Close</button>
+            <div class="modal-content signal-modal-content">
+                <div class="signal-modal-media">
+                    <img id="signal-modal-image" src="" alt="">
+                </div>
+                <div class="signal-modal-copy">
+                    <p class="eyebrow eyebrow-soft">Why it matters</p>
+                    <h2 id="signal-modal-title"></h2>
+                    <p id="signal-modal-description"></p>
+                    <ul class="policy-list policy-list-compact" id="signal-modal-highlights"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <noscript>
+        <div class="noscript-banner">This form works best with JavaScript enabled.</div>
+    </noscript>
+
+    <script src="/scripts/content.js" defer></script>
+    <script src="/scripts/tracking.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@25.12.1/build/js/intlTelInput.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js" defer></script>
+    <script src="/scripts/app.js" defer></script>
+</body>
+</html>

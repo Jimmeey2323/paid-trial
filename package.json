@@ -1,0 +1,25 @@
+{
+  "name": "trial-form",
+  "version": "1.0.0",
+  "description": "Trial form with UTM tracking for Physique 57",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "form",
+    "utm",
+    "tracking"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.100.0",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "googleapis": "^128.0.0"
+  },
+  "engines": {
+    "node": ">=18.x"
+  }
+}
