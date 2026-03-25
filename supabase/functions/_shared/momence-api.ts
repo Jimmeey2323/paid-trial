@@ -9,6 +9,8 @@ export interface MomenceCustomerInput {
   firstName: string;
   lastName: string;
   phoneNumber?: string;
+  center?: string;
+  homeLocationId?: number;
 }
 
 export interface MomenceCustomer {
@@ -39,6 +41,8 @@ export interface MomenceMembershipPurchaseInput {
 export class MomenceAPIService {
   private hostId: number;
   private homeLocationId: number;
+  private defaultHomeLocationId: number;
+  private kwalityHomeLocationId: number;
   private transactionTagId: number;
   private apiV2BasicAuth: string;
   private apiV2Username: string;
@@ -50,10 +54,25 @@ export class MomenceAPIService {
   ) {
     this.hostId = Number(Deno.env.get('MOMENCE_HOST_ID') || '13752');
     this.homeLocationId = Number(Deno.env.get('MOMENCE_HOME_LOCATION_ID') || '9030');
+    this.defaultHomeLocationId = Number(Deno.env.get('MOMENCE_DEFAULT_HOME_LOCATION_ID') || '29821');
+    this.kwalityHomeLocationId = Number(Deno.env.get('MOMENCE_KWALITY_HOME_LOCATION_ID') || '9030');
     this.transactionTagId = Number(Deno.env.get('MOMENCE_EXTERNAL_TRANSACTION_TAG_ID') || '4578');
     this.apiV2BasicAuth = String(Deno.env.get('MOMENCE_API_V2_BASIC_AUTH') || '').trim();
     this.apiV2Username = String(Deno.env.get('MOMENCE_API_V2_USERNAME') || '').trim();
     this.apiV2Password = String(Deno.env.get('MOMENCE_API_V2_PASSWORD') || '').trim();
+  }
+
+  private resolveHomeLocationId(input: MomenceCustomerInput): number {
+    if (Number.isFinite(input.homeLocationId) && Number(input.homeLocationId) > 0) {
+      return Number(input.homeLocationId);
+    }
+
+    const normalizedCenter = String(input.center || '').trim().toLowerCase();
+    if (normalizedCenter.includes('kwality house') || normalizedCenter.includes('kemps')) {
+      return this.kwalityHomeLocationId;
+    }
+
+    return this.defaultHomeLocationId || this.homeLocationId;
   }
 
   private assertApiV2Configured(): void {
@@ -121,15 +140,25 @@ export class MomenceAPIService {
     return customer ? this.parseApiV2Customer(customer, 'found_existing') : null;
   }
 
+  private isApiV2CreateUnavailable(errorMessage: string): boolean {
+    const normalized = String(errorMessage || '').toLowerCase();
+    return normalized.includes('cannot post /api/v2/customers')
+      || normalized.includes('cannot post /api/v2/host/members')
+      || normalized.includes('notfoundexception')
+      || normalized.includes('404');
+  }
+
   private async createCustomerViaApiV2(input: MomenceCustomerInput, accessToken: string): Promise<MomenceCustomer> {
+    const homeLocationId = this.resolveHomeLocationId(input);
     const payload = {
       email: input.email,
       firstName: input.firstName || 'Customer',
       lastName: input.lastName || '',
-      source: 'stripe_integration',
+      phoneNumber: input.phoneNumber || '',
+      homeLocationId,
     };
 
-    const response = await fetch('https://api.momence.com/api/v2/customers', {
+    const response = await fetch('https://api.momence.com/api/v2/host/members', {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -145,7 +174,14 @@ export class MomenceAPIService {
     }
 
     const newCustomer = JSON.parse(responseText);
-    return this.parseApiV2Customer(newCustomer, 'created_new');
+    return {
+      memberId: Number(newCustomer.memberId || newCustomer.id || 0),
+      email: input.email,
+      firstName: input.firstName || 'Customer',
+      lastName: input.lastName || '',
+      phoneNumber: input.phoneNumber || '',
+      action: 'created_new',
+    };
   }
 
   private buildHeaders(originPath: string, extra: Record<string, string> = {}): Record<string, string> {
@@ -306,7 +342,33 @@ export class MomenceAPIService {
       return existingCustomer;
     }
 
-    const createdCustomer = await this.createCustomerViaApiV2(input, accessToken);
+    const existingDashboardCustomer = await this.findCustomerByEmail(input.email);
+    if (existingDashboardCustomer?.memberId) {
+      return {
+        ...existingDashboardCustomer,
+        action: 'found_existing',
+      };
+    }
+
+    let createdCustomer: MomenceCustomer | null = null;
+
+    try {
+      createdCustomer = await this.createCustomerViaApiV2(input, accessToken);
+    } catch (error) {
+      const errorMessage = (error as Error).message;
+
+      if (!this.isApiV2CreateUnavailable(errorMessage)) {
+        throw error;
+      }
+
+      console.warn('Momence API v2 customer creation is unavailable, falling back to dashboard customer creation flow.');
+      const fallbackCustomer = await this.createCustomer(input);
+      return {
+        ...fallbackCustomer,
+        action: 'created_new',
+      };
+    }
+
     const hydratedCustomer = await this.findCustomerByEmail(input.email);
 
     if (hydratedCustomer?.memberId) {

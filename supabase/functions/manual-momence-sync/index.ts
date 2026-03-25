@@ -45,6 +45,7 @@ interface IncomingRequestBody {
     lastName?: string;
     email?: string;
     phoneNumber?: string;
+    center?: string;
   };
   membership?: {
     id?: number | string;
@@ -115,6 +116,7 @@ function normalizeRequest(body: IncomingRequestBody) {
   const membershipId = Number(body.membership?.id || 0) || null;
   const membershipPrice = Number(body.membership?.priceAfterProration || body.membership?.price || 0) || null;
   const phoneNumber = pickString(body.member?.phoneNumber, body.lead?.phoneNumber, body.stripe?.customerDetails?.phone);
+  const center = pickString(body.member?.center, body.lead?.center, body.stripe?.metadata?.center);
   const nameParts = splitName(customerName);
 
   return {
@@ -125,6 +127,7 @@ function normalizeRequest(body: IncomingRequestBody) {
     membershipId,
     membershipPrice,
     phoneNumber,
+    center,
     firstName: pickString(body.member?.firstName, body.lead?.firstName, nameParts.firstName),
     lastName: pickString(body.member?.lastName, body.lead?.lastName, nameParts.lastName),
   };
@@ -197,6 +200,7 @@ serve(async (req) => {
         firstName: normalized.firstName,
         lastName: normalized.lastName,
         phoneNumber: normalized.phoneNumber,
+        center: normalized.center,
       },
       {
         membershipId: Number(membership.id),
