@@ -228,25 +228,18 @@
             </section>
 
             <section class="content-section faq-section" id="faq" aria-labelledby="faq-title">
-                <div class="faq-layout">
-                    <div>
-                        <div class="section-heading">
-                            <p class="eyebrow eyebrow-soft">Questions</p>
-                            <h2 id="faq-title">Helpful answers before you book.</h2>
-                            <p>Everything you need before your first class, without losing the premium feel of the page.</p>
-                        </div>
-                        <div class="faq-list" id="faq-list"></div>
-                        <div class="section-actions">
-                            <button type="button" class="secondary-button secondary-button-small" id="faq-modal-open">View all FAQs</button>
-                        </div>
-                    </div>
+                <div class="section-heading section-heading-left">
+                    <p class="eyebrow eyebrow-soft">Questions</p>
+                    <h2 id="faq-title">Helpful answers before you book.</h2>
+                    <p>Everything you need before your first class, without losing the premium feel of the page.</p>
+                </div>
 
-                    <aside class="policy-panel" aria-labelledby="policy-title">
-                        <p class="eyebrow eyebrow-soft">Policy highlights</p>
-                        <h3 id="policy-title">Important booking notes</h3>
-                        <ul class="policy-list" id="policy-list"></ul>
-                        <button type="button" class="secondary-button" id="waiver-link-footer">Read full waiver</button>
-                    </aside>
+                <div class="faq-preview" id="faq-list"></div>
+
+                <div class="section-actions section-actions-center">
+                    <button type="button" class="secondary-button" id="faq-modal-open">View all FAQs</button>
+                    <button type="button" class="secondary-button secondary-button-outline" id="detailed-faq-modal-open">Complete FAQ Guide</button>
+                    <button type="button" class="secondary-button secondary-button-outline" id="waiver-link-footer">Read full waiver</button>
                 </div>
             </section>
         </main>
@@ -301,12 +294,71 @@
 
     <div class="modal" id="faq-modal" aria-hidden="true" hidden>
         <div class="modal-backdrop" data-modal-close></div>
-        <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="faq-modal-title">
+        <div class="modal-dialog modal-dialog-faq" role="dialog" aria-modal="true" aria-labelledby="faq-modal-title">
             <button type="button" class="modal-close" id="faq-modal-close" aria-label="Close FAQs">Close</button>
             <div class="modal-content">
-                <p class="eyebrow eyebrow-soft">Frequently asked questions</p>
-                <h2 id="faq-modal-title">Everything before your first class.</h2>
-                <div id="faq-modal-list" class="faq-list faq-list-modal"></div>
+                <div class="modal-header">
+                    <p class="eyebrow eyebrow-soft">Frequently asked questions</p>
+                    <h2 id="faq-modal-title">Everything you need to know before your first class.</h2>
+                    <p>Complete answers to help you feel confident and prepared for your Physique 57 experience.</p>
+                </div>
+
+                <div class="faq-modal-sections">
+                    <div class="faq-section-group">
+                        <h3>Class Preparation</h3>
+                        <div id="faq-modal-preparation" class="faq-list faq-list-modal"></div>
+                    </div>
+
+                    <div class="faq-section-group">
+                        <h3>Booking & Scheduling</h3>
+                        <div id="faq-modal-booking" class="faq-list faq-list-modal"></div>
+                    </div>
+
+                    <div class="faq-section-group">
+                        <h3>General Questions</h3>
+                        <div id="faq-modal-general" class="faq-list faq-list-modal"></div>
+                    </div>
+                </div>
+
+                <div class="faq-modal-footer">
+                    <button type="button" class="secondary-button" id="open-detailed-faq-from-modal">View Complete FAQ Guide</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="detailed-faq-modal" aria-hidden="true" hidden>
+        <div class="modal-backdrop" data-modal-close></div>
+        <div class="modal-dialog modal-dialog-faq" role="dialog" aria-modal="true" aria-labelledby="detailed-faq-modal-title">
+            <button type="button" class="modal-close" id="detailed-faq-modal-close" aria-label="Close detailed FAQs">Close</button>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <p class="eyebrow eyebrow-soft">Complete FAQ guide</p>
+                    <h2 id="detailed-faq-modal-title">Comprehensive answers to all your questions.</h2>
+                    <p>Everything you might need to know about Physique 57, membership, classes, and studio policies.</p>
+                </div>
+
+                <div class="faq-modal-sections">
+                    <div class="faq-section-group">
+                        <h3>Physique 57 Method & Benefits</h3>
+                        <div id="detailed-faq-method" class="faq-list faq-list-modal"></div>
+                    </div>
+
+                    <div class="faq-section-group">
+                        <h3>Membership & Pricing</h3>
+                        <div id="detailed-faq-membership" class="faq-list faq-list-modal"></div>
+                    </div>
+
+                    <div class="faq-section-group">
+                        <h3>Studio Policies & Guidelines</h3>
+                        <div id="detailed-faq-policies" class="faq-list faq-list-modal"></div>
+                    </div>
+
+                    <div class="faq-section-group">
+                        <h3>Technical & Booking Support</h3>
+                        <div id="detailed-faq-technical" class="faq-list faq-list-modal"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

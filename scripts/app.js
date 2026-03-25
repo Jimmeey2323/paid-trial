@@ -36,7 +36,6 @@
     const journeySteps = document.getElementById('journey-steps');
     const studioGrid = document.getElementById('studio-grid');
     const faqList = document.getElementById('faq-list');
-    const faqModalList = document.getElementById('faq-modal-list');
     const policyList = document.getElementById('policy-list');
     const formatModalBody = document.getElementById('format-modal-body');
     const formatModalTitle = document.getElementById('format-modal-title');
@@ -48,6 +47,7 @@
     const waiverModal = document.getElementById('waiver-modal');
     const formatModal = document.getElementById('format-modal');
     const faqModal = document.getElementById('faq-modal');
+    const detailedFaqModal = document.getElementById('detailed-faq-modal');
     const scheduleModal = document.getElementById('schedule-modal');
     const signalModal = document.getElementById('signal-modal');
     const signalModalTitle = document.getElementById('signal-modal-title');
@@ -65,6 +65,8 @@
         { button: document.getElementById('waiver-link-footer'), modal: waiverModal },
         { button: document.getElementById('format-modal-open'), modal: formatModal },
         { button: document.getElementById('faq-modal-open'), modal: faqModal },
+        { button: document.getElementById('detailed-faq-modal-open'), modal: detailedFaqModal },
+        { button: document.getElementById('open-detailed-faq-from-modal'), modal: detailedFaqModal },
         { button: document.getElementById('schedule-modal-open'), modal: scheduleModal },
         { button: membershipDetailsButton, modal: membershipDetailsModal }
     ].filter((entry) => entry.button && entry.modal);
@@ -73,6 +75,7 @@
         { button: document.getElementById('waiver-modal-close'), modal: waiverModal },
         { button: document.getElementById('format-modal-close'), modal: formatModal },
         { button: document.getElementById('faq-modal-close'), modal: faqModal },
+        { button: document.getElementById('detailed-faq-modal-close'), modal: detailedFaqModal },
         { button: document.getElementById('schedule-modal-close'), modal: scheduleModal },
         { button: document.getElementById('signal-modal-close'), modal: signalModal },
         { button: document.getElementById('membership-details-modal-close'), modal: membershipDetailsModal }
@@ -177,6 +180,9 @@
         }
 
         updatePaymentStageUi(normalizedStage);
+
+        // Update membership price display when payment stage changes
+        updateSelectedClassState();
 
         if (persist) {
             persistCheckoutState({
@@ -589,7 +595,7 @@
     function renderFaqCollection(items, defaultOpenIndex = -1) {
         return items.map((item, index) => `
             <details class="faq-item"${index === defaultOpenIndex ? ' open' : ''}>
-                <summary>${item.question}</summary>
+                <summary><span class="faq-question">${item.question}</span></summary>
                 <div class="faq-answer">${item.answer}</div>
             </details>
         `).join('');
@@ -667,10 +673,316 @@
     }
 
     function renderFaqs() {
-        const inlineFaqs = content.faqs.slice(0, 6);
+        // Show at least 15 FAQs as preview on main page (increased from 6)
+        const previewFaqs = [
+            {
+                question: "What should I bring to my first class?",
+                answer: "We provide all equipment including grippy socks, yoga mats, and light weights. Just bring water, a towel, and comfortable workout clothes that allow for movement."
+            },
+            {
+                question: "How early should I arrive?",
+                answer: "Please arrive 15 minutes early for your first class to complete check-in, get oriented with the studio, and meet your instructor."
+            },
+            {
+                question: "What happens if I need to cancel?",
+                answer: "Cancellations should be made at least 12 hours before class time through the Momence app or by calling the studio directly."
+            },
+            {
+                question: "Are classes suitable for beginners?",
+                answer: "Absolutely! Our instructors provide modifications for all fitness levels. Let them know it's your first class and they'll guide you through everything."
+            },
+            {
+                question: "Is parking available at the studios?",
+                answer: "Both locations offer nearby parking options. Bandra has valet parking, while Kemps Corner has street parking and nearby lots."
+            },
+            {
+                question: "What should I wear to class?",
+                answer: "Wear form-fitting, comfortable workout clothes that allow for full range of motion. Avoid loose clothing that might get in the way during exercises."
+            },
+            {
+                question: "Can I bring my own water bottle?",
+                answer: "Yes, please bring a water bottle to stay hydrated during class. We also have water available for purchase at the studio."
+            },
+            {
+                question: "Is there a locker room with showers?",
+                answer: "Yes, both studios have well-equipped changing rooms with lockers. Shower facilities are available for your convenience after class."
+            },
+            {
+                question: "Can I reschedule my trial class?",
+                answer: "Yes, you can reschedule your trial class up to 12 hours before the scheduled time, subject to availability."
+            },
+            {
+                question: "How do I book my subsequent classes?",
+                answer: "After your trial, download the Physique 57 India app or use the Momence platform to book your regular classes and manage your membership."
+            },
+            {
+                question: "What is the Physique 57 method?",
+                answer: "Physique 57 is a proprietary barre workout method developed in New York that combines isometric exercises, orthopedic stretches, and muscle-defining movements to create long, lean, and sculpted muscles."
+            },
+            {
+                question: "How is Physique 57 different from other barre classes?",
+                answer: "Our method uses a unique combination of small, targeted movements and interval training that creates the signature 'shake' - the point where muscles fatigue and transformation happens."
+            },
+            {
+                question: "What results can I expect and how quickly?",
+                answer: "Most clients see visible results within 3-4 weeks with consistent practice. You'll notice improved posture, increased strength, and muscle definition, especially in arms, core, and glutes."
+            },
+            {
+                question: "Can I modify movements if needed?",
+                answer: "Absolutely! Our instructors provide modifications for all fitness levels and any physical limitations. Just let them know before class starts."
+            },
+            {
+                question: "What is the class size and instructor ratio?",
+                answer: "We keep class sizes small (typically 8-12 people) to ensure personalized attention from our certified instructors who can provide individual guidance and corrections."
+            },
+            {
+                question: "What membership packages are available?",
+                answer: "We offer various packages including single classes, class packs, unlimited monthly memberships, and special introductory offers for new clients."
+            },
+            {
+                question: "How does the trial membership work?",
+                answer: "The trial membership gives you access to 2 classes within 14 days, allowing you to experience our method and find your preferred class times and formats."
+            },
+            {
+                question: "What is the late cancellation policy?",
+                answer: "Classes must be cancelled at least 12 hours in advance. Late cancellations and no-shows will result in loss of class credit."
+            }
+        ];
 
-        faqList.innerHTML = renderFaqCollection(inlineFaqs, 0);
-        faqModalList.innerHTML = renderFaqCollection(content.faqs, 0);
+        faqList.innerHTML = renderFaqCollection(previewFaqs, 0);
+
+        // Main FAQ Modal - comprehensive FAQs organized by category (full width)
+        const preparationFaqs = [
+            {
+                question: "What should I bring to my first class?",
+                answer: "We provide all equipment including grippy socks, yoga mats, and light weights. Just bring water, a towel, and comfortable workout clothes that allow for movement."
+            },
+            {
+                question: "How early should I arrive?",
+                answer: "Please arrive 15 minutes early for your first class to complete check-in, get oriented with the studio, and meet your instructor."
+            },
+            {
+                question: "What should I wear to class?",
+                answer: "Wear form-fitting, comfortable workout clothes that allow for full range of motion. Avoid loose clothing that might get in the way during exercises."
+            },
+            {
+                question: "Can I bring my own water bottle?",
+                answer: "Yes, please bring a water bottle to stay hydrated during class. We also have water available for purchase at the studio."
+            },
+            {
+                question: "Is there a locker room with showers?",
+                answer: "Yes, both studios have well-equipped changing rooms with lockers. Shower facilities are available for your convenience after class."
+            },
+            {
+                question: "What happens if I'm running late?",
+                answer: "Please try to arrive on time as late entry may not be permitted once the class has started for safety reasons. Call the studio if you're running behind."
+            },
+            {
+                question: "Do you provide yoga mats?",
+                answer: "Yes, we provide all necessary equipment including yoga mats, light weights, and resistance bands. Everything is sanitized between uses."
+            }
+        ];
+
+        const bookingFaqs = [
+            {
+                question: "What happens if I need to cancel?",
+                answer: "Cancellations should be made at least 12 hours before class time through the Momence app or by calling the studio directly."
+            },
+            {
+                question: "Can I reschedule my trial class?",
+                answer: "Yes, you can reschedule your trial class up to 12 hours before the scheduled time, subject to availability."
+            },
+            {
+                question: "How do I book my subsequent classes?",
+                answer: "After your trial, download the Physique 57 India app or use the Momence platform to book your regular classes and manage your membership."
+            },
+            {
+                question: "Is parking available at the studios?",
+                answer: "Both locations offer nearby parking options. Bandra has valet parking, while Kemps Corner has street parking and nearby lots. Details will be sent with your booking confirmation."
+            },
+            {
+                question: "Are classes suitable for beginners?",
+                answer: "Absolutely! Our instructors provide modifications for all fitness levels. Let them know it's your first class and they'll guide you through everything."
+            },
+            {
+                question: "What is the late cancellation policy?",
+                answer: "Classes must be cancelled at least 12 hours in advance. Late cancellations and no-shows will result in loss of class credit."
+            },
+            {
+                question: "Can I bring a friend to class?",
+                answer: "Friends are welcome to book their own trial or regular class. We don't allow observers in the studio for safety and privacy reasons."
+            }
+        ];
+
+        const generalFaqs = [
+            {
+                question: "What is the Physique 57 method?",
+                answer: "Physique 57 is a proprietary barre workout method developed in New York that combines isometric exercises, orthopedic stretches, and muscle-defining movements to create long, lean, and sculpted muscles."
+            },
+            {
+                question: "How is Physique 57 different from other barre classes?",
+                answer: "Our method uses a unique combination of small, targeted movements and interval training that creates the signature 'shake' - the point where muscles fatigue and transformation happens."
+            },
+            {
+                question: "What results can I expect and how quickly?",
+                answer: "Most clients see visible results within 3-4 weeks with consistent practice. You'll notice improved posture, increased strength, and muscle definition, especially in arms, core, and glutes."
+            },
+            {
+                question: "Can I modify movements if needed?",
+                answer: "Absolutely! Our instructors provide modifications for all fitness levels and any physical limitations. Just let them know before class starts."
+            },
+            {
+                question: "What is the class size and instructor ratio?",
+                answer: "We keep class sizes small (typically 8-12 people) to ensure personalized attention from our certified instructors who can provide individual guidance and corrections."
+            },
+            {
+                question: "What membership packages are available?",
+                answer: "We offer various packages including single classes, class packs, unlimited monthly memberships, and special introductory offers for new clients."
+            },
+            {
+                question: "How does the trial membership work?",
+                answer: "The trial membership gives you access to 2 classes within 14 days, allowing you to experience our method and find your preferred class times and formats."
+            }
+        ];
+
+        // Populate main modal sections (21 FAQs total across 3 sections)
+        const faqModalPreparation = document.getElementById('faq-modal-preparation');
+        const faqModalBooking = document.getElementById('faq-modal-booking');
+        const faqModalGeneral = document.getElementById('faq-modal-general');
+
+        if (faqModalPreparation) {
+            faqModalPreparation.innerHTML = renderFaqCollection(preparationFaqs, 0);
+            setupFaqAccordion(faqModalPreparation);
+        }
+
+        if (faqModalBooking) {
+            faqModalBooking.innerHTML = renderFaqCollection(bookingFaqs, 0);
+            setupFaqAccordion(faqModalBooking);
+        }
+
+        if (faqModalGeneral) {
+            faqModalGeneral.innerHTML = renderFaqCollection(generalFaqs, 0);
+            setupFaqAccordion(faqModalGeneral);
+        }
+
+        // Detailed FAQ Modal - comprehensive content (20+ additional FAQs)
+        const methodFaqs = [
+            {
+                question: "What makes Physique 57 unique?",
+                answer: "Physique 57 combines cardio, strength training, and stretching in a low-impact, high-intensity format that targets specific muscle groups to create long, lean lines."
+            },
+            {
+                question: "How often should I attend classes?",
+                answer: "For best results, we recommend 3-4 classes per week. This allows your body to adapt while maintaining consistency for visible transformation."
+            },
+            {
+                question: "Is Physique 57 suitable for all fitness levels?",
+                answer: "Yes! Our instructors provide modifications for every exercise, making it accessible for beginners while challenging for advanced practitioners."
+            },
+            {
+                question: "What is the signature 'shake' in Physique 57?",
+                answer: "The 'shake' is when your muscles reach fatigue through small, targeted movements. This is where the magic happens - your muscles are working to their maximum capacity for optimal results."
+            },
+            {
+                question: "Can I practice Physique 57 if I'm pregnant?",
+                answer: "We offer prenatal modifications, but please consult your doctor first and inform your instructor about your pregnancy so they can provide appropriate modifications."
+            }
+        ];
+
+        const membershipFaqs = [
+            {
+                question: "What is the cancellation policy for memberships?",
+                answer: "Membership cancellations must be submitted in writing at least 30 days before the next billing cycle. Trial packages are non-refundable."
+            },
+            {
+                question: "Can I freeze my membership?",
+                answer: "Yes, monthly memberships can be frozen for up to 2 months per year for medical reasons or extended travel with proper documentation."
+            },
+            {
+                question: "Are there corporate or group rates available?",
+                answer: "Yes, we offer corporate packages and group rates for 5 or more people. Contact us at info@physique57india.com for custom pricing."
+            },
+            {
+                question: "How do I upgrade or downgrade my membership?",
+                answer: "Membership changes can be made through the app or by speaking with studio staff. Changes take effect at the next billing cycle."
+            },
+            {
+                question: "Do unused classes expire?",
+                answer: "Class packages have expiration dates which vary by package type. Trial packages must be used within 14 days of purchase."
+            }
+        ];
+
+        const policyFaqs = [
+            {
+                question: "What safety protocols are in place?",
+                answer: "We maintain rigorous cleaning protocols, ensure proper ventilation, and limit class sizes. All instructors are certified and trained in injury prevention."
+            },
+            {
+                question: "Is there an age restriction for classes?",
+                answer: "Classes are designed for adults 16 years and older. Participants under 18 require parental consent and may need modified exercises."
+            },
+            {
+                question: "What happens if I'm injured during class?",
+                answer: "Stop immediately and inform the instructor. While we carry liability insurance, participants are responsible for disclosing any pre-existing conditions or limitations."
+            },
+            {
+                question: "Can I take photos or videos during class?",
+                answer: "Photography and videography are not permitted during class to protect the privacy of all participants and maintain focus on the workout."
+            },
+            {
+                question: "What is your refund policy?",
+                answer: "Trial packages and memberships are non-refundable. However, we offer makeup classes for medical emergencies with proper documentation."
+            }
+        ];
+
+        const technicalFaqs = [
+            {
+                question: "How do I download and use the Physique 57 app?",
+                answer: "Search 'Physique 57 India' in your app store, or use the Momence platform to book classes, manage your account, and track your progress."
+            },
+            {
+                question: "I'm having trouble booking online. What should I do?",
+                answer: "Contact our support team at info@physique57india.com or call the studio directly. We can help with booking issues or technical problems."
+            },
+            {
+                question: "How do I update my payment information?",
+                answer: "Log into your account on the app or Momence platform, go to 'Account Settings' and update your payment method in the billing section."
+            },
+            {
+                question: "Can I book classes for someone else?",
+                answer: "Each person needs their own account for liability and tracking purposes. You can purchase gift certificates that others can use to create their own account."
+            },
+            {
+                question: "What if I forget to check in for my class?",
+                answer: "Always check in at the front desk when you arrive. If you forget, let us know after class so we can manually adjust your account."
+            }
+        ];
+
+        // Populate detailed modal sections
+        const detailedMethodSection = document.getElementById('detailed-faq-method');
+        const detailedMembershipSection = document.getElementById('detailed-faq-membership');
+        const detailedPoliciesSection = document.getElementById('detailed-faq-policies');
+        const detailedTechnicalSection = document.getElementById('detailed-faq-technical');
+
+        if (detailedMethodSection) {
+            detailedMethodSection.innerHTML = renderFaqCollection(methodFaqs, 0);
+            setupFaqAccordion(detailedMethodSection);
+        }
+
+        if (detailedMembershipSection) {
+            detailedMembershipSection.innerHTML = renderFaqCollection(membershipFaqs, 0);
+            setupFaqAccordion(detailedMembershipSection);
+        }
+
+        if (detailedPoliciesSection) {
+            detailedPoliciesSection.innerHTML = renderFaqCollection(policyFaqs, 0);
+            setupFaqAccordion(detailedPoliciesSection);
+        }
+
+        if (detailedTechnicalSection) {
+            detailedTechnicalSection.innerHTML = renderFaqCollection(technicalFaqs, 0);
+            setupFaqAccordion(detailedTechnicalSection);
+        }
     }
 
     function renderPolicyHighlights() {
@@ -854,11 +1166,15 @@
             const selectedOption = options.find(option => option.value === selectedType || option.type === selectedType);
 
             if (selectedOption) {
+                // Determine price based on current payment stage
+                const currentStage = getSelectedPaymentStage();
+                const stagePrice = currentStage === 'testing' ? '₹1' : '₹1,838';
+
                 // Create more detailed membership data for modal
                 const membershipData = {
                     ...selectedOption,
                     name: selectedOption.name || selectedOption.title,
-                    price: selectedOption.price || '₹1,838',
+                    price: stagePrice,
                     sessions: selectedOption.sessions || '1 Trial Class'
                 };
 
@@ -1634,12 +1950,10 @@
     renderJourneySteps();
     renderStudios();
     renderFaqs();
-    renderPolicyHighlights();
     renderFormatModal();
     initializePhoneInput();
     updateScheduleExternalLink();
     setupFaqAccordion(faqList);
-    setupFaqAccordion(faqModalList);
     applyPaymentStage(getDefaultPaymentStage(), { resetPayment: false, persist: false });
     restoreCheckoutState();
     setPaymentState(false);
@@ -1700,6 +2014,18 @@
     form.addEventListener('input', updatePayButtonState);
     form.addEventListener('change', updatePayButtonState);
 
+    // Persist checkout state on any form change to prevent data loss during payment
+    function persistFormStateOnChange() {
+        persistCheckoutState({
+            ...getSerializableFormState(),
+            eventId: currentEventId || tracking.createEventId()
+        });
+    }
+
+    // Add persistent state saving on form changes
+    form.addEventListener('input', persistFormStateOnChange);
+    form.addEventListener('change', persistFormStateOnChange);
+
     // Initial state
     updatePayButtonState();
 
@@ -1712,6 +2038,12 @@
         if (!payload) {
             return;
         }
+
+        // Ensure form state is persisted before going to checkout
+        persistCheckoutState({
+            ...getSerializableFormState(),
+            eventId: currentEventId || tracking.createEventId()
+        });
 
         try {
             setPaymentProcessing(true);
@@ -1751,6 +2083,24 @@
                 applyPaymentStage(data.stage || getSelectedPaymentStage(), { resetPayment: false, persist: true });
                 setPaymentState(true, data.paymentSessionId || sessionId);
                 showStatus('Payment confirmed and your Momence package has been prepared — you can now submit your request.', 'success');
+
+                // Auto-submit the form if all validations pass
+                setTimeout(() => {
+                    try {
+                        // Check if form is valid using the same logic as handleSubmit
+                        const payload = buildLeadPayloadFromForm();
+                        if (payload && paymentConfirmed && paymentSessionId) {
+                            showStatus('Payment confirmed! Submitting your request now...', 'success');
+                            handleSubmit(new Event('submit')); // Automatically submit the form
+                        } else {
+                            showStatus('Payment confirmed! Please complete the form and click submit.', 'success');
+                        }
+                    } catch (error) {
+                        console.error('Auto-submit failed:', error);
+                        showStatus('Payment confirmed! Please click submit to complete your request.', 'success');
+                    }
+                }, 500);
+
                 return true;
             }
 
@@ -1793,14 +2143,22 @@
     })();
 
     modalOpeners.forEach(({ button, modal }) => {
-        button.addEventListener('click', () => openModal(modal));
+        button.addEventListener('click', () => {
+            // Special handling for detailed FAQ modal opened from main FAQ modal
+            if (button.id === 'open-detailed-faq-from-modal' && activeModal === faqModal) {
+                closeModal(faqModal);
+                setTimeout(() => openModal(modal), 100);
+            } else {
+                openModal(modal);
+            }
+        });
     });
 
     modalCloseButtons.forEach(({ button, modal }) => {
         button.addEventListener('click', () => closeModal(modal));
     });
 
-    [waiverModal, formatModal, faqModal, scheduleModal, signalModal, membershipDetailsModal].filter(Boolean).forEach((modal) => {
+    [waiverModal, formatModal, faqModal, detailedFaqModal, scheduleModal, signalModal, membershipDetailsModal].filter(Boolean).forEach((modal) => {
         modal.addEventListener('click', (event) => {
             if (event.target instanceof HTMLElement && event.target.hasAttribute('data-modal-close')) {
                 closeModal(modal);
