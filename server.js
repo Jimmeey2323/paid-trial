@@ -30,8 +30,8 @@ const STATIC_DIRECTORY_ROUTES = [
 ];
 
 const STUDIO_CLASS_OPTIONS = {
-  'Supreme Headquarters, Bandra': ['Barre 57', 'powerCycle'],
-  'Kwality House, Kemps Corner': ['Barre 57', 'powerCycle', 'Strength Lab']
+  'Supreme Headquarters, Bandra': ['powerCycle'],
+  'Kwality House, Kemps Corner': ['powerCycle', 'Strength Lab']
 };
 
 const ALLOWED_TIME_WINDOWS = [
@@ -78,6 +78,74 @@ app.use(express.json({ limit: JSON_BODY_LIMIT }));
 app.use('/styles', express.static(path.join(__dirname, 'styles')));
 app.use('/scripts', express.static(path.join(__dirname, 'scripts')));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
+
+// Stripe checkout endpoints (optional - requires STRIPE_SECRET_KEY in environment)
+let stripeClient = null;
+if (process.env.STRIPE_SECRET_KEY) {
+  try {
+    const Stripe = require('stripe');
+    stripeClient = Stripe(process.env.STRIPE_SECRET_KEY);
+  } catch (err) {
+    console.error('Stripe module not available or failed to initialize:', err && err.message);
+    stripeClient = null;
+  }
+}
+
+app.post('/api/create-checkout-session', async (req, res) => {
+  if (!stripeClient) {
+    return res.status(500).json({ error: 'Payments are not configured on this server.' });
+  }
+
+  try {
+    const amount = 183800; // INR in paise (Rs 1,838.00)
+    const origin = process.env.FORM_API_BASE_URL || `http://localhost:${PORT}`;
+    const successUrl = `${origin}/?paid=1&session_id={CHECKOUT_SESSION_ID}`;
+    const cancelUrl = `${origin}/?paid=0`;
+
+    const session = await stripeClient.checkout.sessions.create({
+      payment_method_types: ['card'],
+      mode: 'payment',
+      line_items: [
+        {
+          price_data: {
+            currency: 'inr',
+            product_data: { name: 'Physique 57 trial booking fee' },
+            unit_amount: amount
+          },
+          quantity: 1
+        }
+      ],
+      success_url: successUrl,
+      cancel_url: cancelUrl
+    });
+
+    return res.json({ url: session.url });
+  } catch (error) {
+    console.error('create-checkout-session error:', error && error.message);
+    return res.status(500).json({ error: 'Unable to create checkout session.' });
+  }
+});
+
+app.get('/api/verify-payment', async (req, res) => {
+  const sessionId = String(req.query.session_id || '').trim();
+
+  if (!stripeClient) {
+    return res.status(500).json({ error: 'Payments are not configured on this server.' });
+  }
+
+  if (!sessionId) {
+    return res.status(400).json({ error: 'Missing session_id' });
+  }
+
+  try {
+    const session = await stripeClient.checkout.sessions.retrieve(sessionId, { expand: ['payment_intent'] });
+    const paid = session && (session.payment_status === 'paid' || (session.payment_intent && session.payment_intent.status === 'succeeded'));
+    return res.json({ paid: Boolean(paid), session: { id: session.id, payment_status: session.payment_status } });
+  } catch (error) {
+    console.error('verify-payment error:', error && error.message);
+    return res.status(500).json({ error: 'Unable to verify payment session.' });
+  }
+});
 
 function serializeForInlineScript(value) {
   return JSON.stringify(value).replace(/</g, '\\u003c');

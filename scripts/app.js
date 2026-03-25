@@ -17,6 +17,7 @@
     const classOptionsSection = document.getElementById('class-options');
     const classOptionGrid = document.getElementById('class-option-grid');
     const submitButton = document.getElementById('submit-button');
+    const payButton = document.getElementById('pay-button');
     const formStatus = document.getElementById('form-status');
     const proofGrid = document.getElementById('proof-grid');
     const journeySteps = document.getElementById('journey-steps');
@@ -65,6 +66,7 @@
     let phoneInputController = null;
     let scheduleEmbedLoaded = false;
     let scheduleObserver = null;
+    let paymentConfirmed = false;
 
     const scheduleActionButtons = Array.from(document.querySelectorAll('[data-schedule-action]'));
     const scheduleStudioButtons = Array.from(document.querySelectorAll('[data-center-target]'));
@@ -973,6 +975,11 @@
             return;
         }
 
+        if (!paymentConfirmed) {
+            showStatus('Please complete the payment of ₹1,838 before submitting your request.', 'error');
+            return;
+        }
+
         const formData = new FormData(form);
         formData.set('phoneNumber', getNormalizedPhoneNumber());
         if (phoneCountryInput?.value) {
@@ -1067,6 +1074,76 @@
     });
 
     form.addEventListener('submit', handleSubmit);
+
+    // Payment flow: create a Checkout session and verify on return
+    async function createCheckoutSession() {
+        try {
+            setSubmitting(true);
+            const resp = await fetch(tracking.buildApiUrl('/api/create-checkout-session'), { method: 'POST' });
+            const data = await resp.json().catch(() => ({}));
+            setSubmitting(false);
+
+            if (!resp.ok || !data.url) {
+                showStatus(data.error || 'Unable to start payment. Please try again later.', 'error');
+                return;
+            }
+
+            // Redirect user to Stripe Checkout
+            window.location.assign(data.url);
+        } catch (err) {
+            console.error('createCheckoutSession error', err);
+            setSubmitting(false);
+            showStatus('Unable to start payment. Please try again in a moment.', 'error');
+        }
+    }
+
+    async function verifyPaymentSession(sessionId) {
+        try {
+            const resp = await fetch(tracking.buildApiUrl(`/api/verify-payment?session_id=${encodeURIComponent(sessionId)}`));
+            const data = await resp.json().catch(() => ({}));
+
+            if (resp.ok && data.paid) {
+                paymentConfirmed = true;
+                submitButton.disabled = false;
+                showStatus('Payment confirmed — you can now submit your request.', 'success');
+                return true;
+            }
+
+            showStatus('Payment not confirmed. If you completed payment, please wait a moment and try again.', 'error');
+            return false;
+        } catch (err) {
+            console.error('verifyPaymentSession error', err);
+            showStatus('Unable to verify payment at the moment.', 'error');
+            return false;
+        }
+    }
+
+    if (payButton) {
+        payButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            createCheckoutSession();
+        });
+    }
+
+    // If the page was loaded after a Checkout success, verify the session
+    (function checkForCheckoutReturn() {
+        try {
+            const params = new URLSearchParams(window.location.search);
+            const sessionId = params.get('session_id');
+            if (sessionId) {
+                // verify and then remove query params from URL
+                verifyPaymentSession(sessionId).finally(() => {
+                    try {
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    } catch (e) {
+                        // ignore
+                    }
+                });
+            }
+        } catch (error) {
+            // ignore
+        }
+    })();
 
     modalOpeners.forEach(({ button, modal }) => {
         button.addEventListener('click', () => openModal(modal));

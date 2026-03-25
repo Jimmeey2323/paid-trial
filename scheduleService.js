@@ -6,7 +6,6 @@ const CENTER_ALIASES = {
 };
 
 const TYPE_ALIASES = {
-  'Barre 57': ['barre 57', 'studio barre 57', 'barre57'],
   Barre: ['barre', 'band barre'],
   powerCycle: ['powercycle', 'power cycle'],
   'Strength Lab': ['strength lab', 'strength']

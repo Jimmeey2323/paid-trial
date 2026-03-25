@@ -389,24 +389,6 @@ window.APP_CONTENT = Object.freeze({
     classOptionsByStudio: {
         'Supreme Headquarters, Bandra': [
             {
-                value: 'Barre 57',
-                title: 'Barre 57',
-                icon: '🩰',
-                badge: 'Signature barre burn',
-                tagline: 'Foundational, full-body, and unmistakably Physique 57.',
-                summary: 'The official Physique 57 foundational barre class that introduces signature moves and the brand’s Interval Overload method.',
-                description: 'Using the ballet barre, light weights, bands, and body weight, Barre 57 blends principles from functional training, aerobics, HIIT, Pilates, and yoga into a low-impact, high-intensity workout built to sculpt, strengthen, and energize.',
-                intensity: 'Moderate to high',
-                bestFor: 'Full-body tone, posture, muscular endurance',
-                duration: '57 mins',
-                trainingStyle: 'Barre + light weights + bands',
-                highlights: [
-                    'Official entry point into Physique 57’s signature barre choreography',
-                    'Built around precise pulses, holds, stretch, and healthy muscle confusion',
-                    'Ideal if you want elegant strength, deep burn, and coaching on every cue'
-                ]
-            },
-            {
                 value: 'powerCycle',
                 title: 'powerCycle',
                 icon: '🚲',
@@ -426,24 +408,6 @@ window.APP_CONTENT = Object.freeze({
             }
         ],
         'Kwality House, Kemps Corner': [
-            {
-                value: 'Barre 57',
-                title: 'Barre 57',
-                icon: '🩰',
-                badge: 'Signature barre burn',
-                tagline: 'The classic first class for learning the method well.',
-                summary: 'The foundational Physique 57 barre format that teaches signature movement patterns and deep muscular control.',
-                description: 'Barre 57 uses the ballet barre, light weights, bands, and body weight to blend cardio, strength, Pilates, yoga, and stretch into one science-backed, low-impact, high-intensity class that leaves you stronger and more lifted.',
-                intensity: 'Moderate to high',
-                bestFor: 'Tone, posture, control, full-body endurance',
-                duration: '57 mins',
-                trainingStyle: 'Barre + sculpt + interval overload',
-                highlights: [
-                    'Official foundational barre class and best first-time method introduction',
-                    'Balances challenge, learning, and strong technique cues beautifully',
-                    'Great choice if you want a sculpt-led first visit with signature shake'
-                ]
-            },
             {
                 value: 'powerCycle',
                 title: 'powerCycle',
@@ -489,7 +453,7 @@ window.APP_CONTENT = Object.freeze({
             address: '203, Supreme Headquarters, Junction of 14th & 33rd Rd, opposite Monkey Bar, Bandra West, Mumbai 400050',
             neighborhood: 'Bandra West',
             phone: '097696 65757',
-            bestFor: 'Barre 57 and powerCycle in a central neighborhood setting.',
+            bestFor: 'powerCycle in a central neighborhood setting.',
             mapUrl: 'https://www.google.com/maps/place/203,+Supreme+Headquarters,+Junction+of+14th,+%26+33rd+Rd,+opposite+Monkey+Bar,+Bandra+West,+Mumbai,+Maharashtra+400050',
             mapEmbedUrl: 'https://www.google.com/maps?q=203%2C%20Supreme%20Headquarters%2C%20Junction%20of%2014th%20%26%2033rd%20Rd%2C%20opposite%20Monkey%20Bar%2C%20Bandra%20West%2C%20Mumbai%20400050&z=15&output=embed'
         },
@@ -499,7 +463,7 @@ window.APP_CONTENT = Object.freeze({
             address: 'Kwality House, August Kranti Rd, below Kemps Corner, Grant Road, Mumbai 400036',
             neighborhood: 'Kemps Corner',
             phone: '097696 65757',
-            bestFor: 'Barre 57, powerCycle, and Strength Lab in a refined South Mumbai location.',
+            bestFor: 'powerCycle and Strength Lab in a refined South Mumbai location.',
             mapUrl: 'https://www.google.com/maps/place/Kwality+House,+August+Kranti+Rd,+below+Kemps+Corner,+Kemps+Corner,+Grant+Road,+Mumbai,+Maharashtra+400036',
             mapEmbedUrl: 'https://www.google.com/maps?q=Kwality%20House%2C%20August%20Kranti%20Rd%2C%20below%20Kemps%20Corner%2C%20Grant%20Road%2C%20Mumbai%20400036&z=15&output=embed'
         }
