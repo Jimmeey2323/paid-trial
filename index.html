@@ -116,6 +116,28 @@
                             <div id="class-option-grid" class="class-option-grid"></div>
                         </fieldset>
 
+                        <fieldset id="payment-stage-fieldset" class="payment-stage-fieldset">
+                            <legend>Checkout stage</legend>
+                            <p class="field-note">Choose whether to run the live production checkout or the ₹1 testing flow.</p>
+                            <div class="payment-stage-switch" role="radiogroup" aria-label="Checkout stage selection">
+                                <label class="payment-stage-chip" for="stage-production">
+                                    <input type="radio" id="stage-production" name="stage" value="production" checked>
+                                    <span class="payment-stage-chip-copy">
+                                        <strong data-stage-label="production">Production</strong>
+                                        <span data-stage-amount="production">Live checkout</span>
+                                    </span>
+                                </label>
+                                <label class="payment-stage-chip" for="stage-testing">
+                                    <input type="radio" id="stage-testing" name="stage" value="testing">
+                                    <span class="payment-stage-chip-copy">
+                                        <strong data-stage-label="testing">Testing</strong>
+                                        <span data-stage-amount="testing">₹1 test checkout</span>
+                                    </span>
+                                </label>
+                            </div>
+                            <p id="payment-stage-note" class="payment-stage-note">Production mode charges ₹1,838 and triggers the live membership purchase after payment.</p>
+                        </fieldset>
+
                         <div class="consent-card">
                             <p class="consent-copy">
                                 Review the <button type="button" class="text-button" id="waiver-link">trial waiver and booking terms</button>

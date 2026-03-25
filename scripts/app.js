@@ -16,6 +16,8 @@
     const phoneCountryInput = document.getElementById('phoneCountry');
     const classOptionsSection = document.getElementById('class-options');
     const classOptionGrid = document.getElementById('class-option-grid');
+    const paymentStageFieldset = document.getElementById('payment-stage-fieldset');
+    const paymentStageNote = document.getElementById('payment-stage-note');
     const submitButton = document.getElementById('submit-button');
     const payButton = document.getElementById('pay-button');
     const formStatus = document.getElementById('form-status');
@@ -44,6 +46,8 @@
     const focusableSelector = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
     const heroHeadlineStorageKey = 'trial_form_last_headline_index';
     const themeStorageKey = 'trial_form_theme_preference';
+    const checkoutStateStorageKey = 'trial_form_checkout_state_v1';
+    const paymentSessionStorageKey = 'trial_form_payment_session_id';
 
     const modalOpeners = [
         { button: document.getElementById('waiver-link'), modal: waiverModal },
@@ -67,9 +71,104 @@
     let scheduleEmbedLoaded = false;
     let scheduleObserver = null;
     let paymentConfirmed = false;
+    let paymentSessionId = '';
+    let currentEventId = '';
 
     const scheduleActionButtons = Array.from(document.querySelectorAll('[data-schedule-action]'));
     const scheduleStudioButtons = Array.from(document.querySelectorAll('[data-center-target]'));
+    const paymentStageInputs = Array.from(form.querySelectorAll('input[name="stage"]'));
+    const paymentStageLabelTargets = Array.from(document.querySelectorAll('[data-stage-label]'));
+    const paymentStageAmountTargets = Array.from(document.querySelectorAll('[data-stage-amount]'));
+
+    function getPaymentStageConfigs() {
+        return tracking.appConfig?.paymentStages || {};
+    }
+
+    function getDefaultPaymentStage() {
+        const configuredDefault = String(tracking.appConfig?.defaultPaymentStage || 'production').trim().toLowerCase();
+        return configuredDefault === 'testing' ? 'testing' : 'production';
+    }
+
+    function getSelectedPaymentStage() {
+        const selectedInput = paymentStageInputs.find((input) => input.checked);
+        return selectedInput?.value === 'testing' ? 'testing' : getDefaultPaymentStage();
+    }
+
+    function getPaymentStageConfig(stage = getSelectedPaymentStage()) {
+        const normalizedStage = stage === 'testing' ? 'testing' : 'production';
+        const configuredStages = getPaymentStageConfigs();
+        return configuredStages[normalizedStage] || configuredStages[getDefaultPaymentStage()] || {
+            label: normalizedStage === 'testing' ? 'Testing' : 'Production',
+            amountDisplay: normalizedStage === 'testing' ? '₹1' : '₹1,838',
+            buttonLabel: normalizedStage === 'testing' ? 'Pay ₹1' : 'Pay ₹1,838',
+            description: normalizedStage === 'testing'
+                ? 'Testing mode charges ₹1 and uses the Momence test membership purchase.'
+                : 'Production mode charges ₹1,838 and uses the live Momence membership purchase.'
+        };
+    }
+
+    function clearStoredPaymentSession() {
+        try {
+            window.sessionStorage.removeItem(paymentSessionStorageKey);
+        } catch (error) {
+            // Storage can be unavailable.
+        }
+    }
+
+    function updatePaymentStageUi(stage = getSelectedPaymentStage()) {
+        const activeStage = stage === 'testing' ? 'testing' : 'production';
+
+        paymentStageLabelTargets.forEach((element) => {
+            const targetStage = element.getAttribute('data-stage-label');
+            const stageConfig = getPaymentStageConfig(targetStage);
+            element.textContent = stageConfig.label || (targetStage === 'testing' ? 'Testing' : 'Production');
+        });
+
+        paymentStageAmountTargets.forEach((element) => {
+            const targetStage = element.getAttribute('data-stage-amount');
+            const stageConfig = getPaymentStageConfig(targetStage);
+            element.textContent = stageConfig.amountDisplay || (targetStage === 'testing' ? '₹1' : '₹1,838');
+        });
+
+        paymentStageInputs.forEach((input) => {
+            input.closest('.payment-stage-chip')?.classList.toggle('is-selected', input.value === activeStage);
+        });
+
+        if (paymentStageFieldset) {
+            paymentStageFieldset.setAttribute('data-selected-stage', activeStage);
+        }
+
+        if (paymentStageNote) {
+            paymentStageNote.textContent = getPaymentStageConfig(activeStage).description || '';
+        }
+
+        if (payButton && !paymentConfirmed) {
+            payButton.textContent = getPaymentStageConfig(activeStage).buttonLabel || 'Pay now';
+        }
+    }
+
+    function applyPaymentStage(stage, { resetPayment = false, persist = true } = {}) {
+        const normalizedStage = stage === 'testing' ? 'testing' : 'production';
+        const targetInput = paymentStageInputs.find((input) => input.value === normalizedStage);
+
+        if (targetInput) {
+            targetInput.checked = true;
+        }
+
+        if (resetPayment && paymentConfirmed) {
+            setPaymentState(false);
+            showStatus(`Checkout stage switched to ${getPaymentStageConfig(normalizedStage).label}. Please complete the matching ${getPaymentStageConfig(normalizedStage).amountDisplay} payment before submitting.`, 'success');
+        }
+
+        updatePaymentStageUi(normalizedStage);
+
+        if (persist) {
+            persistCheckoutState({
+                ...getSerializableFormState(),
+                eventId: currentEventId || tracking.createEventId()
+            });
+        }
+    }
 
     function getPreferredTheme() {
         try {
@@ -82,6 +181,166 @@
         }
 
         return 'dark';
+    }
+
+    function getStoredCheckoutState() {
+        try {
+            return JSON.parse(window.sessionStorage.getItem(checkoutStateStorageKey) || '{}');
+        } catch (error) {
+            return {};
+        }
+    }
+
+    function persistCheckoutState(state) {
+        try {
+            window.sessionStorage.setItem(checkoutStateStorageKey, JSON.stringify(state));
+        } catch (error) {
+            // Session storage can be unavailable.
+        }
+    }
+
+    function clearCheckoutState() {
+        try {
+            window.sessionStorage.removeItem(checkoutStateStorageKey);
+            clearStoredPaymentSession();
+        } catch (error) {
+            // Storage can be unavailable.
+        }
+    }
+
+    function setPaymentState(isConfirmed, sessionId = '') {
+        paymentConfirmed = Boolean(isConfirmed);
+        paymentSessionId = isConfirmed ? String(sessionId || paymentSessionId || '') : '';
+
+        if (submitButton) {
+            submitButton.disabled = !paymentConfirmed;
+        }
+
+        if (payButton) {
+            payButton.disabled = paymentConfirmed;
+            payButton.textContent = paymentConfirmed
+                ? 'Payment confirmed'
+                : (getPaymentStageConfig().buttonLabel || tracking.appConfig?.paymentButtonLabel || 'Pay ₹1,838');
+        }
+
+        if (paymentConfirmed && paymentSessionId) {
+            try {
+                window.sessionStorage.setItem(paymentSessionStorageKey, paymentSessionId);
+            } catch (error) {
+                // Storage can be unavailable.
+            }
+        } else {
+            clearStoredPaymentSession();
+        }
+    }
+
+    function getSerializableFormState() {
+        const selectedType = form.querySelector('input[name="type"]:checked');
+        return {
+            firstName: document.getElementById('firstName')?.value || '',
+            lastName: document.getElementById('lastName')?.value || '',
+            email: document.getElementById('email')?.value || '',
+            phoneNumber: phoneNumberInput?.value || '',
+            phoneCountry: phoneCountryInput?.value || 'IN',
+            time: document.getElementById('time')?.value || '',
+            center: centerSelect?.value || '',
+            type: selectedType?.value || '',
+            stage: getSelectedPaymentStage(),
+            waiverAccepted: Boolean(document.getElementById('waiverAccepted')?.checked),
+            eventId: currentEventId || tracking.createEventId()
+        };
+    }
+
+    function restoreCheckoutState() {
+        const state = getStoredCheckoutState();
+        if (!state || !Object.keys(state).length) {
+            return;
+        }
+
+        const firstNameField = document.getElementById('firstName');
+        const lastNameField = document.getElementById('lastName');
+        const emailField = document.getElementById('email');
+        const timeField = document.getElementById('time');
+        const waiverField = document.getElementById('waiverAccepted');
+
+        if (firstNameField) {
+            firstNameField.value = state.firstName || '';
+        }
+        if (lastNameField) {
+            lastNameField.value = state.lastName || '';
+        }
+        if (emailField) {
+            emailField.value = state.email || '';
+        }
+        if (phoneNumberInput) {
+            phoneNumberInput.value = state.phoneNumber || '';
+        }
+        if (phoneCountryInput) {
+            phoneCountryInput.value = state.phoneCountry || 'IN';
+        }
+        if (phoneInputController && state.phoneCountry) {
+            phoneInputController.setCountry(String(state.phoneCountry).toLowerCase());
+        }
+        if (timeField) {
+            timeField.value = state.time || '';
+        }
+        if (centerSelect && state.center) {
+            centerSelect.value = state.center;
+            renderClassOptions(state.center);
+        }
+        if (state.type) {
+            const optionInput = form.querySelector(`input[name="type"][value="${CSS.escape(state.type)}"]`);
+            if (optionInput) {
+                optionInput.checked = true;
+                updateSelectedClassState();
+            }
+        }
+        applyPaymentStage(state.stage || getDefaultPaymentStage(), { resetPayment: false, persist: false });
+        if (waiverField) {
+            waiverField.checked = Boolean(state.waiverAccepted);
+        }
+
+        currentEventId = state.eventId || currentEventId;
+    }
+
+    function buildLeadPayloadFromForm() {
+        if (!form.reportValidity()) {
+            return null;
+        }
+
+        if (!validatePhoneField({ showMessage: true })) {
+            phoneNumberInput?.reportValidity();
+            phoneNumberInput?.focus();
+            return null;
+        }
+
+        const selectedType = form.querySelector('input[name="type"]:checked');
+        if (!selectedType) {
+            showStatus('Choose a class format before continuing.', 'error');
+            classOptionGrid.querySelector('input[name="type"]')?.focus();
+            return null;
+        }
+
+        const formData = new FormData(form);
+        formData.set('phoneNumber', getNormalizedPhoneNumber());
+        if (phoneCountryInput?.value) {
+            formData.set('phoneCountry', phoneCountryInput.value);
+        }
+
+        currentEventId = currentEventId || getStoredCheckoutState().eventId || tracking.createEventId();
+
+        const payload = {
+            ...Object.fromEntries(formData.entries()),
+            event_id: currentEventId,
+            ...tracking.getSubmissionTrackingPayload()
+        };
+
+        persistCheckoutState({
+            ...getSerializableFormState(),
+            eventId: currentEventId
+        });
+
+        return payload;
     }
 
     function updateThemeToggle(theme) {
@@ -453,8 +712,19 @@
     }
 
     function setSubmitting(isSubmitting) {
-        submitButton.disabled = isSubmitting;
+        submitButton.disabled = isSubmitting || !paymentConfirmed;
         submitButton.textContent = isSubmitting ? 'Submitting your request...' : 'Reserve my trial';
+    }
+
+    function setPaymentProcessing(isProcessing) {
+        if (!payButton) {
+            return;
+        }
+
+        payButton.disabled = isProcessing || paymentConfirmed;
+        payButton.textContent = isProcessing
+            ? 'Starting secure checkout...'
+            : (paymentConfirmed ? 'Payment confirmed' : (getPaymentStageConfig().buttonLabel || tracking.appConfig?.paymentButtonLabel || 'Pay ₹1,838'));
     }
 
     function updateSelectedClassState() {
@@ -958,39 +1228,17 @@
         clearStatus();
         clearFieldErrors();
 
-        if (!form.reportValidity()) {
+        if (!paymentConfirmed || !paymentSessionId) {
+            showStatus(`Please complete the payment of ${getPaymentStageConfig().amountDisplay || tracking.appConfig?.paymentAmountDisplay || '₹1,838'} before submitting your request.`, 'error');
             return;
         }
 
-        if (!validatePhoneField({ showMessage: true })) {
-            phoneNumberInput?.reportValidity();
-            phoneNumberInput?.focus();
+        const payload = buildLeadPayloadFromForm();
+        if (!payload) {
             return;
         }
 
-        const selectedType = form.querySelector('input[name="type"]:checked');
-        if (!selectedType) {
-            showStatus('Choose a class format before submitting.', 'error');
-            classOptionGrid.querySelector('input[name="type"]')?.focus();
-            return;
-        }
-
-        if (!paymentConfirmed) {
-            showStatus('Please complete the payment of ₹1,838 before submitting your request.', 'error');
-            return;
-        }
-
-        const formData = new FormData(form);
-        formData.set('phoneNumber', getNormalizedPhoneNumber());
-        if (phoneCountryInput?.value) {
-            formData.set('phoneCountry', phoneCountryInput.value);
-        }
-
-        const payload = {
-            ...Object.fromEntries(formData.entries()),
-            event_id: tracking.createEventId(),
-            ...tracking.getSubmissionTrackingPayload()
-        };
+        payload.payment_session_id = paymentSessionId;
 
         setSubmitting(true);
         showStatus('Submitting your request and securing the next step.', 'success');
@@ -1019,6 +1267,7 @@
             tracking.trackLeadSubmission(payload);
             launchSuccessConfetti();
             showStatus('Request received. Redirecting you to the next step now.', 'success');
+            clearCheckoutState();
             Array.from(form.elements).forEach((element) => {
                 if (element instanceof HTMLInputElement || element instanceof HTMLSelectElement || element instanceof HTMLButtonElement) {
                     element.disabled = true;
@@ -1048,6 +1297,9 @@
     updateScheduleExternalLink();
     setupFaqAccordion(faqList);
     setupFaqAccordion(faqModalList);
+    applyPaymentStage(getDefaultPaymentStage(), { resetPayment: false, persist: false });
+    restoreCheckoutState();
+    setPaymentState(false);
 
     centerSelect.addEventListener('change', () => {
         renderClassOptions(centerSelect.value);
@@ -1073,17 +1325,42 @@
         });
     });
 
+    paymentStageInputs.forEach((input) => {
+        input.addEventListener('change', () => {
+            if (input.checked) {
+                applyPaymentStage(input.value, { resetPayment: true, persist: true });
+            }
+        });
+    });
+
     form.addEventListener('submit', handleSubmit);
 
     // Payment flow: create a Checkout session and verify on return
     async function createCheckoutSession() {
+        clearStatus();
+        clearFieldErrors();
+
+        const payload = buildLeadPayloadFromForm();
+        if (!payload) {
+            return;
+        }
+
         try {
-            setSubmitting(true);
-            const resp = await fetch(tracking.buildApiUrl('/api/create-checkout-session'), { method: 'POST' });
+            setPaymentProcessing(true);
+            const resp = await fetch(tracking.buildApiUrl('/api/create-checkout-session'), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
             const data = await resp.json().catch(() => ({}));
-            setSubmitting(false);
+            setPaymentProcessing(false);
 
             if (!resp.ok || !data.url) {
+                if (resp.status === 400 && data.fieldErrors) {
+                    applyFieldErrors(data.fieldErrors);
+                }
                 showStatus(data.error || 'Unable to start payment. Please try again later.', 'error');
                 return;
             }
@@ -1092,7 +1369,7 @@
             window.location.assign(data.url);
         } catch (err) {
             console.error('createCheckoutSession error', err);
-            setSubmitting(false);
+            setPaymentProcessing(false);
             showStatus('Unable to start payment. Please try again in a moment.', 'error');
         }
     }
@@ -1102,17 +1379,19 @@
             const resp = await fetch(tracking.buildApiUrl(`/api/verify-payment?session_id=${encodeURIComponent(sessionId)}`));
             const data = await resp.json().catch(() => ({}));
 
-            if (resp.ok && data.paid) {
-                paymentConfirmed = true;
-                submitButton.disabled = false;
-                showStatus('Payment confirmed — you can now submit your request.', 'success');
+            if (resp.ok && data.paid && data.fulfilled) {
+                applyPaymentStage(data.stage || getSelectedPaymentStage(), { resetPayment: false, persist: true });
+                setPaymentState(true, data.paymentSessionId || sessionId);
+                showStatus('Payment confirmed and your Momence package has been prepared — you can now submit your request.', 'success');
                 return true;
             }
 
-            showStatus('Payment not confirmed. If you completed payment, please wait a moment and try again.', 'error');
+            setPaymentState(false);
+            showStatus(data.error || 'Payment not confirmed yet. If you completed payment, please wait a moment and try again.', 'error');
             return false;
         } catch (err) {
             console.error('verifyPaymentSession error', err);
+            setPaymentState(false);
             showStatus('Unable to verify payment at the moment.', 'error');
             return false;
         }
@@ -1129,7 +1408,7 @@
     (function checkForCheckoutReturn() {
         try {
             const params = new URLSearchParams(window.location.search);
-            const sessionId = params.get('session_id');
+            const sessionId = params.get('session_id') || window.sessionStorage.getItem(paymentSessionStorageKey);
             if (sessionId) {
                 // verify and then remove query params from URL
                 verifyPaymentSession(sessionId).finally(() => {

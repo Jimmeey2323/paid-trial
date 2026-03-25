@@ -1,0 +1,4 @@
+project_id = "oleiodivubhtcagrlfug"
+
+[functions.manual-momence-sync]
+verify_jwt = false

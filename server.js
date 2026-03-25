@@ -66,6 +66,76 @@ const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000;
 const RATE_LIMIT_MAX_REQUESTS = 8;
 const rateLimitStore = new Map();
 
+const DEFAULT_STRIPE_CHECKOUT_CONFIG = {
+  amount: 183800,
+  currency: 'inr',
+  productName: 'Physique 57 trial booking fee',
+  productDescription: 'Secure your paid trial and onboarding flow.',
+  paymentMethodTypes: ['card'],
+  allowPromotionCodes: true,
+  billingAddressCollection: 'required',
+  phoneNumberCollection: true,
+  taxIdCollection: false,
+  automaticTax: false,
+  invoiceCreation: false,
+  submitType: 'pay',
+  shippingCountries: [],
+  customFields: [],
+  customText: {},
+  consentCollection: null,
+  metadata: {},
+  buttonLabel: 'Pay ₹1,838',
+  successUrl: '/?payment=success&session_id={CHECKOUT_SESSION_ID}',
+  cancelUrl: '/?payment=cancelled'
+};
+
+const DEFAULT_MOMENCE_MEMBERSHIP = {
+  id: 240932,
+  hostId: 13752,
+  taxBracketId: 36758,
+  type: 'package-events',
+  subscriptionType: 'absolute',
+  name: 'Newcomers 2 For 1',
+  price: 1750,
+  currency: 'inr',
+  duration: 14,
+  durationUnit: 'days',
+  activateOnFirstUse: true,
+  numberOfEvents: 2,
+  isIntroOffer: true,
+  isSingleBuy: true,
+  priceAfterProration: 1750,
+  description: 'Physique 57 Newcomers 2 For 1 package.'
+};
+
+const DEFAULT_PAYMENT_STAGE = 'production';
+const DEFAULT_PAYMENT_STAGE_CONFIGS = {
+  production: {
+    label: 'Production',
+    description: 'Production mode charges ₹1,838 and triggers the live Momence membership purchase after payment.',
+    checkout: {},
+    membership: {}
+  },
+  testing: {
+    label: 'Testing',
+    description: 'Testing mode charges ₹1 and triggers the Momence test membership purchase after payment.',
+    checkout: {
+      amount: 100,
+      productName: 'Physique 57 trial test payment',
+      productDescription: 'Testing checkout flow for the paid trial experience.',
+      buttonLabel: 'Pay ₹1'
+    },
+    membership: {
+      id: 675444,
+      name: 'Test',
+      price: 1,
+      priceAfterProration: 1,
+      currency: 'inr',
+      description: 'Momence test membership purchase used for checkout validation.'
+    }
+  }
+};
+
 app.use((req, res, next) => {
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -81,71 +151,16 @@ app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
 // Stripe checkout endpoints (optional - requires STRIPE_SECRET_KEY in environment)
 let stripeClient = null;
-if (process.env.STRIPE_SECRET_KEY) {
+const stripeSecretKey = String(process.env.STRIPE_SECRET_KEY || '').trim();
+if (stripeSecretKey) {
   try {
     const Stripe = require('stripe');
-    stripeClient = Stripe(process.env.STRIPE_SECRET_KEY);
+    stripeClient = Stripe(stripeSecretKey);
   } catch (err) {
     console.error('Stripe module not available or failed to initialize:', err && err.message);
     stripeClient = null;
   }
 }
-
-app.post('/api/create-checkout-session', async (req, res) => {
-  if (!stripeClient) {
-    return res.status(500).json({ error: 'Payments are not configured on this server.' });
-  }
-
-  try {
-    const amount = 183800; // INR in paise (Rs 1,838.00)
-    const origin = process.env.FORM_API_BASE_URL || `http://localhost:${PORT}`;
-    const successUrl = `${origin}/?paid=1&session_id={CHECKOUT_SESSION_ID}`;
-    const cancelUrl = `${origin}/?paid=0`;
-
-    const session = await stripeClient.checkout.sessions.create({
-      payment_method_types: ['card'],
-      mode: 'payment',
-      line_items: [
-        {
-          price_data: {
-            currency: 'inr',
-            product_data: { name: 'Physique 57 trial booking fee' },
-            unit_amount: amount
-          },
-          quantity: 1
-        }
-      ],
-      success_url: successUrl,
-      cancel_url: cancelUrl
-    });
-
-    return res.json({ url: session.url });
-  } catch (error) {
-    console.error('create-checkout-session error:', error && error.message);
-    return res.status(500).json({ error: 'Unable to create checkout session.' });
-  }
-});
-
-app.get('/api/verify-payment', async (req, res) => {
-  const sessionId = String(req.query.session_id || '').trim();
-
-  if (!stripeClient) {
-    return res.status(500).json({ error: 'Payments are not configured on this server.' });
-  }
-
-  if (!sessionId) {
-    return res.status(400).json({ error: 'Missing session_id' });
-  }
-
-  try {
-    const session = await stripeClient.checkout.sessions.retrieve(sessionId, { expand: ['payment_intent'] });
-    const paid = session && (session.payment_status === 'paid' || (session.payment_intent && session.payment_intent.status === 'succeeded'));
-    return res.json({ paid: Boolean(paid), session: { id: session.id, payment_status: session.payment_status } });
-  } catch (error) {
-    console.error('verify-payment error:', error && error.message);
-    return res.status(500).json({ error: 'Unable to verify payment session.' });
-  }
-});
 
 function serializeForInlineScript(value) {
   return JSON.stringify(value).replace(/</g, '\\u003c');
@@ -186,6 +201,397 @@ function sendStaticFile(res, rootDirectory, relativeFilePath) {
   });
 }
 
+function parseBoolean(value, fallback = false) {
+  if (value === undefined || value === null || value === '') {
+    return fallback;
+  }
+
+  return ['1', 'true', 'yes', 'on'].includes(String(value).trim().toLowerCase());
+}
+
+function parseInteger(value, fallback = 0) {
+  const parsed = Number.parseInt(String(value ?? '').trim(), 10);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function parseList(value, fallback = []) {
+  if (!value) {
+    return fallback;
+  }
+
+  return String(value)
+    .split(',')
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+}
+
+function parseJson(value, fallback) {
+  if (!value || !String(value).trim()) {
+    return fallback;
+  }
+
+  try {
+    return JSON.parse(String(value));
+  } catch (error) {
+    console.error('Invalid JSON configuration detected:', error.message);
+    return fallback;
+  }
+}
+
+function isPlainObject(value) {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+}
+
+function deepMerge(baseValue, overrideValue) {
+  if (Array.isArray(baseValue) || Array.isArray(overrideValue)) {
+    return Array.isArray(overrideValue) ? [...overrideValue] : [...(baseValue || [])];
+  }
+
+  if (!isPlainObject(baseValue) || !isPlainObject(overrideValue)) {
+    return overrideValue === undefined ? baseValue : overrideValue;
+  }
+
+  const merged = { ...baseValue };
+  Object.keys(overrideValue).forEach((key) => {
+    merged[key] = deepMerge(baseValue[key], overrideValue[key]);
+  });
+  return merged;
+}
+
+function stripUndefined(value) {
+  if (Array.isArray(value)) {
+    return value.map(stripUndefined).filter((entry) => entry !== undefined);
+  }
+
+  if (!isPlainObject(value)) {
+    return value;
+  }
+
+  const result = {};
+  Object.entries(value).forEach(([key, entry]) => {
+    const cleaned = stripUndefined(entry);
+    if (cleaned !== undefined) {
+      result[key] = cleaned;
+    }
+  });
+
+  return result;
+}
+
+function getRequestOrigin(req) {
+  const configuredOrigin = String(process.env.FORM_API_BASE_URL || '').trim();
+  if (configuredOrigin) {
+    return configuredOrigin.replace(/\/$/, '');
+  }
+
+  const protocol = req.get('x-forwarded-proto') || req.protocol || 'http';
+  const host = req.get('x-forwarded-host') || req.get('host') || `localhost:${PORT}`;
+  return `${protocol}://${host}`.replace(/\/$/, '');
+}
+
+function resolveUrl(value, origin, fallbackPath) {
+  const target = String(value || fallbackPath || '').trim();
+  if (!target) {
+    return origin;
+  }
+
+  try {
+    return new URL(target, `${origin}/`).toString();
+  } catch (error) {
+    return new URL(fallbackPath || '/', `${origin}/`).toString();
+  }
+}
+
+function formatMoney(amountMinor, currency = 'INR') {
+  const normalizedCurrency = String(currency || 'INR').toUpperCase();
+  return new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: normalizedCurrency,
+    maximumFractionDigits: 2
+  }).format((Number(amountMinor) || 0) / 100);
+}
+
+function normalizePaymentStage(value, fallback = process.env.DEFAULT_PAYMENT_STAGE || DEFAULT_PAYMENT_STAGE) {
+  const normalizedValue = String(value || '').trim().toLowerCase();
+  const fallbackValue = String(fallback || DEFAULT_PAYMENT_STAGE).trim().toLowerCase();
+
+  if (normalizedValue === 'testing') {
+    return 'testing';
+  }
+
+  if (normalizedValue === 'production') {
+    return 'production';
+  }
+
+  return fallbackValue === 'testing' ? 'testing' : DEFAULT_PAYMENT_STAGE;
+}
+
+function getPaymentStageConfigs() {
+  const configuredStages = parseJson(process.env.PAYMENT_STAGE_CONFIG_JSON, {});
+  return deepMerge(DEFAULT_PAYMENT_STAGE_CONFIGS, configuredStages);
+}
+
+function getPaymentStageConfig(stageName) {
+  const stages = getPaymentStageConfigs();
+  const normalizedStage = normalizePaymentStage(stageName);
+  return stages[normalizedStage] || stages[DEFAULT_PAYMENT_STAGE] || DEFAULT_PAYMENT_STAGE_CONFIGS.production;
+}
+
+function getStripeCheckoutConfig(req, stageName = normalizePaymentStage()) {
+  const envConfig = parseJson(process.env.STRIPE_CHECKOUT_CONFIG_JSON, {});
+  const origin = getRequestOrigin(req);
+  const merged = deepMerge(DEFAULT_STRIPE_CHECKOUT_CONFIG, envConfig);
+  const configuredBase = {
+    ...merged,
+    amount: parseInteger(process.env.STRIPE_CHECKOUT_AMOUNT, merged.amount),
+    currency: String(process.env.STRIPE_CHECKOUT_CURRENCY || merged.currency || 'inr').trim().toLowerCase(),
+    productName: String(process.env.STRIPE_CHECKOUT_PRODUCT_NAME || merged.productName || '').trim() || DEFAULT_STRIPE_CHECKOUT_CONFIG.productName,
+    productDescription: String(process.env.STRIPE_CHECKOUT_PRODUCT_DESCRIPTION || merged.productDescription || '').trim(),
+    paymentMethodTypes: parseList(process.env.STRIPE_CHECKOUT_PAYMENT_METHOD_TYPES, merged.paymentMethodTypes || ['card']),
+    allowPromotionCodes: parseBoolean(process.env.STRIPE_CHECKOUT_ALLOW_PROMO_CODES, merged.allowPromotionCodes),
+    billingAddressCollection: String(process.env.STRIPE_CHECKOUT_BILLING_ADDRESS_COLLECTION || merged.billingAddressCollection || 'required').trim(),
+    phoneNumberCollection: parseBoolean(process.env.STRIPE_CHECKOUT_PHONE_NUMBER_COLLECTION, merged.phoneNumberCollection),
+    taxIdCollection: parseBoolean(process.env.STRIPE_CHECKOUT_TAX_ID_COLLECTION, merged.taxIdCollection),
+    automaticTax: parseBoolean(process.env.STRIPE_CHECKOUT_AUTOMATIC_TAX, merged.automaticTax),
+    invoiceCreation: parseBoolean(process.env.STRIPE_CHECKOUT_INVOICE_CREATION, merged.invoiceCreation),
+    submitType: String(process.env.STRIPE_CHECKOUT_SUBMIT_TYPE || merged.submitType || 'pay').trim(),
+    shippingCountries: parseList(process.env.STRIPE_CHECKOUT_SHIPPING_COUNTRIES, merged.shippingCountries || []),
+    customFields: parseJson(process.env.STRIPE_CHECKOUT_CUSTOM_FIELDS_JSON, merged.customFields || []),
+    customText: parseJson(process.env.STRIPE_CHECKOUT_CUSTOM_TEXT_JSON, merged.customText || {}),
+    consentCollection: parseJson(process.env.STRIPE_CHECKOUT_CONSENT_COLLECTION_JSON, merged.consentCollection),
+    metadata: parseJson(process.env.STRIPE_CHECKOUT_METADATA_JSON, merged.metadata || {}),
+    buttonLabel: String(process.env.STRIPE_CHECKOUT_BUTTON_LABEL || merged.buttonLabel || '').trim() || `Pay ${formatMoney(parseInteger(process.env.STRIPE_CHECKOUT_AMOUNT, merged.amount), String(process.env.STRIPE_CHECKOUT_CURRENCY || merged.currency || 'inr').trim().toLowerCase())}`,
+    successUrl: resolveUrl(process.env.STRIPE_CHECKOUT_SUCCESS_URL || merged.successUrl, origin, '/?payment=success&session_id={CHECKOUT_SESSION_ID}'),
+    cancelUrl: resolveUrl(process.env.STRIPE_CHECKOUT_CANCEL_URL || merged.cancelUrl, origin, '/?payment=cancelled')
+  };
+  const stageConfig = getPaymentStageConfig(stageName);
+  const stageCheckoutConfig = deepMerge(configuredBase, stageConfig.checkout || {});
+
+  const amount = parseInteger(stageCheckoutConfig.amount, configuredBase.amount);
+  const currency = String(stageCheckoutConfig.currency || configuredBase.currency || 'inr').trim().toLowerCase();
+  const config = {
+    ...stageCheckoutConfig,
+    amount,
+    currency,
+    productName: String(stageCheckoutConfig.productName || '').trim() || DEFAULT_STRIPE_CHECKOUT_CONFIG.productName,
+    productDescription: String(stageCheckoutConfig.productDescription || '').trim(),
+    paymentMethodTypes: Array.isArray(stageCheckoutConfig.paymentMethodTypes) && stageCheckoutConfig.paymentMethodTypes.length
+      ? stageCheckoutConfig.paymentMethodTypes
+      : ['card'],
+    allowPromotionCodes: Boolean(stageCheckoutConfig.allowPromotionCodes),
+    billingAddressCollection: String(stageCheckoutConfig.billingAddressCollection || 'required').trim(),
+    phoneNumberCollection: Boolean(stageCheckoutConfig.phoneNumberCollection),
+    taxIdCollection: Boolean(stageCheckoutConfig.taxIdCollection),
+    automaticTax: Boolean(stageCheckoutConfig.automaticTax),
+    invoiceCreation: Boolean(stageCheckoutConfig.invoiceCreation),
+    submitType: String(stageCheckoutConfig.submitType || 'pay').trim(),
+    shippingCountries: Array.isArray(stageCheckoutConfig.shippingCountries) ? stageCheckoutConfig.shippingCountries : [],
+    customFields: Array.isArray(stageCheckoutConfig.customFields) ? stageCheckoutConfig.customFields : [],
+    customText: isPlainObject(stageCheckoutConfig.customText) ? stageCheckoutConfig.customText : {},
+    consentCollection: stageCheckoutConfig.consentCollection || null,
+    metadata: isPlainObject(stageCheckoutConfig.metadata) ? stageCheckoutConfig.metadata : {},
+    buttonLabel: String(stageCheckoutConfig.buttonLabel || '').trim() || `Pay ${formatMoney(amount, currency)}`,
+    successUrl: resolveUrl(stageCheckoutConfig.successUrl, origin, '/?payment=success&session_id={CHECKOUT_SESSION_ID}'),
+    cancelUrl: resolveUrl(stageCheckoutConfig.cancelUrl, origin, '/?payment=cancelled')
+  };
+
+  return config;
+}
+
+function getMomencePostPaymentConfig(stageName = normalizePaymentStage()) {
+  const baseMembership = deepMerge(DEFAULT_MOMENCE_MEMBERSHIP, parseJson(process.env.MOMENCE_MEMBERSHIP_JSON, {}));
+  const stageConfig = getPaymentStageConfig(stageName);
+  const membership = deepMerge(baseMembership, stageConfig.membership || {});
+  const explicitUrl = String(process.env.SUPABASE_MOMENCE_PAYMENT_SYNC_URL || '').trim();
+  const supabaseBase = String(process.env.SUPABASE_URL || '').trim().replace(/\/$/, '');
+  const functionUrl = explicitUrl || (supabaseBase ? `${supabaseBase}/functions/v1/manual-momence-sync` : '');
+  const functionKey = String(
+    process.env.SUPABASE_MOMENCE_PAYMENT_SYNC_KEY
+    || process.env.SUPABASE_SERVICE_ROLE_KEY
+    || process.env.SUPABASE_MOMENCE_SESSIONS_KEY
+    || ''
+  ).trim();
+
+  return {
+    mode: String(process.env.MOMENCE_POST_PAYMENT_MODE || (functionUrl ? 'supabase-function' : 'disabled')).trim(),
+    functionUrl,
+    functionKey,
+    action: String(process.env.SUPABASE_MOMENCE_PAYMENT_SYNC_ACTION || 'create-member-and-purchase-membership').trim(),
+    membership
+  };
+}
+
+function buildStripeMetadata(leadPayload, checkoutConfig) {
+  return {
+    source: 'paid-trial-form',
+    payment_stage: String(leadPayload.stage || normalizePaymentStage()),
+    event_id: String(leadPayload.event_id || ''),
+    draft_id: String(leadPayload.draft_id || ''),
+    first_name: String(leadPayload.firstName || ''),
+    last_name: String(leadPayload.lastName || ''),
+    email: String(leadPayload.email || ''),
+    phone_number: String(leadPayload.phoneNumber || ''),
+    phone_country: String(leadPayload.phoneCountry || ''),
+    center: String(leadPayload.center || ''),
+    type: String(leadPayload.type || ''),
+    time: String(leadPayload.time || ''),
+    product_name: String(checkoutConfig.productName || ''),
+    waiver_accepted: String(leadPayload.waiverAccepted || ''),
+    ...Object.fromEntries(Object.entries(checkoutConfig.metadata || {}).map(([key, value]) => [key, String(value)]))
+  };
+}
+
+function isPaidStripeSession(session) {
+  return Boolean(session) && (
+    session.payment_status === 'paid'
+    || session.status === 'complete'
+    || session.payment_intent?.status === 'succeeded'
+  );
+}
+
+function buildLeadPayloadFromCheckoutSession(session) {
+  const metadata = session?.metadata || {};
+  const customerDetails = session?.customer_details || {};
+  const fullName = String(customerDetails.name || '').trim();
+  const [derivedFirstName = '', ...restName] = fullName.split(' ');
+
+  return {
+    firstName: metadata.first_name || derivedFirstName,
+    lastName: metadata.last_name || restName.join(' '),
+    email: metadata.email || customerDetails.email || '',
+    phoneNumber: metadata.phone_number || customerDetails.phone || '',
+    phoneCountry: metadata.phone_country || 'IN',
+    center: metadata.center || '',
+    type: metadata.type || '',
+    time: metadata.time || '',
+    stage: metadata.payment_stage || normalizePaymentStage(),
+    waiverAccepted: metadata.waiver_accepted || 'accepted',
+    event_id: metadata.event_id || '',
+    draft_id: metadata.draft_id || '',
+    payment_session_id: session?.id || ''
+  };
+}
+
+async function updateCheckoutSessionMetadata(sessionId, metadataPatch = {}) {
+  if (!stripeClient || !sessionId || !Object.keys(metadataPatch).length) {
+    return null;
+  }
+
+  try {
+    return await stripeClient.checkout.sessions.update(sessionId, {
+      metadata: Object.fromEntries(Object.entries(metadataPatch).map(([key, value]) => [key, String(value)]))
+    });
+  } catch (error) {
+    console.error('Unable to update Stripe checkout session metadata:', error.message);
+    return null;
+  }
+}
+
+async function fulfillMomencePurchaseFromSession(session) {
+  const paymentStage = normalizePaymentStage(session?.metadata?.payment_stage);
+  const paymentConfig = getMomencePostPaymentConfig(paymentStage);
+  const existingStatus = String(session?.metadata?.momence_fulfillment_status || '').trim().toLowerCase();
+
+  if (existingStatus === 'success') {
+    return {
+      success: true,
+      memberId: session.metadata.momence_member_id || '',
+      purchaseId: session.metadata.momence_purchase_id || '',
+      source: 'stripe-metadata'
+    };
+  }
+
+  if (paymentConfig.mode !== 'supabase-function' || !paymentConfig.functionUrl || !paymentConfig.functionKey) {
+    throw new Error('Post-payment Momence sync is not configured. Set the Supabase Momence payment sync function URL and key.');
+  }
+
+  const leadData = buildLeadPayloadFromCheckoutSession(session);
+  const payload = {
+    action: paymentConfig.action,
+    source: 'paid-trial-form',
+    lead: leadData,
+    member: {
+      firstName: leadData.firstName,
+      lastName: leadData.lastName,
+      email: leadData.email,
+      phoneNumber: leadData.phoneNumber,
+      phoneCountry: leadData.phoneCountry,
+      waiverAccepted: leadData.waiverAccepted,
+      center: leadData.center,
+      type: leadData.type,
+      time: leadData.time
+    },
+    membership: paymentConfig.membership,
+    stripe: {
+      sessionId: session.id,
+      paymentIntentId: session.payment_intent?.id || session.payment_intent || '',
+      paymentStatus: session.payment_status || '',
+      amountTotal: session.amount_total,
+      currency: session.currency,
+      customerDetails: session.customer_details || {},
+      metadata: session.metadata || {}
+    }
+  };
+
+  const response = await fetch(paymentConfig.functionUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${paymentConfig.functionKey}`,
+      apikey: paymentConfig.functionKey
+    },
+    body: JSON.stringify(payload)
+  });
+
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok || result.success === false) {
+    const failureMessage = result.error || result.message || `Supabase Momence sync failed with ${response.status}`;
+    await updateCheckoutSessionMetadata(session.id, {
+      momence_fulfillment_status: 'failed',
+      momence_fulfillment_error: failureMessage.slice(0, 400)
+    });
+    throw new Error(failureMessage);
+  }
+
+  const normalizedResult = {
+    success: true,
+    memberId: result.memberId || result.customerId || result.member?.id || '',
+    purchaseId: result.purchaseId || result.orderId || result.membershipPurchaseId || '',
+    stage: paymentStage,
+    raw: result
+  };
+
+  await updateCheckoutSessionMetadata(session.id, {
+    momence_fulfillment_status: 'success',
+    momence_member_id: normalizedResult.memberId || '',
+    momence_purchase_id: normalizedResult.purchaseId || ''
+  });
+
+  return normalizedResult;
+}
+
+async function retrieveAndValidatePaidSession(sessionId) {
+  if (!stripeClient) {
+    throw new Error('Payments are not configured on this server.');
+  }
+
+  const normalizedSessionId = String(sessionId || '').trim();
+  if (!normalizedSessionId) {
+    throw new Error('Missing payment session identifier.');
+  }
+
+  const session = await stripeClient.checkout.sessions.retrieve(normalizedSessionId, {
+    expand: ['payment_intent']
+  });
+
+  if (!isPaidStripeSession(session)) {
+    throw new Error('Payment has not been completed yet.');
+  }
+
+  const fulfillment = await fulfillMomencePurchaseFromSession(session);
+  return { session, fulfillment };
+}
+
 app.get(['/styles/*', '/scripts/*', '/assets/*'], (req, res, next) => {
   const staticRoute = STATIC_DIRECTORY_ROUTES.find(([routePrefix]) => req.path.startsWith(`${routePrefix}/`));
 
@@ -200,6 +606,29 @@ app.get(['/styles/*', '/scripts/*', '/assets/*'], (req, res, next) => {
 });
 
 function getPublicClientConfig() {
+  const mockRequest = {
+    get: () => '',
+    protocol: 'https'
+  };
+  const defaultPaymentStage = normalizePaymentStage();
+  const checkoutConfig = getStripeCheckoutConfig(mockRequest, defaultPaymentStage);
+  const paymentStages = ['production', 'testing'].reduce((result, stageName) => {
+    const stageCheckoutConfig = getStripeCheckoutConfig(mockRequest, stageName);
+    const stageConfig = getPaymentStageConfig(stageName);
+    const stageMembership = getMomencePostPaymentConfig(stageName).membership;
+
+    result[stageName] = {
+      label: String(stageConfig.label || (stageName === 'testing' ? 'Testing' : 'Production')),
+      amountDisplay: formatMoney(stageCheckoutConfig.amount, stageCheckoutConfig.currency),
+      buttonLabel: stageCheckoutConfig.buttonLabel,
+      description: String(stageConfig.description || ''),
+      membershipName: String(stageMembership.name || ''),
+      membershipId: Number(stageMembership.id || 0) || ''
+    };
+
+    return result;
+  }, {});
+
   return {
     gaMeasurementId: process.env.GA_MEASUREMENT_ID || '',
     googleAdsId: process.env.GOOGLE_ADS_ID || '',
@@ -210,7 +639,12 @@ function getPublicClientConfig() {
     snapPixelId: process.env.SNAP_PIXEL_ID || '',
     apiBaseUrl: process.env.FORM_API_BASE_URL || '',
     scheduleUrl: process.env.FORM_SCHEDULE_URL || process.env.FORM_REDIRECT_URL || 'https://momence.com/u/physique-57-india-fffoSp',
-    redirectUrl: process.env.FORM_REDIRECT_URL || 'https://momence.com/u/physique-57-india-fffoSp'
+    redirectUrl: process.env.FORM_REDIRECT_URL || 'https://momence.com/u/physique-57-india-fffoSp',
+    defaultPaymentStage,
+    paymentStages,
+    paymentButtonLabel: checkoutConfig.buttonLabel,
+    paymentAmountDisplay: formatMoney(checkoutConfig.amount, checkoutConfig.currency),
+    paymentCurrency: String(checkoutConfig.currency || 'inr').toUpperCase()
   };
 }
 
@@ -395,7 +829,8 @@ function validateLeadPayload(payload) {
     waiverAccepted: 'accepted',
     event_id: getOrCreateEventId(payload.event_id),
     draft_id: sanitizeText(payload.draft_id || payload.draftId, 120),
-    session_id: sanitizeText(payload.session_id || payload.sessionId, 120)
+    session_id: sanitizeText(payload.session_id || payload.sessionId, 120),
+    payment_session_id: sanitizeText(payload.payment_session_id || payload.paymentSessionId, 120)
   };
 
   TRACKING_FIELDS.forEach((fieldName) => {
@@ -687,6 +1122,113 @@ function requireAdmin(req, res, next) {
   return next();
 }
 
+app.post('/api/create-checkout-session', async (req, res) => {
+  if (!stripeClient) {
+    return res.status(500).json({ success: false, error: 'Payments are not configured on this server.' });
+  }
+
+  try {
+    const validation = validateLeadPayload(req.body);
+
+    if (validation.isBot) {
+      return res.status(202).json({ success: false, error: 'Request ignored.' });
+    }
+
+    if (!validation.isValid) {
+      return res.status(400).json({
+        success: false,
+        error: 'Validation failed.',
+        fieldErrors: validation.fieldErrors
+      });
+    }
+
+    const paymentStage = normalizePaymentStage(req.body?.stage);
+    const checkoutConfig = getStripeCheckoutConfig(req, paymentStage);
+    const metadata = buildStripeMetadata({ ...validation.data, stage: paymentStage }, checkoutConfig);
+    const sessionPayload = stripUndefined({
+      payment_method_types: checkoutConfig.paymentMethodTypes?.length ? checkoutConfig.paymentMethodTypes : ['card'],
+      mode: 'payment',
+      client_reference_id: validation.data.event_id,
+      customer_email: validation.data.email,
+      submit_type: checkoutConfig.submitType || 'pay',
+      allow_promotion_codes: checkoutConfig.allowPromotionCodes,
+      billing_address_collection: checkoutConfig.billingAddressCollection,
+      phone_number_collection: { enabled: Boolean(checkoutConfig.phoneNumberCollection) },
+      tax_id_collection: { enabled: Boolean(checkoutConfig.taxIdCollection) },
+      automatic_tax: { enabled: Boolean(checkoutConfig.automaticTax) },
+      invoice_creation: { enabled: Boolean(checkoutConfig.invoiceCreation) },
+      shipping_address_collection: checkoutConfig.shippingCountries?.length
+        ? { allowed_countries: checkoutConfig.shippingCountries }
+        : undefined,
+      consent_collection: checkoutConfig.consentCollection || undefined,
+      custom_fields: Array.isArray(checkoutConfig.customFields) && checkoutConfig.customFields.length
+        ? checkoutConfig.customFields
+        : undefined,
+      custom_text: isPlainObject(checkoutConfig.customText) && Object.keys(checkoutConfig.customText).length
+        ? checkoutConfig.customText
+        : undefined,
+      success_url: checkoutConfig.successUrl,
+      cancel_url: checkoutConfig.cancelUrl,
+      metadata,
+      payment_intent_data: {
+        metadata
+      },
+      line_items: [
+        {
+          price_data: {
+            currency: checkoutConfig.currency,
+            product_data: stripUndefined({
+              name: checkoutConfig.productName,
+              description: checkoutConfig.productDescription || undefined
+            }),
+            unit_amount: checkoutConfig.amount
+          },
+          quantity: 1
+        }
+      ]
+    });
+
+    const session = await stripeClient.checkout.sessions.create(sessionPayload);
+
+    return res.json({
+      success: true,
+      url: session.url,
+      sessionId: session.id,
+      stage: paymentStage,
+      amountDisplay: formatMoney(checkoutConfig.amount, checkoutConfig.currency),
+      buttonLabel: checkoutConfig.buttonLabel
+    });
+  } catch (error) {
+    console.error('create-checkout-session error:', error && error.message);
+    return res.status(500).json({ success: false, error: 'Unable to create checkout session.' });
+  }
+});
+
+app.get('/api/verify-payment', async (req, res) => {
+  try {
+    const { session, fulfillment } = await retrieveAndValidatePaidSession(req.query.session_id);
+    const paymentStage = normalizePaymentStage(session?.metadata?.payment_stage);
+
+    return res.json({
+      success: true,
+      paid: true,
+      fulfilled: Boolean(fulfillment?.success),
+      stage: paymentStage,
+      paymentSessionId: session.id,
+      session: {
+        id: session.id,
+        payment_status: session.payment_status,
+        amount_total: session.amount_total,
+        currency: session.currency
+      },
+      fulfillment
+    });
+  } catch (error) {
+    console.error('verify-payment error:', error && error.message);
+    return res.status(500).json({ success: false, error: error.message || 'Unable to verify payment session.' });
+  }
+});
+
 app.get(['/', '/index.html'], (req, res) => {
   res.type('html').send(renderIndexHtml());
 });
@@ -773,6 +1315,28 @@ app.post('/api/submit-lead', applySubmissionRateLimit, async (req, res) => {
         success: false,
         error: 'Validation failed.',
         fieldErrors: validation.fieldErrors
+      });
+    }
+
+    if (!validation.data.payment_session_id) {
+      return res.status(400).json({
+        success: false,
+        error: 'Payment is required before submitting.',
+        fieldErrors: {
+          payment: 'Complete payment before submitting your request.'
+        }
+      });
+    }
+
+    try {
+      await retrieveAndValidatePaidSession(validation.data.payment_session_id);
+    } catch (paymentError) {
+      return res.status(400).json({
+        success: false,
+        error: paymentError.message || 'Payment could not be verified.',
+        fieldErrors: {
+          payment: paymentError.message || 'Payment could not be verified.'
+        }
       });
     }
 
