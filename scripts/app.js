@@ -96,9 +96,6 @@
     const paymentStageLabelTargets = Array.from(document.querySelectorAll('[data-stage-label]'));
     const paymentStageAmountTargets = Array.from(document.querySelectorAll('[data-stage-amount]'));
 
-    // Clear and reset form on page load
-    clearCheckoutState();
-
     function getPaymentStageConfigs() {
         return tracking.appConfig?.paymentStages || {};
     }
@@ -116,7 +113,7 @@
     function getPaymentStageConfig(stage = getSelectedPaymentStage()) {
         const normalizedStage = stage === 'testing' ? 'testing' : 'production';
         const configuredStages = getPaymentStageConfigs();
-        return configuredStages[normalizedStage] || configuredStages[getDefaultPaymentStage()] || {
+        return configuredStages[normalizedStage] || {
             label: normalizedStage === 'testing' ? 'Testing' : 'Production',
             amountDisplay: normalizedStage === 'testing' ? '₹1' : '₹1,838',
             buttonLabel: normalizedStage === 'testing' ? 'Pay ₹1' : 'Pay ₹1,838',
