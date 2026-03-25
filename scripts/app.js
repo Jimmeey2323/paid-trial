@@ -21,6 +21,17 @@
     const submitButton = document.getElementById('submit-button');
     const payButton = document.getElementById('pay-button');
     const formStatus = document.getElementById('form-status');
+    const membershipSummary = document.getElementById('membership-summary');
+    const membershipName = document.getElementById('membership-name');
+    const membershipPrice = document.getElementById('membership-price');
+    const membershipSessions = document.getElementById('membership-sessions');
+    const membershipDetailsButton = document.getElementById('membership-details-button');
+    const membershipDetailsModal = document.getElementById('membership-details-modal');
+    const checkoutMembershipSummary = document.getElementById('checkout-membership-summary');
+    const checkoutMembershipName = document.getElementById('checkout-membership-name');
+    const checkoutMembershipPrice = document.getElementById('checkout-membership-price');
+    const checkoutMembershipSessions = document.getElementById('checkout-membership-sessions');
+    const checkoutMembershipDetailsButton = document.getElementById('checkout-membership-details-button');
     const proofGrid = document.getElementById('proof-grid');
     const journeySteps = document.getElementById('journey-steps');
     const studioGrid = document.getElementById('studio-grid');
@@ -33,7 +44,7 @@
     const scheduleMount = document.getElementById('ribbon-schedule');
     const scheduleNote = document.getElementById('schedule-note');
     const scheduleExternalLink = document.getElementById('schedule-open-external');
-    const themeToggle = document.getElementById('theme-toggle');
+    const whatsappButton = document.getElementById('whatsapp-button');
     const waiverModal = document.getElementById('waiver-modal');
     const formatModal = document.getElementById('format-modal');
     const faqModal = document.getElementById('faq-modal');
@@ -54,7 +65,8 @@
         { button: document.getElementById('waiver-link-footer'), modal: waiverModal },
         { button: document.getElementById('format-modal-open'), modal: formatModal },
         { button: document.getElementById('faq-modal-open'), modal: faqModal },
-        { button: document.getElementById('schedule-modal-open'), modal: scheduleModal }
+        { button: document.getElementById('schedule-modal-open'), modal: scheduleModal },
+        { button: membershipDetailsButton, modal: membershipDetailsModal }
     ].filter((entry) => entry.button && entry.modal);
 
     const modalCloseButtons = [
@@ -62,7 +74,8 @@
         { button: document.getElementById('format-modal-close'), modal: formatModal },
         { button: document.getElementById('faq-modal-close'), modal: faqModal },
         { button: document.getElementById('schedule-modal-close'), modal: scheduleModal },
-        { button: document.getElementById('signal-modal-close'), modal: signalModal }
+        { button: document.getElementById('signal-modal-close'), modal: signalModal },
+        { button: document.getElementById('membership-details-modal-close'), modal: membershipDetailsModal }
     ].filter((entry) => entry.button && entry.modal);
 
     let activeModal = null;
@@ -79,6 +92,9 @@
     const paymentStageInputs = Array.from(form.querySelectorAll('input[name="stage"]'));
     const paymentStageLabelTargets = Array.from(document.querySelectorAll('[data-stage-label]'));
     const paymentStageAmountTargets = Array.from(document.querySelectorAll('[data-stage-amount]'));
+
+    // Clear and reset form on page load
+    clearCheckoutState();
 
     function getPaymentStageConfigs() {
         return tracking.appConfig?.paymentStages || {};
@@ -180,7 +196,7 @@
             // Storage can be unavailable.
         }
 
-        return 'dark';
+        return 'light';
     }
 
     function getStoredCheckoutState() {
@@ -344,15 +360,7 @@
     }
 
     function updateThemeToggle(theme) {
-        if (!themeToggle) {
-            return;
-        }
-
-        const isLight = theme === 'light';
-        themeToggle.setAttribute('aria-pressed', String(isLight));
-        themeToggle.setAttribute('aria-label', isLight ? 'Switch to dark mode' : 'Switch to light mode');
-        themeToggle.querySelector('.theme-toggle-label').textContent = isLight ? 'Dark mode' : 'Light mode';
-        themeToggle.querySelector('.theme-toggle-icon').textContent = isLight ? '☾' : '☀︎';
+        // Theme toggle removed - function kept for compatibility
     }
 
     function applyTheme(theme) {
@@ -516,10 +524,55 @@
     }
 
     function renderProofCards() {
-        proofGrid.innerHTML = content.proofCards.map((item) => `
-            <article class="proof-card">
-                <strong>${item.title}</strong>
-                <p>${item.copy}</p>
+        const usps = [
+            {
+                title: "Proven, Visible Results in Weeks",
+                copy: "Physique 57 is known for delivering fast, visible transformation—leaner arms, lifted glutes, stronger core, and improved posture—within just a few weeks. Members don't just feel stronger, they see real changes, which drives consistency and long-term commitment."
+            },
+            {
+                title: "Proprietary, Globally Proven Method (NY-Origin)",
+                copy: "This is a signature, proprietary workout method developed in New York and refined over years—not a generic class format. With a global presence and consistent standards, members trust they're following a system that's been perfected and proven internationally."
+            },
+            {
+                title: "High-Intensity Yet Low-Impact (Safe & Sustainable)",
+                copy: "The workout deeply fatigues muscles without putting stress on joints, making it ideal for long-term consistency. It's intense enough to deliver results, yet safe enough to practise regularly without burnout or injury—perfect for sustainable fitness."
+            },
+            {
+                title: "Celebrity-Endorsed & Globally Loved",
+                copy: "Physique 57 has been associated with Hollywood celebrities like Kelly Ripa, Sarah Jessica Parker, and Chrissy Teigen, adding strong aspirational value. It's positioned as a premium, results-driven workout trusted by those who prioritise both fitness and physique."
+            },
+            {
+                title: "Award-Winning Fitness Method",
+                copy: "The brand has received multiple global recognitions, including Best Overall Barre Workout – Good Housekeeping, 5-Star Studio Rating – The Fit Guide (global recognition), and Best Fitness Studio – Vogue Beauty Awards (India). These reinforce credibility, quality, and premium positioning."
+            },
+            {
+                title: "Expert-Led, Hands-On Coaching",
+                copy: "Highly trained instructors actively correct form, guide alignment, and ensure every movement is effective. This level of personal attention significantly improves results while reducing the risk of injury."
+            },
+            {
+                title: "Structured, Progressive Programming (Not Random Workouts)",
+                copy: "Each class follows a carefully designed structure that builds strength, endurance, and control over time. Members are part of a system—not just attending isolated sessions—leading to consistent progress."
+            },
+            {
+                title: "Strong Community & Accountability Culture",
+                copy: "Physique 57 fosters a loyal, supportive community that keeps members motivated and consistent. This emotional connection is a key driver of long-term retention and results."
+            },
+            {
+                title: "Efficient 57-Minute Format (High ROI on Time)",
+                copy: "Every class is designed to deliver maximum effectiveness within 57 minutes—making it ideal for busy professionals who want results without spending hours working out."
+            }
+        ];
+
+        // Show only the top 8 USPs
+        const displayedUsps = usps.slice(0, 8);
+
+        proofGrid.innerHTML = displayedUsps.map((usp, index) => `
+            <article class="usp-card" data-usp-index="${index + 1}">
+                <div class="usp-number">${index + 1}</div>
+                <div class="usp-content">
+                    <h3 class="usp-title">${usp.title}</h3>
+                    <p class="usp-description">${usp.copy}</p>
+                </div>
             </article>
         `).join('');
     }
@@ -575,7 +628,10 @@
                         allowfullscreen
                     ></iframe>
                     <div class="studio-map-overlay">
-                        <span class="studio-map-badge">Live map preview</span>
+                        <div class="studio-map-location">
+                            <span class="studio-map-badge">${studio.neighborhood}</span>
+                            <p class="studio-map-address">${studio.address}</p>
+                        </div>
                         <a class="studio-link studio-link-map studio-link-card" href="${studio.mapUrl}" target="_blank" rel="noopener noreferrer">
                             <span class="studio-link-icon" aria-hidden="true">📍</span>
                             <span>Open in Maps</span>
@@ -622,6 +678,10 @@
     }
 
     function getFormatGroups(center) {
+        if (!content.classOptionsByStudio) {
+            return [];
+        }
+        
         if (center && content.classOptionsByStudio[center]) {
             return [[center, content.classOptionsByStudio[center]]];
         }
@@ -640,7 +700,8 @@
 
         if (formatModalTitle && formatModalCopy) {
             if (optionValue && filteredGroups.length === 1 && filteredGroups[0][1].length === 1) {
-                const [studioName, [option]] = filteredGroups;
+                const [studioName, options] = filteredGroups[0];
+                const [option] = options;
                 formatModalTitle.textContent = `${option.title} at ${studioName}`;
                 formatModalCopy.textContent = 'A closer look at the format, intensity, training style, and what makes it a strong first-class choice.';
             } else {
@@ -656,8 +717,10 @@
                     ${options.map((option) => `
                         <article class="modal-format-card">
                             <div class="choice-card-topline choice-card-topline-modal">
-                                ${renderFormatIcon(option)}
-                                <span class="choice-card-badge">${option.badge}</span>
+                                <div class="choice-card-icon-with-badge choice-card-icon-with-badge-modal">
+                                    ${renderFormatIcon(option)}
+                                    <span class="choice-card-badge">${option.badge}</span>
+                                </div>
                             </div>
                             <div class="choice-card-header">
                                 <div class="choice-card-heading-stack">
@@ -721,10 +784,49 @@
             return;
         }
 
-        payButton.disabled = isProcessing || paymentConfirmed;
+        payButton.disabled = isProcessing || paymentConfirmed || !isFormValidForPayment();
         payButton.textContent = isProcessing
             ? 'Starting secure checkout...'
             : (paymentConfirmed ? 'Payment confirmed' : (getPaymentStageConfig().buttonLabel || tracking.appConfig?.paymentButtonLabel || 'Pay ₹1,838'));
+    }
+
+    function isFormValidForPayment() {
+        const requiredFields = [
+            'firstName', 'lastName', 'email', 'phoneNumber', 'time', 'center'
+        ];
+
+        for (const fieldId of requiredFields) {
+            const field = document.getElementById(fieldId);
+            if (!field || !field.value.trim()) {
+                return false;
+            }
+        }
+
+        // Check if a class option is selected
+        const selectedType = form.querySelector('input[name="type"]:checked');
+        if (!selectedType) {
+            return false;
+        }
+
+        // Check if payment stage is selected
+        const selectedStage = form.querySelector('input[name="stage"]:checked');
+        if (!selectedStage) {
+            return false;
+        }
+
+        // Check waiver
+        const waiverAccepted = document.getElementById('waiverAccepted');
+        if (!waiverAccepted || !waiverAccepted.checked) {
+            return false;
+        }
+
+        return true;
+    }
+
+    function updatePayButtonState() {
+        if (payButton) {
+            payButton.disabled = paymentConfirmed || !isFormValidForPayment();
+        }
     }
 
     function updateSelectedClassState() {
@@ -739,6 +841,218 @@
             card.setAttribute('aria-checked', String(isSelected));
             card.tabIndex = isSelected || (selectedIndex === -1 && index === 0) ? 0 : -1;
         });
+
+        // Update membership summary
+        if (selectedIndex !== -1 && membershipSummary && checkoutMembershipSummary) {
+            const selectedCard = cards[selectedIndex];
+            const selectedInput = selectedCard.querySelector('input[type="radio"]');
+            const selectedType = selectedInput?.value;
+
+            // Find the class option data
+            const center = form.querySelector('#center')?.value;
+            const options = content.classOptionsByStudio?.[center] || [];
+            const selectedOption = options.find(option => option.value === selectedType || option.type === selectedType);
+
+            if (selectedOption) {
+                // Create more detailed membership data for modal
+                const membershipData = {
+                    ...selectedOption,
+                    name: selectedOption.name || selectedOption.title,
+                    price: selectedOption.price || '₹1,838',
+                    sessions: selectedOption.sessions || '1 Trial Class'
+                };
+
+                // Update original membership summary
+                if (membershipName) membershipName.textContent = membershipData.name;
+                if (membershipPrice) membershipPrice.textContent = membershipData.price;
+                if (membershipSessions) membershipSessions.textContent = membershipData.sessions;
+                membershipSummary.hidden = false;
+
+                // Update checkout membership summary
+                if (checkoutMembershipName) checkoutMembershipName.textContent = membershipData.name;
+                if (checkoutMembershipPrice) checkoutMembershipPrice.textContent = membershipData.price;
+                if (checkoutMembershipSessions) checkoutMembershipSessions.textContent = membershipData.sessions;
+                checkoutMembershipSummary.hidden = false;
+
+                // Store the selected option for details modal
+                membershipSummary.setAttribute('data-selected-option', JSON.stringify(membershipData));
+            }
+        } else if (membershipSummary && checkoutMembershipSummary) {
+            membershipSummary.hidden = true;
+            checkoutMembershipSummary.hidden = true;
+        }
+
+        // Add event listener for membership details button
+        if (membershipDetailsButton && membershipDetailsModal) {
+            membershipDetailsButton.onclick = () => {
+                console.log('Membership details button clicked');
+                const selectedOptionData = membershipSummary.getAttribute('data-selected-option');
+                console.log('Selected option data:', selectedOptionData);
+                if (selectedOptionData) {
+                    try {
+                        const option = JSON.parse(selectedOptionData);
+                        console.log('Parsed option:', option);
+                        populateMembershipDetailsModal(option);
+                        openModal(membershipDetailsModal);
+                    } catch (e) {
+                        console.error('Error parsing selected option data:', e);
+                    }
+                } else {
+                    console.warn('No selected option data found');
+                }
+            };
+        }
+
+        // Add event listener for checkout membership details button
+        if (checkoutMembershipDetailsButton && membershipDetailsModal) {
+            checkoutMembershipDetailsButton.onclick = () => {
+                console.log('Checkout membership details button clicked');
+                const selectedOptionData = membershipSummary.getAttribute('data-selected-option');
+                if (selectedOptionData) {
+                    try {
+                        const option = JSON.parse(selectedOptionData);
+                        populateMembershipDetailsModal(option);
+                        openModal(membershipDetailsModal);
+                    } catch (e) {
+                        console.error('Error parsing checkout selected option data:', e);
+                    }
+                }
+            };
+        }
+    }
+
+    function populateMembershipDetailsModal(option) {
+        const modalContent = document.getElementById('membership-details-modal-content');
+        const modalTitle = document.getElementById('membership-details-modal-title');
+
+        // For testing/production, get membership data based on payment stage
+        const paymentStage = getSelectedPaymentStage();
+        let membershipData = null;
+
+        // Sample membership data based on stage (production gets Newcomers, testing gets Test)
+        if (paymentStage === 'testing') {
+            membershipData = {
+                id: 675444,
+                name: "Test",
+                price: 1,
+                numberOfEvents: 2,
+                duration: 1,
+                durationUnit: "months",
+                description: "Test package for development and debugging purposes.",
+                isIntroOffer: false,
+                activateOnFirstUse: true,
+                taxBracket: { name: "GST 5%", vatRateInPercent: 5 },
+                host: { name: "Physique 57 Mumbai" }
+            };
+        } else {
+            membershipData = {
+                id: 240932,
+                name: "Newcomers 2 For 1",
+                price: 1750,
+                numberOfEvents: 2,
+                duration: 14,
+                durationUnit: "days",
+                description: "Whether you're a fitness enthusiast or just starting out, Physique 57's Newcomers 2 for 1 is the perfect way to achieve the results you've been dreaming of! With our expert instructors and supportive community, you'll have the guidance and accountability you need to stay motivated and committed to your fitness goals.\n\nLATE CANCELLATION: Canceling your class within 12 hours of your class start time results in loss of your credit. No shows are considered late cancellations and results in loss of your credit.\n\nThis membership can be purchased ONLY once, is non refundable & cannot be shared between members.",
+                isIntroOffer: true,
+                activateOnFirstUse: true,
+                taxBracket: { name: "GST 5%", vatRateInPercent: 5 },
+                host: { name: "Physique 57 Mumbai" }
+            };
+        }
+
+        if (modalTitle) {
+            modalTitle.textContent = `${membershipData.name} - Complete Package Details`;
+        }
+
+        if (modalContent) {
+            const formattedPrice = new Intl.NumberFormat('en-IN', {
+                style: 'currency',
+                currency: 'INR',
+                maximumFractionDigits: 0
+            }).format(membershipData.price);
+
+            const durationText = `${membershipData.duration} ${membershipData.durationUnit}`;
+            const sessionsText = `${membershipData.numberOfEvents} ${membershipData.numberOfEvents === 1 ? 'Class' : 'Classes'}`;
+
+            modalContent.innerHTML = `
+                <div class="membership-detail-grid">
+                    <div class="membership-detail-card">
+                        <h3>Package Information</h3>
+                        <dl class="membership-detail-list">
+                            <div>
+                                <dt>Package Name</dt>
+                                <dd>${membershipData.name}</dd>
+                            </div>
+                            <div>
+                                <dt>Studio</dt>
+                                <dd>${membershipData.host.name}</dd>
+                            </div>
+                            <div>
+                                <dt>Package Type</dt>
+                                <dd>${membershipData.isIntroOffer ? 'Introductory Offer' : 'Regular Package'}</dd>
+                            </div>
+                            <div>
+                                <dt>Activation</dt>
+                                <dd>${membershipData.activateOnFirstUse ? 'On First Use' : 'Immediately'}</dd>
+                            </div>
+                        </dl>
+                    </div>
+
+                    <div class="membership-detail-card">
+                        <h3>Pricing & Usage</h3>
+                        <dl class="membership-detail-list">
+                            <div>
+                                <dt>Package Price</dt>
+                                <dd class="price-highlight">${formattedPrice}</dd>
+                            </div>
+                            <div>
+                                <dt>Sessions Included</dt>
+                                <dd>${sessionsText}</dd>
+                            </div>
+                            <div>
+                                <dt>Valid For</dt>
+                                <dd>${durationText}</dd>
+                            </div>
+                            <div>
+                                <dt>Tax</dt>
+                                <dd>${membershipData.taxBracket.name} (${membershipData.taxBracket.vatRateInPercent}%)</dd>
+                            </div>
+                        </dl>
+                    </div>
+                </div>
+
+                ${membershipData.description ? `
+                <div class="membership-detail-card membership-detail-description">
+                    <h3>Package Description</h3>
+                    <div style="white-space: pre-line;">${membershipData.description}</div>
+                </div>
+                ` : ''}
+
+                <div class="membership-detail-card">
+                    <h3>Important Terms</h3>
+                    <ul class="membership-highlights-list">
+                        <li>Package activates on first class attended</li>
+                        <li>Late cancellations (within 12 hours) result in loss of credit</li>
+                        <li>No-shows are considered late cancellations</li>
+                        <li>Classes must be attended within the validity period</li>
+                        ${membershipData.isIntroOffer ? '<li>This introductory offer can only be purchased once per customer</li>' : ''}
+                        <li>Package is non-refundable and non-transferable</li>
+                        <li>Subject to studio availability and booking policies</li>
+                    </ul>
+                </div>
+
+                <div class="membership-detail-card">
+                    <h3>Next Steps</h3>
+                    <ul class="membership-highlights-list">
+                        <li>Complete your payment to secure the package</li>
+                        <li>Receive booking confirmation via email</li>
+                        <li>Download the Physique 57 India app for easy class booking</li>
+                        <li>Book your first class at your preferred studio</li>
+                        <li>Arrive 15 minutes early for your first visit</li>
+                    </ul>
+                </div>
+            `;
+        }
     }
 
     function renderClassOptions(center) {
@@ -760,8 +1074,10 @@
             <article class="choice-card" data-option-value="${option.value}" role="radio" aria-checked="false">
                 <input type="radio" name="type" value="${option.value}" required>
                 <div class="choice-card-topline">
-                    ${renderFormatIcon(option)}
-                    <span class="choice-card-badge">${option.badge}</span>
+                    <div class="choice-card-icon-with-badge">
+                        ${renderFormatIcon(option)}
+                        <span class="choice-card-badge">${option.badge}</span>
+                    </div>
                     <span class="choice-card-selected-pill">Selected</span>
                 </div>
                 <div class="choice-card-header">
@@ -777,6 +1093,7 @@
         `).join('');
 
         classOptionGrid.setAttribute('role', 'radiogroup');
+        classOptionGrid.setAttribute('data-center', center);
 
         classOptionGrid.querySelectorAll('.choice-card').forEach((card) => {
             const input = card.querySelector('input[name="type"]');
@@ -810,14 +1127,8 @@
             input.addEventListener('change', updateSelectedClassState);
         });
 
-        classOptionGrid.querySelectorAll('.choice-card-more').forEach((button) => {
-            button.addEventListener('click', (event) => {
-                event.stopPropagation();
-                openFormatDetails(center, button.getAttribute('data-option-value'));
-            });
-        });
-
-        updateSelectedClassState();
+        // Ensure function updates properly
+        setTimeout(updateSelectedClassState, 50);
     }
 
     function clearFieldErrors() {
@@ -1285,7 +1596,39 @@
     }
 
     renderHeroHeadline();
+    function openWhatsAppChat() {
+        const formData = getSerializableFormState();
+        let message = "Hi! I'd like to book a trial class at Physique 57.\n\n";
+        
+        if (formData.firstName || formData.lastName) {
+            message += `Name: ${formData.firstName} ${formData.lastName}\n`;
+        }
+        if (formData.email) {
+            message += `Email: ${formData.email}\n`;
+        }
+        if (formData.phoneNumber) {
+            message += `Phone: ${formData.phoneNumber}\n`;
+        }
+        if (formData.center) {
+            message += `Preferred Studio: ${formData.center}\n`;
+        }
+        if (formData.time) {
+            message += `Preferred Time: ${formData.time}\n`;
+        }
+        if (formData.type) {
+            message += `Preferred Format: ${formData.type}\n`;
+        }
+        
+        message += "\nPlease help me complete my booking. Thank you!";
+        
+        const encodedMessage = encodeURIComponent(message);
+        const whatsappUrl = `https://wa.me/919769570178?text=${encodedMessage}`;
+        
+        window.open(whatsappUrl, '_blank');
+    }
+
     applyTheme(getPreferredTheme());
+
     renderHeroSignals(false);
     renderProofCards();
     renderJourneySteps();
@@ -1304,12 +1647,30 @@
     centerSelect.addEventListener('change', () => {
         renderClassOptions(centerSelect.value);
         clearStatus();
+        updatePayButtonState();
     });
 
-    themeToggle?.addEventListener('click', () => {
-        const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
-        applyTheme(currentTheme === 'light' ? 'dark' : 'light');
+    classOptionGrid.addEventListener('click', (event) => {
+        if (!(event.target instanceof HTMLElement)) {
+            return;
+        }
+
+        const btn = event.target.closest('.choice-card-more');
+
+        if (!btn) {
+            return;
+        }
+
+        event.stopPropagation();
+        const center = classOptionGrid.getAttribute('data-center');
+        const optionValue = btn.getAttribute('data-option-value');
+
+        if (center && optionValue) {
+            openFormatDetails(center, optionValue);
+        }
     });
+
+    whatsappButton?.addEventListener('click', openWhatsAppChat);
 
     scheduleActionButtons.forEach((button) => {
         button.addEventListener('click', () => {
@@ -1334,6 +1695,13 @@
     });
 
     form.addEventListener('submit', handleSubmit);
+
+    // Update pay button state on form changes
+    form.addEventListener('input', updatePayButtonState);
+    form.addEventListener('change', updatePayButtonState);
+
+    // Initial state
+    updatePayButtonState();
 
     // Payment flow: create a Checkout session and verify on return
     async function createCheckoutSession() {
@@ -1432,7 +1800,7 @@
         button.addEventListener('click', () => closeModal(modal));
     });
 
-    [waiverModal, formatModal, faqModal, scheduleModal, signalModal].filter(Boolean).forEach((modal) => {
+    [waiverModal, formatModal, faqModal, scheduleModal, signalModal, membershipDetailsModal].filter(Boolean).forEach((modal) => {
         modal.addEventListener('click', (event) => {
             if (event.target instanceof HTMLElement && event.target.hasAttribute('data-modal-close')) {
                 closeModal(modal);
@@ -1441,4 +1809,6 @@
     });
 
     document.addEventListener('keydown', handleModalKeyboard);
+
+    whatsappButton?.addEventListener('click', openWhatsAppChat);
 })();
