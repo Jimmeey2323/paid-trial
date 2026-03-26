@@ -1276,126 +1276,129 @@ select:focus {
 
 .consent-card {
     display: grid;
-    gap: 12px;
+    gap: 14px;
     margin: 0;
     margin-top: 24px;
-    padding: 18px 0 0;
-    border-radius: 0;
-    background: transparent;
-    border: 0;
-    box-shadow: none;
-    backdrop-filter: none;
-    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    padding: 18px;
+    border-radius: 20px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.025));
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(18px);
 }
 
-.consent-copy-block {
+.consent-intro {
     display: grid;
     gap: 6px;
 }
 
-.consent-kicker {
+.consent-label {
     margin: 0;
-    color: color-mix(in srgb, var(--text) 62%, var(--muted) 38%);
-    font-size: 0.68rem;
+    color: var(--text);
+    font-size: 0.78rem;
     font-weight: 800;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
 }
 
 .consent-copy {
-    max-width: 58ch;
-    font-size: 0.92rem;
-    line-height: 1.68;
+    font-size: 0.95rem;
+    line-height: 1.7;
 }
 
 .checkbox-row {
-    display: flex;
-    align-items: flex-start;
+    position: relative;
+    display: grid;
+    grid-template-columns: auto auto minmax(0, 1fr);
+    align-items: start;
     gap: 12px;
-    padding: 8px 0 0;
+    padding: 14px 16px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    cursor: pointer;
+    transition: border-color var(--motion-fast) ease, background-color var(--motion-fast) ease, box-shadow var(--motion-fast) ease;
 }
 
 .checkbox-row input {
-    appearance: none;
-    -webkit-appearance: none;
-    width: 20px;
-    height: 20px;
-    margin-top: 2px;
-    flex: 0 0 20px;
-    border-radius: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    background: rgba(255, 255, 255, 0.03);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-    cursor: pointer;
-    transition: border-color var(--motion-fast) ease, background-color var(--motion-fast) ease, box-shadow var(--motion-fast) ease, transform var(--motion-fast) ease;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
 }
 
-.checkbox-row input:hover {
-    border-color: rgba(255, 255, 255, 0.24);
+.checkbox-row:hover {
+    border-color: rgba(255, 255, 255, 0.14);
     background: rgba(255, 255, 255, 0.05);
 }
 
-.checkbox-row input:focus-visible {
-    outline: none;
+.checkbox-control {
+    position: relative;
+    width: 22px;
+    height: 22px;
+    margin-top: 2px;
+    border-radius: 7px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.04);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    transition: border-color var(--motion-fast) ease, background-color var(--motion-fast) ease, box-shadow var(--motion-fast) ease, transform var(--motion-fast) ease;
+}
+
+.checkbox-row:hover .checkbox-control {
+    border-color: rgba(255, 255, 255, 0.28);
+    background: rgba(255, 255, 255, 0.07);
+}
+
+.checkbox-row input:focus-visible + .checkbox-control {
     border-color: var(--accent);
     box-shadow: 0 0 0 4px rgba(0, 245, 212, 0.14);
 }
 
-.checkbox-row input:checked {
+.checkbox-row input:checked + .checkbox-control {
     border-color: rgba(255, 255, 255, 0.14);
     background:
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='white' d='M6.55 11.35 3.2 8l1.06-1.06 2.29 2.3 5.19-5.2L12.8 5.1z'/%3E%3C/svg%3E") center / 13px 13px no-repeat,
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='white' d='M6.55 11.35 3.2 8l1.06-1.06 2.29 2.3 5.19-5.2L12.8 5.1z'/%3E%3C/svg%3E") center / 14px 14px no-repeat,
         linear-gradient(135deg, var(--accent), var(--accent-strong));
-    box-shadow: 0 8px 18px rgba(18, 194, 255, 0.16);
+    box-shadow: 0 10px 22px rgba(18, 194, 255, 0.18);
 }
 
-.checkbox-row span {
+.checkbox-copy {
     display: grid;
-    gap: 3px;
-    line-height: 1.6;
+    gap: 2px;
+    line-height: 1.65;
     color: var(--text);
 }
 
-.checkbox-row span strong {
+.checkbox-copy-title {
     color: var(--text);
-    font-size: 0.92rem;
     font-weight: 700;
-    line-height: 1.45;
 }
 
-.checkbox-row span small {
+.checkbox-copy small {
     color: var(--muted);
-    font-size: 0.8rem;
-    line-height: 1.5;
-}
-
-.consent-footnote {
-    position: relative;
-    max-width: 60ch;
-    padding-top: 10px;
-    color: color-mix(in srgb, var(--muted) 88%, var(--text) 12%);
     font-size: 0.78rem;
-    line-height: 1.6;
+    line-height: 1.55;
 }
 
-.consent-footnote::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 28px;
-    height: 1px;
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0.24), transparent);
+.form-footnote {
+    font-size: 0.84rem;
+    line-height: 1.65;
+    padding-top: 2px;
 }
 
 .text-button {
     padding: 0;
     border: 0;
     background: none;
-    color: color-mix(in srgb, var(--accent-strong) 82%, white 18%);
+    color: var(--accent-strong);
     font-weight: 700;
     text-decoration: underline;
-    text-decoration-thickness: 1px;
     text-underline-offset: 0.18em;
 }
 
@@ -1810,24 +1813,24 @@ select:focus {
 
 .journey-infographic-header {
     text-align: center;
-    margin-bottom: 24px;
+    margin-bottom: 26px;
     position: relative;
     z-index: 1;
 }
 
 .journey-infographic-header h3 {
-    margin: 6px 0 8px;
-    font-size: clamp(1.55rem, 2.6vw, 2.05rem);
+    margin: 6px 0 10px;
+    font-size: clamp(1.6rem, 2.6vw, 2.05rem);
     font-weight: 600;
     color: var(--text);
 }
 
 .journey-infographic-header p {
-    max-width: 640px;
+    max-width: 620px;
     margin: 0 auto;
     color: var(--muted);
-    font-size: 0.98rem;
-    line-height: 1.55;
+    font-size: 0.96rem;
+    line-height: 1.58;
 }
 
 .journey-steps-container {
@@ -1843,9 +1846,9 @@ select:focus {
 .journey-steps-container::before {
     content: '';
     position: absolute;
-    left: 34px;
-    right: 34px;
-    top: 39px;
+    left: 42px;
+    right: 42px;
+    top: 42px;
     height: 1px;
     background: linear-gradient(90deg, rgba(0, 245, 212, 0.18), rgba(18, 194, 255, 0.26), rgba(140, 255, 102, 0.18));
     opacity: 0.8;
@@ -1858,54 +1861,6 @@ select:focus {
     list-style: none;
     padding: 0;
     margin: 0;
-}
-
-.journey-copy {
-    display: grid;
-    grid-template-rows: auto auto auto 1fr;
-    gap: 14px;
-    padding: 8px 8px 8px 0;
-    height: 100%;
-}
-
-.journey-copy h3 {
-    font-size: clamp(2rem, 4vw, 2.5rem);
-}
-
-.journey-copy > p:last-of-type {
-    max-width: 32ch;
-    font-size: 0.96rem;
-}
-
-.journey-visual {
-    display: grid;
-    grid-template-rows: 1fr auto;
-    gap: 12px;
-    margin: auto 0 0;
-    padding: 12px;
-    border-radius: calc(var(--radius-lg) + 2px);
-    border: 1px solid var(--line);
-    background:
-        radial-gradient(circle at top right, rgba(124, 92, 255, 0.12), transparent 30%),
-        linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(124, 92, 255, 0.06));
-    box-shadow: var(--shadow-sm);
-    overflow: hidden;
-    min-height: 100%;
-}
-
-.journey-visual img {
-    width: 100%;
-    height: 100%;
-    min-height: 420px;
-    object-fit: cover;
-    border-radius: calc(var(--radius-lg) - 4px);
-    background: rgba(255, 255, 255, 0.03);
-}
-
-.journey-visual figcaption {
-    color: var(--muted);
-    font-size: 0.88rem;
-    line-height: 1.7;
 }
 
 .journey-steps {
@@ -1929,22 +1884,22 @@ select:focus {
     position: relative;
     display: grid;
     gap: 8px;
-    padding: 18px 18px 17px;
-    border-radius: var(--radius-lg);
+    padding: 18px 18px 16px;
+    border-radius: 18px;
     background:
         radial-gradient(circle at top right, rgba(18, 194, 255, 0.12), transparent 36%),
         linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(0, 245, 212, 0.05));
     border: 1px solid rgba(255, 255, 255, 0.09);
     backdrop-filter: blur(18px);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 18px 34px rgba(0, 0, 0, 0.16);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 14px 26px rgba(0, 0, 0, 0.14);
     height: 100%;
     transition: transform var(--motion-fast) ease, border-color var(--motion-fast) ease, box-shadow var(--motion-fast) ease;
 }
 
 .journey-step:hover {
-    transform: translateY(-4px);
+    transform: translateY(-2px);
     border-color: rgba(18, 194, 255, 0.28);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 24px 40px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 18px 30px rgba(0, 0, 0, 0.18);
 }
 
 .journey-step::before {
@@ -1953,13 +1908,13 @@ select:focus {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
-    margin-bottom: 8px;
+    width: 34px;
+    height: 34px;
+    margin-bottom: 6px;
     border-radius: 999px;
     background: linear-gradient(135deg, rgba(0, 245, 212, 0.22), rgba(18, 194, 255, 0.18));
     color: #f3f0ff;
-    font-size: 0.72rem;
+    font-size: 0.74rem;
     font-weight: 800;
     letter-spacing: 0.08em;
     border: 1px solid rgba(255, 255, 255, 0.12);
@@ -1967,9 +1922,9 @@ select:focus {
 
 .journey-step strong {
     display: block;
-    margin-bottom: 2px;
+    margin-bottom: 4px;
     color: #f3fffd;
-    font-size: 0.95rem;
+    font-size: 0.96rem;
     letter-spacing: -0.01em;
     line-height: 1.32;
 }
@@ -3329,17 +3284,33 @@ html[data-theme="light"] .studio-map-badge {
 }
 
 html[data-theme="light"] .checkbox-row input {
+    border-color: inherit;
+    background: transparent;
+    box-shadow: none;
+}
+
+html[data-theme="light"] .checkbox-row {
+    background: rgba(255, 255, 255, 0.72);
+    border-color: rgba(24, 49, 83, 0.08);
+}
+
+html[data-theme="light"] .checkbox-row:hover {
+    border-color: rgba(24, 49, 83, 0.14);
+    background: rgba(255, 255, 255, 0.88);
+}
+
+html[data-theme="light"] .checkbox-control {
     border-color: rgba(24, 49, 83, 0.16);
-    background: rgba(255, 255, 255, 0.92);
+    background: rgba(255, 255, 255, 0.96);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
 }
 
-html[data-theme="light"] .checkbox-row input:hover {
+html[data-theme="light"] .checkbox-row:hover .checkbox-control {
     border-color: rgba(24, 49, 83, 0.24);
     background: rgba(255, 255, 255, 0.98);
 }
 
-html[data-theme="light"] .checkbox-row input:focus-visible {
+html[data-theme="light"] .checkbox-row input:focus-visible + .checkbox-control {
     box-shadow: 0 0 0 4px rgba(75, 95, 215, 0.12);
 }
 
@@ -3362,38 +3333,20 @@ html[data-theme="light"] .faq-section .section-actions {
 }
 
 html[data-theme="light"] .consent-card {
-    background: transparent;
-    border: 0;
-    box-shadow: none;
-    backdrop-filter: none;
-    border-top: 1px solid rgba(24, 49, 83, 0.08);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(248, 244, 255, 0.82));
+    border-color: rgba(24, 49, 83, 0.08);
+    box-shadow: 0 16px 28px rgba(17, 38, 77, 0.06);
 }
 
-html[data-theme="light"] .consent-kicker {
-    color: #64789c;
+html[data-theme="light"] .consent-label,
+html[data-theme="light"] .checkbox-copy-title {
+    color: #153159;
 }
 
-html[data-theme="light"] .checkbox-row input {
-    border-color: rgba(24, 49, 83, 0.16);
-    background: rgba(255, 255, 255, 0.92);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
-}
-
-html[data-theme="light"] .checkbox-row input:hover {
-    border-color: rgba(24, 49, 83, 0.24);
-    background: rgba(255, 255, 255, 0.98);
-}
-
-html[data-theme="light"] .checkbox-row input:focus-visible {
-    box-shadow: 0 0 0 4px rgba(75, 95, 215, 0.12);
-}
-
-html[data-theme="light"] .consent-footnote {
-    color: #6a7b97;
-}
-
-html[data-theme="light"] .consent-footnote::before {
-    background: linear-gradient(90deg, rgba(24, 49, 83, 0.2), transparent);
+html[data-theme="light"] .form-footnote,
+html[data-theme="light"] .checkbox-copy small,
+html[data-theme="light"] .consent-copy {
+    color: #5b6f92;
 }
 
 /* Light theme FAQ answer styling */
@@ -3518,8 +3471,9 @@ html[data-theme="light"] .faq-item summary:hover {
     }
 
     .journey-steps-container::before {
-        left: 28px;
-        right: 28px;
+        left: 32px;
+        right: 32px;
+        top: 40px;
     }
 
     .policy-panel {
@@ -3631,6 +3585,19 @@ html[data-theme="light"] .faq-item summary:hover {
         margin-top: 20px;
     }
 
+    .journey-strip {
+        padding: 22px 18px;
+    }
+
+    .journey-infographic-header {
+        margin-bottom: 20px;
+    }
+
+    .checkbox-row {
+        grid-template-columns: auto auto minmax(0, 1fr);
+        padding: 12px 14px;
+    }
+
     .schedule-toolbar {
         align-items: stretch;
     }
@@ -3668,10 +3635,6 @@ html[data-theme="light"] .faq-item summary:hover {
     .section-actions-inline > * {
         width: 100%;
         max-width: 280px;
-    }
-
-    .consent-footnote {
-        padding-left: 0;
     }
 
     .faq-section-group {

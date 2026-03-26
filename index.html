@@ -172,8 +172,8 @@
                         </div>
 
                         <div class="consent-card">
-                            <div class="consent-copy-block">
-                                <p class="consent-kicker">Before you confirm</p>
+                            <div class="consent-intro">
+                                <p class="consent-label">Before you confirm</p>
                                 <p class="consent-copy">
                                     Review the <button type="button" class="text-button" id="waiver-link">trial waiver and booking terms</button>
                                     before confirming your request.
@@ -181,12 +181,13 @@
                             </div>
                             <label class="checkbox-row" for="waiverAccepted">
                                 <input type="checkbox" id="waiverAccepted" name="waiverAccepted" value="accepted" required>
-                                <span>
-                                    <strong>I have read and accept the waiver and booking terms. <span aria-hidden="true">*</span></strong>
-                                    <small>Required to complete your booking request.</small>
+                                <span class="checkbox-control" aria-hidden="true"></span>
+                                <span class="checkbox-copy">
+                                    <span class="checkbox-copy-title">I have read and accept the waiver and booking terms. <strong>*</strong></span>
+                                    <small>Required to submit your trial request.</small>
                                 </span>
                             </label>
-                            <p class="form-footnote consent-footnote">Your details are used only for booking coordination, studio follow-up, and attribution tracking.</p>
+                            <p class="form-footnote">Your details are used only for booking coordination, studio follow-up, and attribution tracking.</p>
                         </div>
                     </form>
                 </aside>

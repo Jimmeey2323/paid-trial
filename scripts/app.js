@@ -57,7 +57,6 @@
     const signalModalHighlights = document.getElementById('signal-modal-highlights');
     const focusableSelector = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
     const heroHeadlineStorageKey = 'trial_form_last_headline_index';
-    const themeStorageKey = 'trial_form_theme_preference';
     const checkoutStateStorageKey = 'trial_form_checkout_state_v1';
     const paymentSessionStorageKey = 'trial_form_payment_session_id';
 
@@ -96,7 +95,6 @@
     const paymentStageInputs = Array.from(form.querySelectorAll('input[name="stage"]'));
     const paymentStageLabelTargets = Array.from(document.querySelectorAll('[data-stage-label]'));
     const paymentStageAmountTargets = Array.from(document.querySelectorAll('[data-stage-amount]'));
-
     function getPaymentStageConfigs() {
         return tracking.appConfig?.paymentStages || {};
     }
@@ -191,15 +189,6 @@
     }
 
     function getPreferredTheme() {
-        try {
-            const storedTheme = window.localStorage.getItem(themeStorageKey);
-            if (storedTheme === 'light' || storedTheme === 'dark') {
-                return storedTheme;
-            }
-        } catch (error) {
-            // Storage can be unavailable.
-        }
-
         return 'light';
     }
 
@@ -352,24 +341,8 @@
         return payload;
     }
 
-    function updateThemeToggle(theme) {
-        const normalizedTheme = theme === 'dark' ? 'dark' : 'light';
-
-        if (themeToggle) {
-            themeToggle.checked = normalizedTheme === 'dark';
-            themeToggle.setAttribute('aria-checked', String(normalizedTheme === 'dark'));
-        }
-    }
-
     function applyTheme(theme) {
-        document.documentElement.setAttribute('data-theme', theme);
-        updateThemeToggle(theme);
-
-        try {
-            window.localStorage.setItem(themeStorageKey, theme);
-        } catch (error) {
-            // Storage can be unavailable.
-        }
+        document.documentElement.setAttribute('data-theme', theme === 'dark' ? 'dark' : 'light');
     }
 
     function getRandomHeadlineIndex(headlines) {
