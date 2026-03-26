@@ -234,14 +234,40 @@
                     <p>Everything you need before your first class, without losing the premium feel of the page.</p>
                 </div>
 
-                <div class="faq-preview" id="faq-list"></div>
+                <div class="faq-preview-shell">
+                    <aside class="faq-preview-panel" aria-label="FAQ preview highlights">
+                        <span class="faq-preview-kicker">Quick read</span>
+                        <h3>Start with the essentials, then open the full guide when you need the deeper details.</h3>
+                        <p>
+                            We pulled the most common first-visit questions into one polished preview so booking feels easy,
+                            not like a scavenger hunt with leggings.
+                        </p>
+                        <ul class="faq-preview-points">
+                            <li>First-class prep and arrival tips</li>
+                            <li>Booking, cancellation, and rescheduling basics</li>
+                            <li>Studio amenities, class feel, and beginner support</li>
+                        </ul>
+                    </aside>
+
+                    <div class="faq-preview" id="faq-list"></div>
+                </div>
 
                 <div class="section-actions section-actions-center">
                     <button type="button" class="secondary-button" id="faq-modal-open">View all FAQs</button>
                     <button type="button" class="secondary-button secondary-button-outline" id="detailed-faq-modal-open">Complete FAQ Guide</button>
-                    <button type="button" class="secondary-button secondary-button-outline" id="waiver-link-footer">Read full waiver</button>
+                    <div class="section-actions-inline" aria-label="Waiver and appearance controls">
+                        <button type="button" class="secondary-button secondary-button-outline" id="waiver-link-footer">Read full waiver</button>
+                        <label class="theme-switch theme-switch-inline" for="theme-toggle" aria-label="Toggle dark mode">
+                            <input type="checkbox" id="theme-toggle" role="switch" aria-label="Toggle dark mode">
+                            <span class="theme-switch-track" aria-hidden="true">
+                                <span class="theme-switch-thumb"></span>
+                            </span>
+                        </label>
+                    </div>
                 </div>
             </section>
+
+            <footer class="page-footer" aria-hidden="true"></footer>
         </main>
     </div>
 
@@ -305,17 +331,17 @@
 
                 <div class="faq-modal-sections">
                     <div class="faq-section-group">
-                        <h3>Class Preparation</h3>
+                        <h3>Physique 57 basics</h3>
                         <div id="faq-modal-preparation" class="faq-list faq-list-modal"></div>
                     </div>
 
                     <div class="faq-section-group">
-                        <h3>Booking & Scheduling</h3>
+                        <h3>Studios, booking & amenities</h3>
                         <div id="faq-modal-booking" class="faq-list faq-list-modal"></div>
                     </div>
 
                     <div class="faq-section-group">
-                        <h3>General Questions</h3>
+                        <h3>Method, results & training approach</h3>
                         <div id="faq-modal-general" class="faq-list faq-list-modal"></div>
                     </div>
                 </div>
@@ -340,22 +366,22 @@
 
                 <div class="faq-modal-sections">
                     <div class="faq-section-group">
-                        <h3>Physique 57 Method & Benefits</h3>
+                        <h3>powerCycle & cardio basics</h3>
                         <div id="detailed-faq-method" class="faq-list faq-list-modal"></div>
                     </div>
 
                     <div class="faq-section-group">
-                        <h3>Membership & Pricing</h3>
+                        <h3>Class levels & studio formats</h3>
                         <div id="detailed-faq-membership" class="faq-list faq-list-modal"></div>
                     </div>
 
                     <div class="faq-section-group">
-                        <h3>Studio Policies & Guidelines</h3>
+                        <h3>Format comparisons</h3>
                         <div id="detailed-faq-policies" class="faq-list faq-list-modal"></div>
                     </div>
 
                     <div class="faq-section-group">
-                        <h3>Technical & Booking Support</h3>
+                        <h3>Policies, bike fit & studio rules</h3>
                         <div id="detailed-faq-technical" class="faq-list faq-list-modal"></div>
                     </div>
                 </div>

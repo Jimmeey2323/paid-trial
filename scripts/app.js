@@ -40,6 +40,7 @@
     const formatModalBody = document.getElementById('format-modal-body');
     const formatModalTitle = document.getElementById('format-modal-title');
     const formatModalCopy = document.getElementById('format-modal-copy');
+    const formatModalImage = document.getElementById('format-modal-image');
     const scheduleMount = document.getElementById('ribbon-schedule');
     const scheduleNote = document.getElementById('schedule-note');
     const scheduleExternalLink = document.getElementById('schedule-open-external');
@@ -95,6 +96,7 @@
     const paymentStageInputs = Array.from(form.querySelectorAll('input[name="stage"]'));
     const paymentStageLabelTargets = Array.from(document.querySelectorAll('[data-stage-label]'));
     const paymentStageAmountTargets = Array.from(document.querySelectorAll('[data-stage-amount]'));
+    const themeToggle = document.getElementById('theme-toggle');
 
     function getPaymentStageConfigs() {
         return tracking.appConfig?.paymentStages || {};
@@ -323,22 +325,11 @@
     }
 
     function buildLeadPayloadFromForm() {
-        if (!form.reportValidity()) {
-            return null;
-        }
-
-        if (!validatePhoneField({ showMessage: true })) {
-            phoneNumberInput?.reportValidity();
-            phoneNumberInput?.focus();
+        if (!validateLeadForm()) {
             return null;
         }
 
         const selectedType = form.querySelector('input[name="type"]:checked');
-        if (!selectedType) {
-            showStatus('Choose a class format before continuing.', 'error');
-            classOptionGrid.querySelector('input[name="type"]')?.focus();
-            return null;
-        }
 
         const formData = new FormData(form);
         formData.set('phoneNumber', getNormalizedPhoneNumber());
@@ -363,7 +354,12 @@
     }
 
     function updateThemeToggle(theme) {
-        // Theme toggle removed - function kept for compatibility
+        const normalizedTheme = theme === 'dark' ? 'dark' : 'light';
+
+        if (themeToggle) {
+            themeToggle.checked = normalizedTheme === 'dark';
+            themeToggle.setAttribute('aria-checked', String(normalizedTheme === 'dark'));
+        }
     }
 
     function applyTheme(theme) {
@@ -670,179 +666,423 @@
     }
 
     function renderFaqs() {
-        // Show at least 15 FAQs as preview on main page (increased from 6)
-        const previewFaqs = [
-            {
-                question: "What should I bring to my first class?",
-                answer: "We provide all equipment including grippy socks, yoga mats, and light weights. Just bring water, a towel, and comfortable workout clothes that allow for movement."
-            },
-            {
-                question: "How early should I arrive?",
-                answer: "Please arrive 15 minutes early for your first class to complete check-in, get oriented with the studio, and meet your instructor."
-            },
-            {
-                question: "What happens if I need to cancel?",
-                answer: "Cancellations should be made at least 12 hours before class time through the Momence app or by calling the studio directly."
-            },
-            {
-                question: "Are classes suitable for beginners?",
-                answer: "Absolutely! Our instructors provide modifications for all fitness levels. Let them know it's your first class and they'll guide you through everything."
-            },
-            {
-                question: "Is parking available at the studios?",
-                answer: "Both locations offer nearby parking options. Bandra has valet parking, while Kemps Corner has street parking and nearby lots."
-            },
-            {
-                question: "What should I wear to class?",
-                answer: "Wear form-fitting, comfortable workout clothes that allow for full range of motion. Avoid loose clothing that might get in the way during exercises."
-            },
-            {
-                question: "Can I bring my own water bottle?",
-                answer: "Yes, please bring a water bottle to stay hydrated during class. We also have water available for purchase at the studio."
-            },
-            {
-                question: "Is there a locker room with showers?",
-                answer: "Yes, both studios have well-equipped changing rooms with lockers. Shower facilities are available for your convenience after class."
-            },
-            {
-                question: "Can I reschedule my trial class?",
-                answer: "Yes, you can reschedule your trial class up to 12 hours before the scheduled time, subject to availability."
-            },
-            {
-                question: "How do I book my subsequent classes?",
-                answer: "After your trial, download the Physique 57 India app or use the Momence platform to book your regular classes and manage your membership."
-            },
-            {
-                question: "What is the Physique 57 method?",
-                answer: "Physique 57 is a proprietary barre workout method developed in New York that combines isometric exercises, orthopedic stretches, and muscle-defining movements to create long, lean, and sculpted muscles."
-            },
-            {
-                question: "How is Physique 57 different from other barre classes?",
-                answer: "Our method uses a unique combination of small, targeted movements and interval training that creates the signature 'shake' - the point where muscles fatigue and transformation happens."
-            },
-            {
-                question: "What results can I expect and how quickly?",
-                answer: "Most clients see visible results within 3-4 weeks with consistent practice. You'll notice improved posture, increased strength, and muscle definition, especially in arms, core, and glutes."
-            },
-            {
-                question: "Can I modify movements if needed?",
-                answer: "Absolutely! Our instructors provide modifications for all fitness levels and any physical limitations. Just let them know before class starts."
-            },
-            {
-                question: "What is the class size and instructor ratio?",
-                answer: "We keep class sizes small (typically 8-12 people) to ensure personalized attention from our certified instructors who can provide individual guidance and corrections."
-            },
-            {
-                question: "What membership packages are available?",
-                answer: "We offer various packages including single classes, class packs, unlimited monthly memberships, and special introductory offers for new clients."
-            },
-            {
-                question: "How does the trial membership work?",
-                answer: "The trial membership gives you access to 2 classes within 14 days, allowing you to experience our method and find your preferred class times and formats."
-            },
-            {
-                question: "What is the late cancellation policy?",
-                answer: "Classes must be cancelled at least 12 hours in advance. Late cancellations and no-shows will result in loss of class credit."
-            }
+        const faqDataset = String.raw`What is Physique 57?	Physique 57 is a renowned global fitness brand, celebrated for its innovative approach to barrebased workouts. In India, Physique 57 offers a unique fitness experience that combines elements of cardio, strength training, and stretching.
+What are the benefits of Physique 57?	Physique 57 offers numerous benefits, including muscle strength and tone, improved posture, enhanced flexibility, increased endurance, and stress reduction.
+Is Physique 57 suitable for all fitness levels?	Yes, Physique 57 is suitable for individuals of all fitness levels, from beginners to advanced. The workouts are designed to be modified to accommodate different fitness levels, and the lowimpact nature of the exercises makes it a welcoming format for those starting their fitness journey.
+Can men take Physique 57 classes?	Absolutely! Physique 57 India welcomes men to participate in all classes. The workouts are designed to benefit anyone looking to improve their fitness, regardless of gender.
+Is Physique 57 safe during or after pregnancy?	Yes, Physique 57 India offers prenatal and postnatal modifications, making it safe for pregnant women, provided they have clearance from their healthcare provider.
+What is the typical class size at Physique 57?	The typical class size at Physique 57 India varies, but most classes have between 10-20 participants.
+How often should I take Physique 57 classes to see results?	For optimal results, it is recommended to participate in Physique 57 India classes 3-4 times per week.
+Can I crosstrain with Physique 57?	Yes, Physique 57 India can be effectively combined with other fitness routines. It complements various types of workouts by building core strength, flexibility, and endurance, which can enhance performance in other sports or physical activities.
+What is the cost of Physique 57 classes?	The cost of Physique 57 India classes varies depending on the location and package options. Please visit our website or contact your local studio for more information.
+Can I purchase Physique 57 classes online?	Yes, you can purchase Physique 57 India classes online through our website or mobile app.
+Where are Physique 57 studios located?	Physique 57 India studios are located at the following addresses: 1. Kwality House, August Kranti Rd, below Kemps Corner, Kemps Corner, Grant Road, Mumbai, Maharashtra 400036 [https://www.google.com/maps/place/Kwality+House,+August+Kranti+Rd,+below+Kemps+Corner,+Kemps+Corner,+Grant+Road,+Mumbai,+Maharashtra+400036](https://www.google.com/maps/place/Kwality+House,+August+Kranti+Rd,+below+Kemps+Corner,+Kemps+Corner,+Grant+Road,+Mumbai,+Maharashtra+400036) Phone: 097696 65757 2. 203, Supreme Headquarters, Junction of 14th, &, 33rd Rd, opposite Monkey Bar, Bandra West, Mumbai, Maharashtra 400050 [https://www.google.com/maps/place/203,+Supreme+Headquarters,+Junction+of+14th,+%26+33rd+Rd,+opposite+Monkey+Bar,+Bandra+West,+Mumbai,+Maharashtra+400050](https://www.google.com/maps/place/203,+Supreme+Headquarters,+Junction+of+14th,+%26+33rd+Rd,+opposite+Monkey+Bar,+Bandra+West,+Mumbai,+Maharashtra+400050) Phone: 097696 65757 3. 1st Floor, Kenkere House, Vittal Mallya Rd, above Raymonds, Shanthala Nagar, Ashok Nagar, Bengaluru, Karnataka 560001 [https://www.google.com/maps/place/1st+Floor,+Kenkere+House,+Vittal+Mallya+Rd,+above+Raymonds,+Shanthala+Nagar,+Ashok+Nagar,+Bengaluru,+Karnataka+560001](https://www.google.com/maps/place/1st+Floor,+Kenkere+House,+Vittal+Mallya+Rd,+above+Raymonds,+Shanthala+Nagar,+Ashok+Nagar,+Bengaluru,+Karnataka+560001) Phone: 070220 43667
+What amenities do Physique 57 studios offer?	Physique 57 India studios offer a variety of amenities to enhance your experience, including: Locker Rooms: Secure storage for your belongings. Showers: Clean and private facilities for postworkout refreshment. Towel Service: Complimentary towels for your convenience. Boutique: A selection of fitness apparel and accessories for purchase.
+Are Physique 57 studios clean and wellmaintained?	Yes, Physique 57 India studios are committed to maintaining a clean and hygienic environment. Regular Cleaning: Studios are cleaned and disinfected frequently to ensure safety. Attention to Detail: Staff members are trained to uphold high cleanliness standards throughout the facility.
+Do Physique 57 studios offer parking?	Yes. Vallet services are available at each of our studio locations.
+Can I store my belongings at Physique 57 studios?	Yes, Physique 57 India studios provide storage options for clients, including: Lockers: Secure storage for personal items during classes. Cubbies: Available for smaller belongings. Please note that Physique 57 India is not responsible for lost or stolen items.
+Are Physique 57 studios accessible for people with disabilities?	Yes, Physique 57 India studios are designed to be accessible for individuals with disabilities. Wheelchair Access: Facilities are equipped to accommodate wheelchair users. Supportive Environment: Staff are trained to assist clients with special needs.
+Can I bring a guest to Physique 57 studios?	Yes, you can bring a guest to Physique 57 India studios. However, guests must: Sign a Waiver: Complete a waiver form before participating. Provide Identification: Show valid ID for verification.
+Do Physique 57 studios offer childcare services?	No, Physique 57 India studios do not offer childcare services. AdultFocused Environment: The studios are designed for adult clients and are not suitable for children.
+Can I purchase food and drinks at Physique 57 studios?	Yes, Physique 57 India studios offer a selection of healthy snacks and beverages for purchase. Healthy Options: The menu typically includes nutritious snacks and drinks to support your fitness journey.
+Do Physique 57 studios offer showers and towel service?	Yes, Physique 57 India studios provide both showers and towel service for clients. Convenience: Fresh towels are available for use before and after classes. Clean Facilities: Showers are maintained to ensure a pleasant experience.
+What is the Physique 57 method?	The Physique 57 method is a unique fitness approach that combines: Isometric Exercises: Targeting specific muscle groups to build strength. Ballet Barre: Providing support and resistance during workouts. Interval Overload: Muscles are worked to fatigue and then immediately stretched, promoting lean muscle development and boosting metabolism. This method is designed to create long, lean muscles while enhancing overall fitness.
+What is the history of Physique 57?	Physique 57 India was founded by Mallika Parekh, an accomplished entrepreneur with a passion for health and wellness. Inspired by the Global Brand: The Indian franchise was established to bring the Physique 57 method to the Indian market. Rapid Growth: Since its inception, Physique 57 India has expanded to multiple locations across the country.
+What is the science behind Physique 57?	The Physique 57 methodology is based on scientific research and principles of exercise physiology. Effective Workouts: The combination of isometric exercises and interval overload is designed to challenge the body safely and effectively. ResearchBacked: Studies have shown that this approach leads to significant improvements in strength, flexibility, and overall fitness.
+How does Physique 57 compare to other fitness methods?	Physique 57 India stands out due to its unique blend of: Ballet, Pilates, and Strength Training: This combination creates a dynamic and effective workout. Focus on Interval Overload: This technique leads to quicker results compared to traditional workouts. Personalized Instruction: Instructors provide tailored guidance to help clients achieve their fitness goals.
+What is the role of the ballet barre in Physique 57?	The ballet barre is a fundamental tool in the Physique 57 method, serving several purposes: Support: It provides stability during exercises, allowing clients to focus on form and technique. Resistance: The barre is used to enhance muscle engagement and challenge strength. Alignment: It helps clients maintain proper posture and alignment throughout the workout.
+How does Physique 57 incorporate stretching?	Stretching is a vital component of the Physique 57 workout, integrated throughout the sessions: Fluid Transitions: Stretching is incorporated between intense muscle work to aid recovery. Muscle Elongation: It helps in elongating and shaping the muscles, enhancing flexibility. Injury Prevention: Regular stretching reduces the risk of injury and promotes overall mobility.
+What is the significance of interval overload in Physique 57?	Interval overload is a cornerstone of the Physique 57 method, characterized by: Muscle Fatigue: Muscles are worked to the point of fatigue, promoting strength and endurance. Immediate Stretching: Following muscle fatigue, immediate stretching helps in recovery and muscle elongation. Metabolism Boost: This technique effectively boosts metabolism, leading to quicker results.
+How does Physique 57 incorporate cardio?	Physique 57 India incorporates cardio through highintensity interval training (HIIT), which includes: Dynamic Movements: Exercises that elevate the heart rate and improve cardiovascular health. Interval Training: Alternating between intense bursts of activity and recovery periods to maximize calorie burn. FullBody Engagement: Cardio elements are integrated into strength training for a comprehensive workout.
+What is the role of the instructor in Physique 57?	Instructors play a crucial role in the Physique 57 experience by: Providing Expert Guidance: They offer personalized instruction to help clients achieve their fitness goals. Creating a Supportive Environment: Instructors foster a welcoming atmosphere that encourages participation and motivation. Monitoring Form and Technique: They ensure clients maintain proper form to maximize effectiveness and minimize injury risk.
+How does Physique 57 support client goals and progress?	Physique 57 India supports client goals and progress through various means: GoalSetting: Clients are encouraged to set personal fitness goals, which instructors help track and adjust as needed. Progress Tracking: Regular assessments and feedback help clients monitor their improvements. Personalized Instruction: Instructors provide tailored recommendations based on individual progress and goals.
+What is powerCycle?	powerCycle is an indoor cycling program that combines rhythmdriven rides with meaningful resistance. It focuses on syncing pedal strokes to the beat of the music, creating an engaging and effective workout experience. Our classes are designed to accommodate all fitness levels, ensuring a personalized experience within a group setting.
+How long are the powerCycle classes?	Our powerCycle classes are available in 30minute and 45minute formats. This flexibility allows clients to choose a class duration that fits their schedule and fitness goals.
+Do I need special shoes for powerCycle?	While you can use your own sneakers, we recommend using specialty indoor cycling shoes provided by us for the best experience. These shoes enhance your performance by providing better grip and support during the ride.
+How do I track my progress in powerCycle?	During powerCycle classes, you can track your progress using wattage, distance covered in kilometers, and RPM (pedal speed) displayed on our stateoftheart bikes. This data allows you to monitor your performance and see improvements over time.
+Can beginners join powerCycle classes?	Absolutely! Our powerCycle classes are designed to be inclusive for all fitness levels, including beginners. Instructors provide modifications and guidance to ensure everyone can participate and benefit from the workout.
+What should I wear to a powerCycle class?	We recommend wearing a sports bra, a comfortable tank top or tshirt, and leggings or shorts. It's important to wear breathable clothing that allows for movement. If you prefer, you can also wear a cycling kit that you find comfortable.
+How often should I attend powerCycle classes for results?	For significant fitness results, we recommend attending two to three powerCycle classes per week. This frequency allows for effective crosstraining and helps achieve your fitness goals while ensuring adequate recovery time.
+What is the cancellation policy for powerCycle classes?	Cancellations must be made at least 12 hours before the scheduled class start time. If you cancel within this timeframe, the class will be credited back to your account for future use.
+What is the bike fit process for new clients?	New clients are encouraged to arrive 15 minutes early for bike fitting. Our staff will assist you in adjusting the saddle height, handlebar height, and other settings to ensure a comfortable and safe riding experience. Proper bike fit is crucial for maximizing performance and preventing injuries.
+What if I have injuries or specific fitness concerns?	Yes! Our instructors screen for injuries or limitations before class. You can privately discuss any concerns with your instructor, who will provide modifications to ensure a safe and effective workout tailored to your needs.
+What are the health benefits of powerCycle?	powerCycle offers numerous health benefits, including improved cardiovascular fitness, enhanced muscle endurance, and increased caloric burn. The lowimpact nature of cycling makes it suitable for various fitness levels, promoting joint health while providing an effective workout.
+How does powerCycle differ from traditional spinning classes?	Unlike traditional spinning classes, powerCycle emphasizes rhythmdriven rides that sync with music, incorporating meaningful resistance for a more engaging experience. Our classes focus on proper form and technique, ensuring a safe and effective workout.
+Can powerCycle help with weight loss?	Yes, powerCycle can be an effective component of a weight loss program. The combination of highintensity intervals and resistance training helps burn calories and build lean muscle, contributing to overall weight management.
+What is the unique selling proposition (USP) of powerCycle?	The USP of powerCycle lies in its sciencebased training combined with musicdriven rides. Our instructors are extensively trained to provide a fun and effective workout that focuses on longterm movement and health benefits, making it a standout choice for fitness enthusiasts.
+How does powerCycle improve mental health?	Yes, powerCycle can significantly improve mental health. The combination of physical activity, music, and the endorphin release during cycling can lead to reduced stress levels and improved mood. Many clients report feeling more energized and positive after classes.
+What kind of music is played during powerCycle classes?	Our powerCycle classes feature a diverse range of music genres, including pop, rock, Bollywood, and hiphop. The carefully curated playlists are designed to motivate and energize riders, enhancing the overall workout experience by syncing movements to the beat.
+How does powerCycle support joint health?	powerCycle is a lowimpact workout, making it suitable for individuals with joint concerns. The cycling motion is gentle on the joints while still providing an effective cardiovascular workout, promoting joint health and mobility.
+What can I expect in a typical powerCycle class?	In a typical powerCycle class, you can expect a dynamic warmup, followed by rhythmbased cycling intervals, resistance training, and a cooldown. Each session is designed to be engaging and effective, ensuring participants have fun while achieving their fitness goals.
+How does Physique 57 differ from traditional gym workouts?	Physique 57 combines elements of barre, strength training, and indoor cycling to create a holistic fitness experience. Unlike traditional gym workouts that may focus solely on strength or cardio, our classes emphasize a balanced approach to fitness, promoting overall wellbeing and functional movement.
+Can I combine Physique 57 with other fitness routines?	Yes, combining Physique 57 with other fitness routines, such as powerCycle or strength training, can enhance overall fitness. This crosstraining approach helps improve strength, endurance, and flexibility, leading to better results and reduced risk of injury.
+How does Physique 57 support muscle building compared to other workouts?	Physique 57 incorporates strength training principles in both barre and cycling classes, promoting lean muscle development. Our focus on proper form and resistance ensures effective muscle engagement, making it a valuable addition to any strength training program.
+How does the community aspect of Physique 57 compare to other gyms?	Physique 57 fosters a strong sense of community among participants. Our classes are designed to be inclusive and supportive, encouraging camaraderie and motivation among clients. This community aspect enhances the overall workout experience, making it more enjoyable and effective.
+How does Physique 57 address individual fitness levels?	Physique 57 classes are designed to accommodate all fitness levels. Instructors provide modifications and personalized guidance, ensuring that everyone can participate and benefit from the workout, regardless of their starting point.
+What is the instructor training process at Physique 57?	Our instructors undergo extensive training that combines sciencebased principles and musicdriven techniques. This ensures they are wellequipped to provide effective coaching and support, enhancing the overall class experience for participants.
+How does Physique 57 promote longterm fitness success?	Physique 57 emphasizes sustainable fitness through a balanced approach that combines strength, cardio, and flexibility. Our classes are designed to be enjoyable and effective, encouraging longterm adherence to a healthy lifestyle and fitness routine.
+How does Physique 57 incorporate feedback from clients?	We value client feedback and regularly incorporate it into our class design and programming. This ensures that our offerings remain relevant and effective, meeting the evolving needs and preferences of our community.
+What class levels does Physique 57 offer?	Physique 57 offers several class levels, including Foundations, Barre 57, SWEAT in 30, FIT, and Cardio Barre. Each level is designed to cater to different fitness abilities and goals, ensuring inclusivity for all participants.
+How are the class levels structured at Physique 57?	The class levels are structured to progress from Foundations, which is beginnerfriendly, to more advanced classes like Barre 57 and FIT. This structure allows clients to build their skills and confidence gradually.
+What is the difference between the Barre 57 and Foundations classes?	Barre 57 is a dynamic, highintensity class focusing on sculpting and toning, while Foundations offers a slowerpaced introduction to barre techniques, emphasizing alignment and technique.
+Are the classes suitable for beginners?	Yes, all classes at Physique 57 are designed to be inclusive, with modifications available for beginners. The Foundations class is particularly recommended for those new to barre fitness.
+What is the intensity level of the Barre 57 class?	The Barre 57 class is considered moderate to high intensity, incorporating high repetitions and isometric holds to challenge participants while ensuring safety and effectiveness.
+How does the Foundations class differ from other classes?	The Foundations class focuses on a slower pace, allowing participants to master basic movements and proper alignment, which is essential for progressing to more intense classes.
+What can I expect in a typical Barre 57 class?	In a typical Barre 57 class, you can expect a warmup, followed by a series of targeted exercises focusing on arms, thighs, glutes, and core, concluding with a cooldown. The class is set to energizing music to enhance motivation.
+Is there a specific class format for advanced practitioners?	Yes, advanced practitioners can benefit from classes like Barre 57, FIT, and Amped Up!, which offer more challenging movements and higher intensity to push their limits.
+How often should I attend classes at different levels for optimal results?	For optimal results, attending 24 classes per week across different levels is recommended. This frequency allows for muscle recovery while promoting consistent progress.
+What is the duration of each class format offered?	Class durations vary, with most classes lasting between 30 to 60 minutes. This flexibility allows participants to choose classes that fit their schedules and fitness goals.
+Are there any prerequisites for attending the FIT class?	While there are no strict prerequisites, it is recommended that participants have a basic understanding of fitness principles and some experience with strength training to fully benefit from the FIT class.
+How does the SWEAT in 30 class differ from traditional barre classes?	SWEAT in 30 is a highintensity interval training (HIIT) class that focuses on cardio and bodyweight exercises, contrasting with traditional barre classes that emphasize strength and toning through isometric movements.
+What is the focus of the Cardio Barre class?	The Cardio Barre class combines traditional barre exercises with cardiovascular training, incorporating dynamic movements to elevate heart rates while toning muscles.
+Can I participate in multiple class formats in one day?	Yes, participants can attend multiple classes in one day. However, it is essential to listen to your body and ensure adequate recovery between sessions to prevent fatigue or injury.
+What is the purpose of the Recovery class?	The Recovery class is designed to promote relaxation, flexibility, and muscle recovery through gentle stretching and restorative movements, helping to alleviate soreness and improve overall mobility.
+How does the Mat 57 class format work?	Mat 57 focuses on Pilates-inspired movements that enhance core strength, flexibility, and posture. The class includes a series of floor exercises designed to tone and sculpt the body effectively.
+Are there modifications available for different fitness levels in classes?	Yes, instructors provide modifications for all exercises to accommodate different fitness levels, ensuring that everyone can participate safely and effectively.
+What type of equipment is used in the various class formats?	Classes typically use light weights, resistance bands, and mats. Participants are encouraged to bring their own mats if preferred, but all necessary equipment is usually provided at the studio.
+How do I know which class format is right for me?	Consider your fitness goals, current fitness level, and preferences. If you're new to fitness, starting with Barre 57 or powerCycle is recommended, while more experienced individuals may prefer FIT or Mat 57 for a challenge.
+How does Physique 57 ensure class variety?	Physique 57 regularly updates class formats and incorporates new exercises to keep workouts fresh and engaging. Instructors also vary routines within classes to prevent plateaus and maintain participant interest.
+Can I switch between class levels as I progress?	Yes, participants are encouraged to switch between class levels as they progress in their fitness journey. This flexibility allows for continuous growth and adaptation to changing fitness goals.
+What is the class size for each format?	Class sizes vary, but most classes are designed to accommodate 1020 participants to ensure personalized attention from instructors while maintaining a supportive group environment.
+Are there any special classes or formats offered seasonally?	Yes, Physique 57 occasionally offers seasonal classes or special events that focus on specific themes or fitness goals, providing variety and excitement throughout the year.
+How does the class schedule accommodate different lifestyles?	Physique 57 offers a variety of class times throughout the day, including early morning, lunchtime, and evening sessions, to accommodate different schedules and lifestyles.
+What is the maximum class size for each format?	The maximum class size typically ranges from 15 to 25 participants, depending on the format, to ensure a quality experience with adequate instructor attention.
+How do I sign up for different class formats?	Participants can sign up for classes through the Physique 57 app or website. It is recommended to book in advance, especially for popular classes, to secure a spot.
+Are there any class formats that focus specifically on strength training?	Yes, classes like Strength Lab! and FIT incorporate strength training elements, focusing on building muscle and enhancing overall strength through targeted exercises.
+How does Physique 57 incorporate feedback into class formats?	Client feedback is highly valued at Physique 57 and is regularly used to refine and improve class formats, ensuring they meet the needs and preferences of participants.
+What’s the difference between Mat 57 and Cardio Barre?	Mat 57 focuses on Pilates-inspired movements to enhance core strength and flexibility, while Cardio Barre combines traditional barre exercises with high-intensity cardio to boost endurance and calorie burn.
+How does Barre 57 differ from Foundations?	Barre 57 is a dynamic, high-intensity class designed for those with some experience, while Foundations is a slower-paced class that emphasizes basic movements and proper technique for beginners.
+What sets HIIT apart from Amped Up?	HIIT (High-Intensity Interval Training) focuses on short bursts of intense activity followed by rest, while Amped Up incorporates fast-paced barre movements with a focus on endurance and muscle engagement.
+How is Cardio Barre different from HIIT?	Cardio Barre combines barre exercises with cardiovascular training to elevate heart rate, while HIIT alternates between intense cardio and strength exercises, maximizing calorie burn and improving overall fitness.
+What distinguishes Recovery from other formats?	Recovery classes focus on stretching, relaxation, and muscle recovery, contrasting with more intense formats like HIIT or Cardio Barre, which emphasize strength and endurance.
+How does Foundations compare to Mat 57?	Foundations is designed for beginners, focusing on basic movements and alignment, while Mat 57 is more advanced, incorporating Pilates techniques to strengthen and tone the core.
+What sets Cardio Barre apart from Cardio Barre Plus?	Cardio Barre Plus includes additional strength training elements and higher intensity intervals compared to the standard Cardio Barre, making it a more challenging workout for those looking to push their limits.
+How does Fit differ from HIIT?	Fit combines strength-based interval training with core conditioning, while HIIT focuses on high-intensity bursts of cardio and strength exercises. Both formats are intense but target different aspects of fitness.
+How is Cardio Barre Express different from regular Cardio Barre?	Cardio Barre Express is a condensed version of the traditional Cardio Barre class, focusing on the most effective movements in a shorter time frame, making it ideal for those with limited time.
+What distinguishes HIIT from Fit?	HIIT focuses on high-intensity intervals for cardiovascular fitness, while Fit combines strength training with endurance work, targeting major muscle groups and core stability.
+What is the difference between Spinning and Indoor Cycling?	"Spinning" is a trademarked brand created by Johnny G. "Indoor Cycling" is the general term for the fitness category used by other brands like Physique 57.
+What kind of bikes are used at the studio?	The studio uses Schwinn indoor cycling bikes, which were co-developed with fitness industry leaders.
+Why do I need to arrive early for my first class?	New clients (fewer than 10 classes) must arrive 15 minutes early to ensure they receive a proper bike fitting 10 minutes before the class starts.
+What is the late entry policy for new clients?	New clients arriving less than 5 minutes before the scheduled start time will not be admitted to the room.
+Is there a grace period for experienced riders?	Yes, clients who have attended more than 10 classes are permitted to enter up to 5 minutes after the class has started.
+What happens if I miss the admission window?	You can be rescheduled to an alternate or parallel class within 24 hours of your original start time.
+What is the cancellation policy?	Reservations must be cancelled at least 12 hours before the class start time to receive a credit back to your account.
+Are class packages refundable?	No. Single classes, class packages, unlimited packages, promotions, workshops, and memberships are non-refundable.
+Can I share my class package with a friend?	No. Unlimited packages and class packages cannot be shared among different clients.
+Do I need special shoes for PowerCycle?	Yes, the bikes require cycling shoes. The studio handles shoe disbursement as part of the standard operating procedures.
+How is the bike seat height determined?	The "Hip Bone" method is the primary standard; the saddle should be level with the rider's hip bone when standing next to the bike.
+How should the handlebars be positioned?	For beginners, handlebars should be slightly higher than the saddle to reduce back strain. Experienced riders may prefer them level with the saddle.
+What is the "Fore/Aft" adjustment?	This adjusts the horizontal distance of the saddle. When the pedals are level (3 o'clock and 9 o'clock), the front knee should be directly over the center of the pedal.
+How do I know if my seat is too high?	If your hips rock back and forth or your toes point down at the bottom of the stroke, your seat is likely too high.
+How do I know if my seat is too low?	If you feel discomfort in the front of the knee or find it difficult to pedal smoothly at high speeds, your seat is likely too low.
+What is the "Knee Over Pedal Spindle" (KOPS) rule?	This is a check for the Fore/Aft position where a plumb line dropped from the bony part of the knee should fall through the center of the pedal.
+Are there safety warnings for bike adjustments?	Yes. Never adjust the seat or handlebars while on the bike. Ensure all pop-pins are fully engaged and tightened before mounting.
+What should I do after my class ends?	Clients should follow post-class procedures, which include wiping down the bike and returning borrowed equipment or shoes according to housekeeping guidelines.
+What happens if I cancel a class less than 12 hours in advance?	If cancelled late or if you no-show, the client will be charged for that class or workshop.
+Who developed the Schwinn certification used by the studio?	Fitness leader Jay Blahnik, who later moved on to help develop the Apple Watch and Apple Fitness+.
+Can I adjust my own bike?	While clients learn to adjust their bikes, instructors provide a comprehensive guide and reference sheets to ensure best practices for safety and efficiency.
+Is PowerCycle just for professional athletes?	No. While it originated as a way for pro cyclists to train safely, it is now a worldwide fitness program suitable for various fitness levels.
+What is the "Welcome Message" protocol?	Instructors are required to welcome every client, introduce themselves, and ensure new clients are identified for setup assistance.
+How is shoe disbursement handled?	It is a standard operational procedure where staff ensure clients receive the correct size and type of cycling shoes upon arrival.
+Are there specific housekeeping rules for the studio?	Yes, the SOP includes detailed housekeeping guidelines to maintain cleanliness and equipment longevity between sessions.`;
+
+        const faqEntries = faqDataset
+            .split('\n')
+            .map((line) => line.trim())
+            .filter(Boolean)
+            .map((line) => {
+                const [question, ...answerParts] = line.split('\t');
+                return {
+                    question: question?.trim(),
+                    answer: answerParts.join('\t').trim()
+                };
+            })
+            .filter((item) => item.question && item.answer);
+
+        const faqAnswerOverrides = {
+            'Where are Physique 57 studios located?': `
+                <p>Physique 57 India studios are located at the following addresses:</p>
+                <ol>
+                    <li>
+                        <strong>Kemps Corner, Mumbai</strong><br>
+                        Kwality House, August Kranti Rd, below Kemps Corner, Grant Road, Mumbai, Maharashtra 400036<br>
+                        <a href="https://www.google.com/maps/place/Kwality+House,+August+Kranti+Rd,+below+Kemps+Corner,+Kemps+Corner,+Grant+Road,+Mumbai,+Maharashtra+400036" target="_blank" rel="noopener noreferrer">Open in Google Maps</a><br>
+                        Phone: 097696 65757
+                    </li>
+                    <li>
+                        <strong>Bandra West, Mumbai</strong><br>
+                        203, Supreme Headquarters, Junction of 14th &amp; 33rd Rd, opposite Monkey Bar, Bandra West, Mumbai, Maharashtra 400050<br>
+                        <a href="https://www.google.com/maps/place/203,+Supreme+Headquarters,+Junction+of+14th,+%26+33rd+Rd,+opposite+Monkey+Bar,+Bandra+West,+Mumbai,+Maharashtra+400050" target="_blank" rel="noopener noreferrer">Open in Google Maps</a><br>
+                        Phone: 097696 65757
+                    </li>
+                    <li>
+                        <strong>Bengaluru</strong><br>
+                        1st Floor, Kenkere House, Vittal Mallya Rd, above Raymonds, Shanthala Nagar, Ashok Nagar, Bengaluru, Karnataka 560001<br>
+                        <a href="https://www.google.com/maps/place/1st+Floor,+Kenkere+House,+Vittal+Mallya+Rd,+above+Raymonds,+Shanthala+Nagar,+Ashok+Nagar,+Bengaluru,+Karnataka+560001" target="_blank" rel="noopener noreferrer">Open in Google Maps</a><br>
+                        Phone: 070220 43667
+                    </li>
+                </ol>
+            `,
+            'What amenities do Physique 57 studios offer?': `
+                <p>Physique 57 India studios offer a variety of amenities to enhance your experience, including:</p>
+                <ul>
+                    <li><strong>Locker rooms:</strong> Secure storage for your belongings.</li>
+                    <li><strong>Showers:</strong> Clean and private facilities for a post-workout refresh.</li>
+                    <li><strong>Towel service:</strong> Complimentary towels for your convenience.</li>
+                    <li><strong>Boutique:</strong> A curated selection of fitness apparel and accessories.</li>
+                </ul>
+            `,
+            'Are Physique 57 studios clean and wellmaintained?': `
+                <p>Yes, Physique 57 India studios are committed to maintaining a clean and hygienic environment.</p>
+                <ul>
+                    <li><strong>Regular cleaning:</strong> Studios are cleaned and disinfected frequently.</li>
+                    <li><strong>Attention to detail:</strong> Staff members are trained to uphold high cleanliness standards throughout the facility.</li>
+                </ul>
+            `,
+            'Can I store my belongings at Physique 57 studios?': `
+                <p>Yes, Physique 57 India studios provide storage options for clients, including:</p>
+                <ul>
+                    <li><strong>Lockers:</strong> Secure storage for personal items during class.</li>
+                    <li><strong>Cubbies:</strong> Available for smaller belongings.</li>
+                </ul>
+                <p>Please note that Physique 57 India is not responsible for lost or stolen items.</p>
+            `,
+            'Are Physique 57 studios accessible for people with disabilities?': `
+                <p>Yes, Physique 57 India studios are designed to be accessible for individuals with disabilities.</p>
+                <ul>
+                    <li><strong>Wheelchair access:</strong> Facilities are equipped to accommodate wheelchair users.</li>
+                    <li><strong>Supportive environment:</strong> Staff are trained to assist clients with special needs.</li>
+                </ul>
+            `,
+            'Can I bring a guest to Physique 57 studios?': `
+                <p>Yes, you can bring a guest to Physique 57 India studios. Guests must:</p>
+                <ul>
+                    <li><strong>Sign a waiver</strong> before participating.</li>
+                    <li><strong>Provide identification</strong> for verification.</li>
+                </ul>
+            `,
+            'Do Physique 57 studios offer childcare services?': `<p>No. Physique 57 India studios do not offer childcare services, and the studio environment is designed for adult clients.</p>`,
+            'Can I purchase food and drinks at Physique 57 studios?': `
+                <p>Yes, Physique 57 India studios offer a selection of healthy snacks and beverages for purchase.</p>
+                <ul>
+                    <li><strong>Healthy options:</strong> Nutritious snacks and drinks that support your fitness journey.</li>
+                </ul>
+            `,
+            'Do Physique 57 studios offer showers and towel service?': `
+                <p>Yes, Physique 57 India studios provide both showers and towel service for clients.</p>
+                <ul>
+                    <li><strong>Convenience:</strong> Fresh towels are available before and after class.</li>
+                    <li><strong>Clean facilities:</strong> Showers are maintained to ensure a pleasant experience.</li>
+                </ul>
+            `
+        };
+
+        function normalizeFaqAnswer(answer) {
+            return answer
+                .replace(/barrebased/gi, 'barre-based')
+                .replace(/lowimpact/gi, 'low-impact')
+                .replace(/postworkout/gi, 'post-workout')
+                .replace(/wellmaintained/gi, 'well-maintained')
+                .replace(/AdultFocused/gi, 'Adult-focused')
+                .replace(/GoalSetting/gi, 'Goal-setting')
+                .replace(/ResearchBacked/gi, 'Research-backed')
+                .replace(/highintensity/gi, 'high-intensity')
+                .replace(/FullBody/gi, 'Full-body')
+                .replace(/fullBody/gi, 'full-body')
+                .replace(/rhythmdriven/gi, 'rhythm-driven')
+                .replace(/rhythmbased/gi, 'rhythm-based')
+                .replace(/musicdriven/gi, 'music-driven')
+                .replace(/stateoftheart/gi, 'state-of-the-art')
+                .replace(/sciencebased/gi, 'science-based')
+                .replace(/longterm/gi, 'long-term')
+                .replace(/wellbeing/gi, 'well-being')
+                .replace(/wellequipped/gi, 'well-equipped')
+                .replace(/beginnerfriendly/gi, 'beginner-friendly')
+                .replace(/slowerpaced/gi, 'slower-paced')
+                .replace(/30minute/gi, '30-minute')
+                .replace(/45minute/gi, '45-minute')
+                .replace(/tshirt/gi, 't-shirt')
+                .replace(/hiphop/gi, 'hip-hop')
+                .replace(/crosstraining/gi, 'cross-training')
+                .replace(/crosstrain/gi, 'cross-train')
+                .replace(/1020 participants/gi, '10-20 participants')
+                .replace(/24 classes per week/gi, '2-4 classes per week')
+                .replace(/Vallet/gi, 'Valet')
+                .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+        }
+
+        const faqLookup = new Map(
+            faqEntries.map(({ question, answer }) => {
+                const htmlAnswer = faqAnswerOverrides[question] || `<p>${normalizeFaqAnswer(answer)}</p>`;
+                return [question, htmlAnswer];
+            })
+        );
+
+        const buildFaqItems = (questions) => questions
+            .map((question) => ({
+                question,
+                answer: faqLookup.get(question)
+            }))
+            .filter((item) => item.answer);
+
+        const previewQuestions = [
+            'What is Physique 57?',
+            'What are the benefits of Physique 57?',
+            'Is Physique 57 suitable for all fitness levels?',
+            'Can men take Physique 57 classes?',
+            'Is Physique 57 safe during or after pregnancy?',
+            'What is the typical class size at Physique 57?',
+            'How often should I take Physique 57 classes to see results?',
+            'What is the Physique 57 method?',
+            'What is powerCycle?',
+            'What is the cancellation policy?'
         ];
+
+        const preparationFaqs = buildFaqItems([
+            'What is Physique 57?',
+            'What are the benefits of Physique 57?',
+            'Is Physique 57 suitable for all fitness levels?',
+            'Can men take Physique 57 classes?',
+            'Is Physique 57 safe during or after pregnancy?',
+            'What is the typical class size at Physique 57?',
+            'How often should I take Physique 57 classes to see results?',
+            'Can I crosstrain with Physique 57?',
+            'What is the Physique 57 method?'
+        ]);
+
+        const bookingFaqs = buildFaqItems([
+            'What is the cost of Physique 57 classes?',
+            'Can I purchase Physique 57 classes online?',
+            'Where are Physique 57 studios located?',
+            'What amenities do Physique 57 studios offer?',
+            'Are Physique 57 studios clean and wellmaintained?',
+            'Do Physique 57 studios offer parking?',
+            'Can I store my belongings at Physique 57 studios?',
+            'Are Physique 57 studios accessible for people with disabilities?',
+            'Can I bring a guest to Physique 57 studios?',
+            'Do Physique 57 studios offer childcare services?',
+            'Can I purchase food and drinks at Physique 57 studios?',
+            'Do Physique 57 studios offer showers and towel service?'
+        ]);
+
+        const generalFaqs = buildFaqItems([
+            'What is the history of Physique 57?',
+            'What is the science behind Physique 57?',
+            'How does Physique 57 compare to other fitness methods?',
+            'What is the role of the ballet barre in Physique 57?',
+            'How does Physique 57 incorporate stretching?',
+            'What is the significance of interval overload in Physique 57?',
+            'How does Physique 57 incorporate cardio?',
+            'What is the role of the instructor in Physique 57?',
+            'How does Physique 57 support client goals and progress?',
+            'How does Physique 57 differ from traditional gym workouts?',
+            'Can I combine Physique 57 with other fitness routines?',
+            'How does Physique 57 support muscle building compared to other workouts?',
+            'How does the community aspect of Physique 57 compare to other gyms?',
+            'How does Physique 57 address individual fitness levels?',
+            'What is the instructor training process at Physique 57?',
+            'How does Physique 57 promote longterm fitness success?',
+            'How does Physique 57 incorporate feedback from clients?'
+        ]);
+
+        const methodFaqs = buildFaqItems([
+            'What is powerCycle?',
+            'How long are the powerCycle classes?',
+            'Do I need special shoes for powerCycle?',
+            'How do I track my progress in powerCycle?',
+            'Can beginners join powerCycle classes?',
+            'What should I wear to a powerCycle class?',
+            'How often should I attend powerCycle classes for results?',
+            'What is the cancellation policy for powerCycle classes?',
+            'What is the bike fit process for new clients?',
+            'What if I have injuries or specific fitness concerns?',
+            'What are the health benefits of powerCycle?',
+            'How does powerCycle differ from traditional spinning classes?',
+            'Can powerCycle help with weight loss?',
+            'What is the unique selling proposition (USP) of powerCycle?',
+            'How does powerCycle improve mental health?',
+            'What kind of music is played during powerCycle classes?',
+            'How does powerCycle support joint health?',
+            'What can I expect in a typical powerCycle class?'
+        ]);
+
+        const membershipFaqs = buildFaqItems([
+            'What class levels does Physique 57 offer?',
+            'How are the class levels structured at Physique 57?',
+            'What is the difference between the Barre 57 and Foundations classes?',
+            'Are the classes suitable for beginners?',
+            'What is the intensity level of the Barre 57 class?',
+            'How does the Foundations class differ from other classes?',
+            'What can I expect in a typical Barre 57 class?',
+            'Is there a specific class format for advanced practitioners?',
+            'How often should I attend classes at different levels for optimal results?',
+            'What is the duration of each class format offered?',
+            'Are there any prerequisites for attending the FIT class?',
+            'How does the SWEAT in 30 class differ from traditional barre classes?',
+            'What is the focus of the Cardio Barre class?',
+            'Can I participate in multiple class formats in one day?',
+            'What is the purpose of the Recovery class?',
+            'How does the Mat 57 class format work?',
+            'Are there modifications available for different fitness levels in classes?',
+            'What type of equipment is used in the various class formats?',
+            'How do I know which class format is right for me?',
+            'How does Physique 57 ensure class variety?',
+            'Can I switch between class levels as I progress?',
+            'What is the class size for each format?',
+            'Are there any special classes or formats offered seasonally?',
+            'How does the class schedule accommodate different lifestyles?',
+            'What is the maximum class size for each format?',
+            'How do I sign up for different class formats?',
+            'Are there any class formats that focus specifically on strength training?',
+            'How does Physique 57 incorporate feedback into class formats?'
+        ]);
+
+        const policiesFaqs = buildFaqItems([
+            'What’s the difference between Mat 57 and Cardio Barre?',
+            'How does Barre 57 differ from Foundations?',
+            'What sets HIIT apart from Amped Up?',
+            'How is Cardio Barre different from HIIT?',
+            'What distinguishes Recovery from other formats?',
+            'How does Foundations compare to Mat 57?',
+            'What sets Cardio Barre apart from Cardio Barre Plus?',
+            'How does Fit differ from HIIT?',
+            'How is Cardio Barre Express different from regular Cardio Barre?',
+            'What distinguishes HIIT from Fit?'
+        ]);
+
+        const technicalFaqs = buildFaqItems([
+            'What is the difference between Spinning and Indoor Cycling?',
+            'What kind of bikes are used at the studio?',
+            'Why do I need to arrive early for my first class?',
+            'What is the late entry policy for new clients?',
+            'Is there a grace period for experienced riders?',
+            'What happens if I miss the admission window?',
+            'What is the cancellation policy?',
+            'Are class packages refundable?',
+            'Can I share my class package with a friend?',
+            'Do I need special shoes for PowerCycle?',
+            'How is the bike seat height determined?',
+            'How should the handlebars be positioned?',
+            'What is the "Fore/Aft" adjustment?',
+            'How do I know if my seat is too high?',
+            'How do I know if my seat is too low?',
+            'What is the "Knee Over Pedal Spindle" (KOPS) rule?',
+            'Are there safety warnings for bike adjustments?',
+            'What should I do after my class ends?',
+            'What happens if I cancel a class less than 12 hours in advance?',
+            'Who developed the Schwinn certification used by the studio?',
+            'Can I adjust my own bike?',
+            'Is PowerCycle just for professional athletes?',
+            'What is the "Welcome Message" protocol?',
+            'How is shoe disbursement handled?',
+            'Are there specific housekeeping rules for the studio?'
+        ]);
+
+        const previewFaqs = buildFaqItems(previewQuestions);
 
         faqList.innerHTML = renderFaqCollection(previewFaqs, 0);
+        setupFaqAccordion(faqList);
 
-        // Main FAQ Modal - comprehensive FAQs organized by category (full width)
-        const preparationFaqs = [
-            {
-                question: "What should I bring to my first class?",
-                answer: "We provide all equipment including grippy socks, yoga mats, and light weights. Just bring water, a towel, and comfortable workout clothes that allow for movement."
-            },
-            {
-                question: "How early should I arrive?",
-                answer: "Please arrive 15 minutes early for your first class to complete check-in, get oriented with the studio, and meet your instructor."
-            },
-            {
-                question: "What should I wear to class?",
-                answer: "Wear form-fitting, comfortable workout clothes that allow for full range of motion. Avoid loose clothing that might get in the way during exercises."
-            },
-            {
-                question: "Can I bring my own water bottle?",
-                answer: "Yes, please bring a water bottle to stay hydrated during class. We also have water available for purchase at the studio."
-            },
-            {
-                question: "Is there a locker room with showers?",
-                answer: "Yes, both studios have well-equipped changing rooms with lockers. Shower facilities are available for your convenience after class."
-            },
-            {
-                question: "What happens if I'm running late?",
-                answer: "Please try to arrive on time as late entry may not be permitted once the class has started for safety reasons. Call the studio if you're running behind."
-            },
-            {
-                question: "Do you provide yoga mats?",
-                answer: "Yes, we provide all necessary equipment including yoga mats, light weights, and resistance bands. Everything is sanitized between uses."
-            }
-        ];
-
-        const bookingFaqs = [
-            {
-                question: "What happens if I need to cancel?",
-                answer: "Cancellations should be made at least 12 hours before class time through the Momence app or by calling the studio directly."
-            },
-            {
-                question: "Can I reschedule my trial class?",
-                answer: "Yes, you can reschedule your trial class up to 12 hours before the scheduled time, subject to availability."
-            },
-            {
-                question: "How do I book my subsequent classes?",
-                answer: "After your trial, download the Physique 57 India app or use the Momence platform to book your regular classes and manage your membership."
-            },
-            {
-                question: "Is parking available at the studios?",
-                answer: "Both locations offer nearby parking options. Bandra has valet parking, while Kemps Corner has street parking and nearby lots. Details will be sent with your booking confirmation."
-            },
-            {
-                question: "Are classes suitable for beginners?",
-                answer: "Absolutely! Our instructors provide modifications for all fitness levels. Let them know it's your first class and they'll guide you through everything."
-            },
-            {
-                question: "What is the late cancellation policy?",
-                answer: "Classes must be cancelled at least 12 hours in advance. Late cancellations and no-shows will result in loss of class credit."
-            },
-            {
-                question: "Can I bring a friend to class?",
-                answer: "Friends are welcome to book their own trial or regular class. We don't allow observers in the studio for safety and privacy reasons."
-            }
-        ];
-
-        const generalFaqs = [
-            {
-                question: "What is the Physique 57 method?",
-                answer: "Physique 57 is a proprietary barre workout method developed in New York that combines isometric exercises, orthopedic stretches, and muscle-defining movements to create long, lean, and sculpted muscles."
-            },
-            {
-                question: "How is Physique 57 different from other barre classes?",
-                answer: "Our method uses a unique combination of small, targeted movements and interval training that creates the signature 'shake' - the point where muscles fatigue and transformation happens."
-            },
-            {
-                question: "What results can I expect and how quickly?",
-                answer: "Most clients see visible results within 3-4 weeks with consistent practice. You'll notice improved posture, increased strength, and muscle definition, especially in arms, core, and glutes."
-            },
-            {
-                question: "Can I modify movements if needed?",
-                answer: "Absolutely! Our instructors provide modifications for all fitness levels and any physical limitations. Just let them know before class starts."
-            },
-            {
-                question: "What is the class size and instructor ratio?",
-                answer: "We keep class sizes small (typically 8-12 people) to ensure personalized attention from our certified instructors who can provide individual guidance and corrections."
-            },
-            {
-                question: "What membership packages are available?",
-                answer: "We offer various packages including single classes, class packs, unlimited monthly memberships, and special introductory offers for new clients."
-            },
-            {
-                question: "How does the trial membership work?",
-                answer: "The trial membership gives you access to 2 classes within 14 days, allowing you to experience our method and find your preferred class times and formats."
-            }
-        ];
-
-        // Populate main modal sections (21 FAQs total across 3 sections)
         const faqModalPreparation = document.getElementById('faq-modal-preparation');
         const faqModalBooking = document.getElementById('faq-modal-booking');
         const faqModalGeneral = document.getElementById('faq-modal-general');
@@ -862,100 +1102,6 @@
             setupFaqAccordion(faqModalGeneral);
         }
 
-        // Detailed FAQ Modal - comprehensive content (20+ additional FAQs)
-        const methodFaqs = [
-            {
-                question: "What makes Physique 57 unique?",
-                answer: "Physique 57 combines cardio, strength training, and stretching in a low-impact, high-intensity format that targets specific muscle groups to create long, lean lines."
-            },
-            {
-                question: "How often should I attend classes?",
-                answer: "For best results, we recommend 3-4 classes per week. This allows your body to adapt while maintaining consistency for visible transformation."
-            },
-            {
-                question: "Is Physique 57 suitable for all fitness levels?",
-                answer: "Yes! Our instructors provide modifications for every exercise, making it accessible for beginners while challenging for advanced practitioners."
-            },
-            {
-                question: "What is the signature 'shake' in Physique 57?",
-                answer: "The 'shake' is when your muscles reach fatigue through small, targeted movements. This is where the magic happens - your muscles are working to their maximum capacity for optimal results."
-            },
-            {
-                question: "Can I practice Physique 57 if I'm pregnant?",
-                answer: "We offer prenatal modifications, but please consult your doctor first and inform your instructor about your pregnancy so they can provide appropriate modifications."
-            }
-        ];
-
-        const membershipFaqs = [
-            {
-                question: "What is the cancellation policy for memberships?",
-                answer: "Membership cancellations must be submitted in writing at least 30 days before the next billing cycle. Trial packages are non-refundable."
-            },
-            {
-                question: "Can I freeze my membership?",
-                answer: "Yes, monthly memberships can be frozen for up to 2 months per year for medical reasons or extended travel with proper documentation."
-            },
-            {
-                question: "Are there corporate or group rates available?",
-                answer: "Yes, we offer corporate packages and group rates for 5 or more people. Contact us at info@physique57india.com for custom pricing."
-            },
-            {
-                question: "How do I upgrade or downgrade my membership?",
-                answer: "Membership changes can be made through the app or by speaking with studio staff. Changes take effect at the next billing cycle."
-            },
-            {
-                question: "Do unused classes expire?",
-                answer: "Class packages have expiration dates which vary by package type. Trial packages must be used within 14 days of purchase."
-            }
-        ];
-
-        const policyFaqs = [
-            {
-                question: "What safety protocols are in place?",
-                answer: "We maintain rigorous cleaning protocols, ensure proper ventilation, and limit class sizes. All instructors are certified and trained in injury prevention."
-            },
-            {
-                question: "Is there an age restriction for classes?",
-                answer: "Classes are designed for adults 16 years and older. Participants under 18 require parental consent and may need modified exercises."
-            },
-            {
-                question: "What happens if I'm injured during class?",
-                answer: "Stop immediately and inform the instructor. While we carry liability insurance, participants are responsible for disclosing any pre-existing conditions or limitations."
-            },
-            {
-                question: "Can I take photos or videos during class?",
-                answer: "Photography and videography are not permitted during class to protect the privacy of all participants and maintain focus on the workout."
-            },
-            {
-                question: "What is your refund policy?",
-                answer: "Trial packages and memberships are non-refundable. However, we offer makeup classes for medical emergencies with proper documentation."
-            }
-        ];
-
-        const technicalFaqs = [
-            {
-                question: "How do I download and use the Physique 57 app?",
-                answer: "Search 'Physique 57 India' in your app store, or use the Momence platform to book classes, manage your account, and track your progress."
-            },
-            {
-                question: "I'm having trouble booking online. What should I do?",
-                answer: "Contact our support team at info@physique57india.com or call the studio directly. We can help with booking issues or technical problems."
-            },
-            {
-                question: "How do I update my payment information?",
-                answer: "Log into your account on the app or Momence platform, go to 'Account Settings' and update your payment method in the billing section."
-            },
-            {
-                question: "Can I book classes for someone else?",
-                answer: "Each person needs their own account for liability and tracking purposes. You can purchase gift certificates that others can use to create their own account."
-            },
-            {
-                question: "What if I forget to check in for my class?",
-                answer: "Always check in at the front desk when you arrive. If you forget, let us know after class so we can manually adjust your account."
-            }
-        ];
-
-        // Populate detailed modal sections
         const detailedMethodSection = document.getElementById('detailed-faq-method');
         const detailedMembershipSection = document.getElementById('detailed-faq-membership');
         const detailedPoliciesSection = document.getElementById('detailed-faq-policies');
@@ -972,7 +1118,7 @@
         }
 
         if (detailedPoliciesSection) {
-            detailedPoliciesSection.innerHTML = renderFaqCollection(policyFaqs, 0);
+            detailedPoliciesSection.innerHTML = renderFaqCollection(policiesFaqs, 0);
             setupFaqAccordion(detailedPoliciesSection);
         }
 
@@ -1007,6 +1153,13 @@
             return [studioName, scopedOptions];
         }).filter(([, options]) => options.length > 0);
 
+        const heroOption = filteredGroups[0]?.[1]?.[0] || null;
+
+        if (formatModalImage) {
+            formatModalImage.src = heroOption?.image || 'https://i.postimg.cc/GtJNPK7P/hp-Img-1774213193.png';
+            formatModalImage.alt = heroOption?.imageAlt || heroOption?.title || 'Physique 57 class format';
+        }
+
         if (formatModalTitle && formatModalCopy) {
             if (optionValue && filteredGroups.length === 1 && filteredGroups[0][1].length === 1) {
                 const [studioName, options] = filteredGroups[0];
@@ -1038,24 +1191,24 @@
                                 </div>
                             </div>
                             <p class="choice-card-summary">${option.description}</p>
-                            <dl class="choice-card-meta">
-                                <div>
-                                    <dt>Intensity</dt>
-                                    <dd>${option.intensity}</dd>
+                            <div class="format-meta-tabs" role="list" aria-label="${option.title} quick details">
+                                <div class="format-meta-tab" role="listitem">
+                                    <span class="format-meta-label">Intensity</span>
+                                    <strong class="format-meta-value">${option.intensity}</strong>
                                 </div>
-                                <div>
-                                    <dt>Best for</dt>
-                                    <dd>${option.bestFor}</dd>
+                                <div class="format-meta-tab" role="listitem">
+                                    <span class="format-meta-label">Best for</span>
+                                    <strong class="format-meta-value">${option.bestFor}</strong>
                                 </div>
-                                <div>
-                                    <dt>Length</dt>
-                                    <dd>${option.duration || 'Varies'}</dd>
+                                <div class="format-meta-tab" role="listitem">
+                                    <span class="format-meta-label">Length</span>
+                                    <strong class="format-meta-value">${option.duration || 'Varies'}</strong>
                                 </div>
-                                <div>
-                                    <dt>Style</dt>
-                                    <dd>${option.trainingStyle || 'Studio format'}</dd>
+                                <div class="format-meta-tab" role="listitem">
+                                    <span class="format-meta-label">Style</span>
+                                    <strong class="format-meta-value">${option.trainingStyle || 'Studio format'}</strong>
                                 </div>
-                            </dl>
+                            </div>
                             <ul class="modal-format-points">
                                 ${option.highlights.map((highlight) => `<li>${highlight}</li>`).join('')}
                             </ul>
@@ -1444,35 +1597,201 @@
         setTimeout(updateSelectedClassState, 50);
     }
 
+    function getFieldErrorConfig(fieldName) {
+        const configs = {
+            firstName: {
+                field: () => document.getElementById('firstName'),
+                container: () => document.getElementById('firstName')?.closest('.field-group')
+            },
+            lastName: {
+                field: () => document.getElementById('lastName'),
+                container: () => document.getElementById('lastName')?.closest('.field-group')
+            },
+            email: {
+                field: () => document.getElementById('email'),
+                container: () => document.getElementById('email')?.closest('.field-group')
+            },
+            phoneNumber: {
+                field: () => document.getElementById('phoneNumber'),
+                container: () => document.getElementById('phoneNumber')?.closest('.field-group')
+            },
+            time: {
+                field: () => document.getElementById('time'),
+                container: () => document.getElementById('time')?.closest('.field-group')
+            },
+            center: {
+                field: () => document.getElementById('center'),
+                container: () => document.getElementById('center')?.closest('.field-group')
+            },
+            type: {
+                field: () => classOptionGrid.querySelector('input[name="type"]'),
+                container: () => classOptionsSection
+            },
+            stage: {
+                field: () => form.querySelector('input[name="stage"]'),
+                container: () => paymentStageFieldset
+            },
+            waiverAccepted: {
+                field: () => document.getElementById('waiverAccepted'),
+                container: () => form.querySelector('.consent-card')
+            }
+        };
+
+        return configs[fieldName] || null;
+    }
+
+    function ensureFieldErrorElement(fieldName) {
+        const config = getFieldErrorConfig(fieldName);
+        const container = config?.container?.();
+
+        if (!container) {
+            return null;
+        }
+
+        let errorElement = container.querySelector(`[data-field-error="${fieldName}"]`);
+        if (!errorElement) {
+            errorElement = document.createElement('p');
+            errorElement.className = 'field-error-message';
+            errorElement.dataset.fieldError = fieldName;
+            errorElement.id = `${fieldName}-error`;
+            errorElement.hidden = true;
+            container.appendChild(errorElement);
+        }
+
+        return errorElement;
+    }
+
+    function setFieldError(fieldName, message) {
+        const config = getFieldErrorConfig(fieldName);
+        const field = config?.field?.();
+        const container = config?.container?.();
+        const errorElement = ensureFieldErrorElement(fieldName);
+
+        if (!container || !errorElement) {
+            return;
+        }
+
+        container.classList.add('has-error');
+        errorElement.hidden = false;
+        errorElement.textContent = message;
+
+        if (field) {
+            field.setAttribute('aria-invalid', 'true');
+            field.setAttribute('aria-describedby', errorElement.id);
+        }
+    }
+
+    function clearFieldError(fieldName) {
+        const config = getFieldErrorConfig(fieldName);
+        const field = config?.field?.();
+        const container = config?.container?.();
+        const errorElement = container?.querySelector(`[data-field-error="${fieldName}"]`);
+
+        container?.classList.remove('has-error');
+
+        if (errorElement) {
+            errorElement.hidden = true;
+            errorElement.textContent = '';
+        }
+
+        if (field) {
+            field.removeAttribute('aria-invalid');
+            const describedBy = (field.getAttribute('aria-describedby') || '')
+                .split(' ')
+                .filter((value) => value && value !== `${fieldName}-error`)
+                .join(' ');
+
+            if (describedBy) {
+                field.setAttribute('aria-describedby', describedBy);
+            } else {
+                field.removeAttribute('aria-describedby');
+            }
+        }
+    }
+
     function clearFieldErrors() {
-        form.querySelectorAll('[aria-invalid="true"]').forEach((element) => {
-            element.removeAttribute('aria-invalid');
-        });
+        ['firstName', 'lastName', 'email', 'phoneNumber', 'time', 'center', 'type', 'stage', 'waiverAccepted'].forEach(clearFieldError);
 
         if (phoneNumberInput) {
             phoneNumberInput.setCustomValidity('');
         }
     }
 
-    function applyFieldErrors(fieldErrors = {}) {
-        const entries = Object.entries(fieldErrors);
+    function applyFieldErrors(fieldErrors = {}, { focusFirst = true } = {}) {
+        const entries = Object.entries(fieldErrors).filter(([, message]) => Boolean(message));
 
         if (!entries.length) {
             return;
         }
 
-        const [firstFieldName, firstMessage] = entries[0];
-        const firstField = form.querySelector(`[name="${firstFieldName}"]`);
-
-        entries.forEach(([fieldName]) => {
-            const field = form.querySelector(`[name="${fieldName}"]`);
-            if (field) {
-                field.setAttribute('aria-invalid', 'true');
-            }
+        entries.forEach(([fieldName, message]) => {
+            setFieldError(fieldName, message);
         });
 
-        showStatus(firstMessage, 'error');
-        firstField?.focus();
+        if (focusFirst) {
+            const [firstFieldName] = entries[0];
+            const firstField = getFieldErrorConfig(firstFieldName)?.field?.();
+            firstField?.focus();
+        }
+    }
+
+    function validateLeadForm() {
+        const errors = {};
+        const firstNameField = document.getElementById('firstName');
+        const lastNameField = document.getElementById('lastName');
+        const emailField = document.getElementById('email');
+        const timeField = document.getElementById('time');
+        const centerField = document.getElementById('center');
+        const waiverField = document.getElementById('waiverAccepted');
+        const selectedType = form.querySelector('input[name="type"]:checked');
+        const selectedStage = form.querySelector('input[name="stage"]:checked');
+
+        if (!firstNameField?.value.trim()) {
+            errors.firstName = 'Enter your first name.';
+        }
+
+        if (!lastNameField?.value.trim()) {
+            errors.lastName = 'Enter your last name.';
+        }
+
+        if (!emailField?.value.trim()) {
+            errors.email = 'Enter your email address.';
+        } else if (!emailField.checkValidity()) {
+            errors.email = 'Enter a valid email address.';
+        }
+
+        if (!phoneNumberInput?.value.trim()) {
+            errors.phoneNumber = 'Enter your phone number.';
+        } else if (!validatePhoneField()) {
+            errors.phoneNumber = 'Enter a valid phone number for the selected country.';
+        }
+
+        if (!timeField?.value) {
+            errors.time = 'Select a realistic class window.';
+        }
+
+        if (!centerField?.value) {
+            errors.center = 'Select your preferred studio.';
+        }
+
+        if (!selectedType) {
+            errors.type = 'Choose your first format.';
+        }
+
+        if (!selectedStage) {
+            errors.stage = 'Choose a checkout stage.';
+        }
+
+        if (!waiverField?.checked) {
+            errors.waiverAccepted = 'Accept the waiver and booking terms to continue.';
+        }
+
+        if (Object.keys(errors).length) {
+            applyFieldErrors(errors);
+            return false;
+        }
+
+        return true;
     }
 
     function getFocusableElements(container) {
@@ -1759,11 +2078,11 @@
             const message = 'Enter a valid phone number for the selected country.';
             phoneNumberInput.setCustomValidity(message);
 
-            if (showMessage) {
-                showStatus(message, 'error');
-            }
-
             return false;
+        }
+
+        if (showMessage) {
+            clearFieldError('phoneNumber');
         }
 
         return true;
@@ -1941,6 +2260,9 @@
     }
 
     applyTheme(getPreferredTheme());
+    themeToggle?.addEventListener('change', () => {
+        applyTheme(themeToggle.checked ? 'dark' : 'light');
+    });
 
     renderHeroSignals(false);
     renderProofCards();
@@ -2010,6 +2332,42 @@
     // Update pay button state on form changes
     form.addEventListener('input', updatePayButtonState);
     form.addEventListener('change', updatePayButtonState);
+
+    form.addEventListener('input', (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) {
+            return;
+        }
+
+        const fieldName = target.getAttribute('name');
+        if (fieldName && getFieldErrorConfig(fieldName)) {
+            clearFieldError(fieldName);
+        }
+
+        if (target === phoneNumberInput && phoneNumberInput.value.trim()) {
+            validatePhoneField({ showMessage: true });
+        }
+    });
+
+    form.addEventListener('change', (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) {
+            return;
+        }
+
+        const fieldName = target.getAttribute('name');
+        if (fieldName && getFieldErrorConfig(fieldName)) {
+            clearFieldError(fieldName);
+        }
+
+        if (fieldName === 'type') {
+            clearFieldError('type');
+        }
+
+        if (fieldName === 'stage') {
+            clearFieldError('stage');
+        }
+    });
 
     // Persist checkout state on any form change to prevent data loss during payment
     function persistFormStateOnChange() {
