@@ -96,7 +96,6 @@
     const paymentStageInputs = Array.from(form.querySelectorAll('input[name="stage"]'));
     const paymentStageLabelTargets = Array.from(document.querySelectorAll('[data-stage-label]'));
     const paymentStageAmountTargets = Array.from(document.querySelectorAll('[data-stage-amount]'));
-    const themeToggle = document.getElementById('theme-toggle');
 
     function getPaymentStageConfigs() {
         return tracking.appConfig?.paymentStages || {};
@@ -2259,10 +2258,7 @@ Are there specific housekeeping rules for the studio?	Yes, the SOP includes deta
         window.open(whatsappUrl, '_blank');
     }
 
-    applyTheme(getPreferredTheme());
-    themeToggle?.addEventListener('change', () => {
-        applyTheme(themeToggle.checked ? 'dark' : 'light');
-    });
+    applyTheme('light');
 
     renderHeroSignals(false);
     renderProofCards();

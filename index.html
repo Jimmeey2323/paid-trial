@@ -172,17 +172,22 @@
                         </div>
 
                         <div class="consent-card">
-                            <p class="consent-copy">
-                                Review the <button type="button" class="text-button" id="waiver-link">trial waiver and booking terms</button>
-                                before confirming your request.
-                            </p>
+                            <div class="consent-copy-block">
+                                <p class="consent-kicker">Before you confirm</p>
+                                <p class="consent-copy">
+                                    Review the <button type="button" class="text-button" id="waiver-link">trial waiver and booking terms</button>
+                                    before confirming your request.
+                                </p>
+                            </div>
                             <label class="checkbox-row" for="waiverAccepted">
                                 <input type="checkbox" id="waiverAccepted" name="waiverAccepted" value="accepted" required>
-                                <span>I have read and accept the waiver and booking terms. <strong>*</strong></span>
+                                <span>
+                                    <strong>I have read and accept the waiver and booking terms. <span aria-hidden="true">*</span></strong>
+                                    <small>Required to complete your booking request.</small>
+                                </span>
                             </label>
+                            <p class="form-footnote consent-footnote">Your details are used only for booking coordination, studio follow-up, and attribution tracking.</p>
                         </div>
-
-                        <p class="form-footnote">Your details are used only for booking coordination, studio follow-up, and attribution tracking.</p>
                     </form>
                 </aside>
             </div>
@@ -255,15 +260,7 @@
                 <div class="section-actions section-actions-center">
                     <button type="button" class="secondary-button" id="faq-modal-open">View all FAQs</button>
                     <button type="button" class="secondary-button secondary-button-outline" id="detailed-faq-modal-open">Complete FAQ Guide</button>
-                    <div class="section-actions-inline" aria-label="Waiver and appearance controls">
-                        <button type="button" class="secondary-button secondary-button-outline" id="waiver-link-footer">Read full waiver</button>
-                        <label class="theme-switch theme-switch-inline" for="theme-toggle" aria-label="Toggle dark mode">
-                            <input type="checkbox" id="theme-toggle" role="switch" aria-label="Toggle dark mode">
-                            <span class="theme-switch-track" aria-hidden="true">
-                                <span class="theme-switch-thumb"></span>
-                            </span>
-                        </label>
-                    </div>
+                    <button type="button" class="secondary-button secondary-button-outline" id="waiver-link-footer">Read full waiver</button>
                 </div>
             </section>
 

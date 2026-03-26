@@ -1279,40 +1279,123 @@ select:focus {
     gap: 12px;
     margin: 0;
     margin-top: 24px;
-    padding: 0;
+    padding: 18px 0 0;
     border-radius: 0;
     background: transparent;
     border: 0;
     box-shadow: none;
     backdrop-filter: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.consent-copy-block {
+    display: grid;
+    gap: 6px;
+}
+
+.consent-kicker {
+    margin: 0;
+    color: color-mix(in srgb, var(--text) 62%, var(--muted) 38%);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.consent-copy {
+    max-width: 58ch;
+    font-size: 0.92rem;
+    line-height: 1.68;
 }
 
 .checkbox-row {
     display: flex;
     align-items: flex-start;
     gap: 12px;
-    padding-top: 4px;
+    padding: 8px 0 0;
 }
 
 .checkbox-row input {
-    width: 18px;
-    height: 18px;
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
     margin-top: 2px;
-    accent-color: var(--accent);
+    flex: 0 0 20px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(255, 255, 255, 0.03);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    cursor: pointer;
+    transition: border-color var(--motion-fast) ease, background-color var(--motion-fast) ease, box-shadow var(--motion-fast) ease, transform var(--motion-fast) ease;
+}
+
+.checkbox-row input:hover {
+    border-color: rgba(255, 255, 255, 0.24);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.checkbox-row input:focus-visible {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(0, 245, 212, 0.14);
+}
+
+.checkbox-row input:checked {
+    border-color: rgba(255, 255, 255, 0.14);
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='white' d='M6.55 11.35 3.2 8l1.06-1.06 2.29 2.3 5.19-5.2L12.8 5.1z'/%3E%3C/svg%3E") center / 13px 13px no-repeat,
+        linear-gradient(135deg, var(--accent), var(--accent-strong));
+    box-shadow: 0 8px 18px rgba(18, 194, 255, 0.16);
 }
 
 .checkbox-row span {
-    line-height: 1.65;
+    display: grid;
+    gap: 3px;
+    line-height: 1.6;
     color: var(--text);
+}
+
+.checkbox-row span strong {
+    color: var(--text);
+    font-size: 0.92rem;
+    font-weight: 700;
+    line-height: 1.45;
+}
+
+.checkbox-row span small {
+    color: var(--muted);
+    font-size: 0.8rem;
+    line-height: 1.5;
+}
+
+.consent-footnote {
+    position: relative;
+    max-width: 60ch;
+    padding-top: 10px;
+    color: color-mix(in srgb, var(--muted) 88%, var(--text) 12%);
+    font-size: 0.78rem;
+    line-height: 1.6;
+}
+
+.consent-footnote::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 28px;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.24), transparent);
 }
 
 .text-button {
     padding: 0;
     border: 0;
     background: none;
-    color: var(--accent-strong);
+    color: color-mix(in srgb, var(--accent-strong) 82%, white 18%);
     font-weight: 700;
     text-decoration: underline;
+    text-decoration-thickness: 1px;
     text-underline-offset: 0.18em;
 }
 
@@ -1424,7 +1507,6 @@ select:focus {
     background: transparent;
     border: 0;
     border-radius: 0;
-    box-shadow: none;
     box-shadow: none;
 }
 
@@ -1706,7 +1788,7 @@ select:focus {
     position: relative;
     display: block;
     margin-top: 32px;
-    padding: 34px;
+    padding: 26px;
     border-radius: var(--radius-lg);
     background:
         radial-gradient(circle at top left, rgba(0, 245, 212, 0.14), transparent 28%),
@@ -1728,31 +1810,31 @@ select:focus {
 
 .journey-infographic-header {
     text-align: center;
-    margin-bottom: 40px;
+    margin-bottom: 24px;
     position: relative;
     z-index: 1;
 }
 
 .journey-infographic-header h3 {
-    margin: 8px 0 12px;
-    font-size: clamp(1.8rem, 3vw, 2.4rem);
+    margin: 6px 0 8px;
+    font-size: clamp(1.55rem, 2.6vw, 2.05rem);
     font-weight: 600;
     color: var(--text);
 }
 
 .journey-infographic-header p {
-    max-width: 600px;
+    max-width: 640px;
     margin: 0 auto;
     color: var(--muted);
-    font-size: 1.1rem;
-    line-height: 1.6;
+    font-size: 0.98rem;
+    line-height: 1.55;
 }
 
 .journey-steps-container {
     position: relative;
     max-width: 1080px;
     margin: 0 auto;
-    padding: 18px;
+    padding: 14px;
     border-radius: calc(var(--radius-lg) + 2px);
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.015));
     border: 1px solid rgba(255, 255, 255, 0.05);
@@ -1761,9 +1843,9 @@ select:focus {
 .journey-steps-container::before {
     content: '';
     position: absolute;
-    left: 42px;
-    right: 42px;
-    top: 49px;
+    left: 34px;
+    right: 34px;
+    top: 39px;
     height: 1px;
     background: linear-gradient(90deg, rgba(0, 245, 212, 0.18), rgba(18, 194, 255, 0.26), rgba(140, 255, 102, 0.18));
     opacity: 0.8;
@@ -1772,7 +1854,7 @@ select:focus {
 .journey-steps-infographic {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 24px;
+    gap: 14px;
     list-style: none;
     padding: 0;
     margin: 0;
@@ -1846,8 +1928,8 @@ select:focus {
 .journey-step {
     position: relative;
     display: grid;
-    gap: 10px;
-    padding: 24px 22px 22px;
+    gap: 8px;
+    padding: 18px 18px 17px;
     border-radius: var(--radius-lg);
     background:
         radial-gradient(circle at top right, rgba(18, 194, 255, 0.12), transparent 36%),
@@ -1871,13 +1953,13 @@ select:focus {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 38px;
-    height: 38px;
-    margin-bottom: 12px;
+    width: 32px;
+    height: 32px;
+    margin-bottom: 8px;
     border-radius: 999px;
     background: linear-gradient(135deg, rgba(0, 245, 212, 0.22), rgba(18, 194, 255, 0.18));
     color: #f3f0ff;
-    font-size: 0.8rem;
+    font-size: 0.72rem;
     font-weight: 800;
     letter-spacing: 0.08em;
     border: 1px solid rgba(255, 255, 255, 0.12);
@@ -1885,59 +1967,78 @@ select:focus {
 
 .journey-step strong {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 2px;
     color: #f3fffd;
-    font-size: 1.02rem;
+    font-size: 0.95rem;
     letter-spacing: -0.01em;
-    line-height: 1.35;
+    line-height: 1.32;
 }
 
 .journey-step span {
     color: var(--muted);
-    font-size: 0.9rem;
-    line-height: 1.7;
+    font-size: 0.84rem;
+    line-height: 1.58;
+}
+
+.studio-section .section-heading {
+    max-width: 62ch;
+    margin: 0 auto 28px;
+    text-align: center;
 }
 
 .studio-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 520px));
+    grid-template-columns: repeat(2, minmax(320px, 1fr));
     justify-content: center;
-    gap: 18px;
+    gap: 22px;
 }
 
 .studio-card {
+    display: grid;
+    grid-template-rows: auto 1fr;
     overflow: hidden;
     border-radius: var(--radius-lg);
     border: 1px solid var(--line);
-    background: var(--surface-strong);
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.02));
     backdrop-filter: blur(18px);
+    box-shadow: var(--shadow-sm);
 }
 
 .studio-map-shell {
     position: relative;
+    display: grid;
+    grid-template-rows: minmax(210px, auto) auto;
+    gap: 14px;
     width: 100%;
-    height: 200px;
-    background: rgba(10, 16, 31, 0.9);
+    height: auto;
+    padding: 16px 16px 0;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0));
 }
 
 .studio-map-frame {
     width: 100%;
     height: 100%;
     border: 0;
+    min-height: 210px;
+    border-radius: calc(var(--radius-lg) - 6px);
     filter: saturate(1.02) contrast(1.02);
+    box-shadow: 0 12px 24px rgba(2, 6, 23, 0.18);
 }
 
 .studio-map-overlay {
-    position: absolute;
-    inset: auto 16px 16px 16px;
+    position: relative;
+    inset: auto;
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    gap: 12px;
-    padding: 14px;
+    gap: 16px;
+    padding: 16px;
+    margin: 0;
     border-radius: var(--radius-md);
-    background: var(--map-overlay-bg);
-    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.02));
+    border: 1px solid rgba(255, 255, 255, 0.08);
     backdrop-filter: blur(18px);
 }
 
@@ -1947,11 +2048,11 @@ select:focus {
 }
 
 .studio-map-address {
-    margin: 6px 0 0;
+    margin: 8px 0 0;
     color: var(--muted);
-    font-size: 0.8rem;
-    line-height: 1.4;
-    max-width: 250px;
+    font-size: 0.84rem;
+    line-height: 1.55;
+    max-width: 34ch;
 }
 
 .studio-map-badge {
@@ -1960,8 +2061,8 @@ select:focus {
     min-height: 30px;
     padding: 6px 10px;
     border-radius: 999px;
-    background: rgba(76, 156, 244, 0.18);
-    color: color-mix(in srgb, var(--text) 82%, #003659 18%);
+    background: rgba(255, 255, 255, 0.06);
+    color: color-mix(in srgb, var(--text) 86%, var(--muted) 14%);
     font-size: 0.75rem;
     font-weight: 700;
     letter-spacing: 0.08em;
@@ -2013,8 +2114,9 @@ select:focus {
 
 .studio-copy {
     display: grid;
-    gap: 14px;
-    padding: 24px;
+    gap: 16px;
+    padding: 20px 24px 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .studio-copy h3 {
@@ -2024,7 +2126,8 @@ select:focus {
 
 .studio-meta {
     display: grid;
-    gap: 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px 18px;
 }
 
 .studio-meta div {
@@ -2043,7 +2146,7 @@ select:focus {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    margin-top: 4px;
+    margin-top: 6px;
 }
 
 .studio-link {
@@ -2065,6 +2168,8 @@ select:focus {
     position: relative;
     text-align: left;
     overflow: hidden;
+    display: grid;
+    gap: 0;
 }
 
 .faq-section::before,
@@ -2104,6 +2209,11 @@ select:focus {
     line-height: 0.98;
 }
 
+.faq-section .section-heading p:last-child {
+    max-width: 58ch;
+    margin: 0 auto;
+}
+
 .section-heading-center {
     text-align: center;
     max-width: 600px;
@@ -2129,6 +2239,10 @@ select:focus {
     gap: 20px;
     align-items: start;
     margin-top: 26px;
+    padding: 24px;
+    border-radius: 28px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.015));
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .faq-preview-panel {
@@ -2162,8 +2276,8 @@ select:focus {
 
 .faq-preview-panel h3 {
     margin: 0;
-    font-size: clamp(1.45rem, 2.2vw, 1.9rem);
-    line-height: 1.12;
+    font-size: clamp(1.32rem, 2vw, 1.72rem);
+    line-height: 1.18;
     letter-spacing: -0.03em;
     color: var(--text);
 }
@@ -2215,6 +2329,7 @@ select:focus {
     margin: 0;
     text-align: left;
     counter-reset: faq-preview-items;
+    padding-top: 4px;
 }
 
 .faq-list {
@@ -2231,6 +2346,11 @@ select:focus {
     overflow: hidden;
     backdrop-filter: blur(14px);
     transition: border-color var(--motion-fast) ease, box-shadow var(--motion-fast) ease, transform var(--motion-fast) ease, background-color var(--motion-fast) ease;
+}
+
+.faq-item:hover {
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 16px 30px rgba(0, 0, 0, 0.16);
 }
 
 .faq-preview .faq-item {
@@ -2296,7 +2416,7 @@ select:focus {
     min-width: 0;
     text-align: left;
     font-weight: 800;
-    line-height: 1.38;
+    line-height: 1.44;
     letter-spacing: -0.01em;
     color: var(--text);
 }
@@ -2620,6 +2740,10 @@ select:focus {
     margin-top: 28px;
     padding-top: 18px;
     border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.faq-section .section-actions-center {
+    gap: 12px;
 }
 
 .modal-close {
@@ -3151,6 +3275,11 @@ html[data-theme="light"] .faq-preview-panel {
     border-color: rgba(24, 49, 83, 0.08);
 }
 
+html[data-theme="light"] .faq-preview-shell {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(249, 246, 255, 0.88));
+    border-color: rgba(24, 49, 83, 0.08);
+}
+
 html[data-theme="light"] .faq-section::before,
 html[data-theme="light"] .faq-section::after {
     display: none;
@@ -3181,6 +3310,39 @@ html[data-theme="light"] .faq-preview-points li {
     color: #21406d;
 }
 
+html[data-theme="light"] .studio-card {
+    box-shadow: 0 14px 28px rgba(17, 38, 77, 0.08);
+}
+
+html[data-theme="light"] .studio-map-shell {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(248, 244, 255, 0));
+}
+
+html[data-theme="light"] .studio-map-overlay {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(246, 242, 250, 0.9));
+    border-color: rgba(24, 49, 83, 0.08);
+}
+
+html[data-theme="light"] .studio-map-badge {
+    background: rgba(24, 49, 83, 0.05);
+    color: #385179;
+}
+
+html[data-theme="light"] .checkbox-row input {
+    border-color: rgba(24, 49, 83, 0.16);
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+}
+
+html[data-theme="light"] .checkbox-row input:hover {
+    border-color: rgba(24, 49, 83, 0.24);
+    background: rgba(255, 255, 255, 0.98);
+}
+
+html[data-theme="light"] .checkbox-row input:focus-visible {
+    box-shadow: 0 0 0 4px rgba(75, 95, 215, 0.12);
+}
+
 html[data-theme="light"] .faq-preview .faq-item {
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 245, 251, 0.9));
 }
@@ -3204,6 +3366,34 @@ html[data-theme="light"] .consent-card {
     border: 0;
     box-shadow: none;
     backdrop-filter: none;
+    border-top: 1px solid rgba(24, 49, 83, 0.08);
+}
+
+html[data-theme="light"] .consent-kicker {
+    color: #64789c;
+}
+
+html[data-theme="light"] .checkbox-row input {
+    border-color: rgba(24, 49, 83, 0.16);
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+}
+
+html[data-theme="light"] .checkbox-row input:hover {
+    border-color: rgba(24, 49, 83, 0.24);
+    background: rgba(255, 255, 255, 0.98);
+}
+
+html[data-theme="light"] .checkbox-row input:focus-visible {
+    box-shadow: 0 0 0 4px rgba(75, 95, 215, 0.12);
+}
+
+html[data-theme="light"] .consent-footnote {
+    color: #6a7b97;
+}
+
+html[data-theme="light"] .consent-footnote::before {
+    background: linear-gradient(90deg, rgba(24, 49, 83, 0.2), transparent);
 }
 
 /* Light theme FAQ answer styling */
@@ -3307,6 +3497,7 @@ html[data-theme="light"] .faq-item summary:hover {
 
     .faq-preview-shell {
         grid-template-columns: 1fr;
+        padding: 20px;
     }
 
     .faq-preview-panel {
@@ -3327,8 +3518,8 @@ html[data-theme="light"] .faq-item summary:hover {
     }
 
     .journey-steps-container::before {
-        left: 32px;
-        right: 32px;
+        left: 28px;
+        right: 28px;
     }
 
     .policy-panel {
@@ -3404,10 +3595,10 @@ html[data-theme="light"] .faq-item summary:hover {
     }
 
     .studio-map-overlay {
-        inset: auto 12px 12px 12px;
         flex-direction: column;
         align-items: stretch;
         gap: 16px;
+        padding: 14px;
     }
 
     .studio-map-location {
@@ -3432,7 +3623,8 @@ html[data-theme="light"] .faq-item summary:hover {
     }
 
     .studio-map-shell {
-        height: 180px;
+        grid-template-rows: minmax(180px, auto) auto;
+        padding: 12px 12px 0;
     }
 
     .content-section {
@@ -3478,6 +3670,10 @@ html[data-theme="light"] .faq-item summary:hover {
         max-width: 280px;
     }
 
+    .consent-footnote {
+        padding-left: 0;
+    }
+
     .faq-section-group {
         padding: 18px;
     }
@@ -3496,6 +3692,10 @@ html[data-theme="light"] .faq-item summary:hover {
 
     .faq-preview .faq-answer {
         padding-left: 20px;
+    }
+
+    .studio-meta {
+        grid-template-columns: 1fr;
     }
 
     .section-actions-center {
