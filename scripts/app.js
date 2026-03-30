@@ -2238,7 +2238,7 @@ Are there specific housekeeping rules for the studio?	Yes, the SOP includes deta
         message += "\nPlease help me complete my booking. Thank you!";
         
         const encodedMessage = encodeURIComponent(message);
-        const whatsappUrl = `https://wa.me/919769570178?text=${encodedMessage}`;
+        const whatsappUrl = `https://wa.me/919769076411?text=${encodedMessage}`;
         
         window.open(whatsappUrl, '_blank');
     }
@@ -2467,9 +2467,12 @@ Are there specific housekeeping rules for the studio?	Yes, the SOP includes deta
     }
 
     if (payButton) {
-        payButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            createCheckoutSession();
+        payButton.addEventListener('click', function() {
+            const paymentSuccess = true; // Replace with actual payment logic
+
+            if (paymentSuccess) {
+                form.submit();
+            }
         });
     }
 
