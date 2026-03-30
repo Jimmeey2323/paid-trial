@@ -59,6 +59,7 @@
     const heroHeadlineStorageKey = 'trial_form_last_headline_index';
     const checkoutStateStorageKey = 'trial_form_checkout_state_v1';
     const paymentSessionStorageKey = 'trial_form_payment_session_id';
+    const paymentSubmitPayloadKey = 'trial_form_submit_payload';
 
     const modalOpeners = [
         { button: document.getElementById('waiver-link'), modal: waiverModal },
@@ -211,6 +212,7 @@
     function clearCheckoutState() {
         try {
             window.sessionStorage.removeItem(checkoutStateStorageKey);
+            window.sessionStorage.removeItem(paymentSubmitPayloadKey);
             clearStoredPaymentSession();
         } catch (error) {
             // Storage can be unavailable.
@@ -251,7 +253,6 @@
             email: document.getElementById('email')?.value || '',
             phoneNumber: phoneNumberInput?.value || '',
             phoneCountry: phoneCountryInput?.value || 'IN',
-            time: document.getElementById('time')?.value || '',
             center: centerSelect?.value || '',
             type: selectedType?.value || '',
             stage: getSelectedPaymentStage(),
@@ -269,7 +270,6 @@
         const firstNameField = document.getElementById('firstName');
         const lastNameField = document.getElementById('lastName');
         const emailField = document.getElementById('email');
-        const timeField = document.getElementById('time');
         const waiverField = document.getElementById('waiverAccepted');
 
         if (firstNameField) {
@@ -290,12 +290,9 @@
         if (phoneInputController && state.phoneCountry) {
             phoneInputController.setCountry(String(state.phoneCountry).toLowerCase());
         }
-        if (timeField) {
-            timeField.value = state.time || '';
-        }
         if (centerSelect && state.center) {
             centerSelect.value = state.center;
-            renderClassOptions(state.center);
+            filterClassOptionsByCenter(state.center);
         }
         if (state.type) {
             const optionInput = form.querySelector(`input[name="type"][value="${CSS.escape(state.type)}"]`);
@@ -312,8 +309,8 @@
         currentEventId = state.eventId || currentEventId;
     }
 
-    function buildLeadPayloadFromForm() {
-        if (!validateLeadForm()) {
+    function buildLeadPayloadFromForm({ skipValidation = false } = {}) {
+        if (!skipValidation && !validateLeadForm()) {
             return null;
         }
 
@@ -1494,20 +1491,13 @@ Are there specific housekeeping rules for the studio?	Yes, the SOP includes deta
     }
 
     function renderClassOptions(center) {
-        const options = content.classOptionsByStudio[center] || [];
-        const hasOptions = options.length > 0;
-
-        if (!hasOptions) {
-            classOptionsSection.hidden = true;
-            classOptionGrid.innerHTML = '';
-            renderHeroSignals(false);
-            renderFormatModal();
-            return;
-        }
+        // Always use the full option set (Kwality House has all formats)
+        const fullSetCenter = 'Kwality House, Kemps Corner';
+        const options = content.classOptionsByStudio[fullSetCenter] || [];
 
         classOptionsSection.hidden = false;
         renderHeroSignals(true);
-        renderFormatModal(center);
+        renderFormatModal(center || fullSetCenter);
         classOptionGrid.innerHTML = options.map((option) => `
             <article class="choice-card" data-option-value="${option.value}" role="radio" aria-checked="false">
                 <input type="radio" name="type" value="${option.value}" required>
@@ -1531,7 +1521,7 @@ Are there specific housekeeping rules for the studio?	Yes, the SOP includes deta
         `).join('');
 
         classOptionGrid.setAttribute('role', 'radiogroup');
-        classOptionGrid.setAttribute('data-center', center);
+        classOptionGrid.setAttribute('data-center', center || fullSetCenter);
 
         classOptionGrid.querySelectorAll('.choice-card').forEach((card) => {
             const input = card.querySelector('input[name="type"]');
@@ -1565,8 +1555,31 @@ Are there specific housekeeping rules for the studio?	Yes, the SOP includes deta
             input.addEventListener('change', updateSelectedClassState);
         });
 
+        // Apply center filter if a center is already selected
+        if (center) {
+            filterClassOptionsByCenter(center);
+        }
+
         // Ensure function updates properly
         setTimeout(updateSelectedClassState, 50);
+    }
+
+    function filterClassOptionsByCenter(center) {
+        const isSupreme = center === 'Supreme Headquarters, Bandra';
+        classOptionGrid.querySelectorAll('.choice-card').forEach((card) => {
+            const optionValue = card.getAttribute('data-option-value');
+            if (optionValue === 'Strength Lab' && isSupreme) {
+                card.hidden = true;
+                // Deselect if it was selected
+                const input = card.querySelector('input[name="type"]');
+                if (input?.checked) {
+                    input.checked = false;
+                    updateSelectedClassState();
+                }
+            } else {
+                card.hidden = false;
+            }
+        });
     }
 
     function getFieldErrorConfig(fieldName) {
@@ -1586,10 +1599,6 @@ Are there specific housekeeping rules for the studio?	Yes, the SOP includes deta
             phoneNumber: {
                 field: () => document.getElementById('phoneNumber'),
                 container: () => document.getElementById('phoneNumber')?.closest('.field-group')
-            },
-            time: {
-                field: () => document.getElementById('time'),
-                container: () => document.getElementById('time')?.closest('.field-group')
             },
             center: {
                 field: () => document.getElementById('center'),
@@ -1682,7 +1691,7 @@ Are there specific housekeeping rules for the studio?	Yes, the SOP includes deta
     }
 
     function clearFieldErrors() {
-        ['firstName', 'lastName', 'email', 'phoneNumber', 'time', 'center', 'type', 'stage', 'waiverAccepted'].forEach(clearFieldError);
+        ['firstName', 'lastName', 'email', 'phoneNumber', 'center', 'type', 'stage', 'waiverAccepted'].forEach(clearFieldError);
 
         if (phoneNumberInput) {
             phoneNumberInput.setCustomValidity('');
@@ -1712,7 +1721,6 @@ Are there specific housekeeping rules for the studio?	Yes, the SOP includes deta
         const firstNameField = document.getElementById('firstName');
         const lastNameField = document.getElementById('lastName');
         const emailField = document.getElementById('email');
-        const timeField = document.getElementById('time');
         const centerField = document.getElementById('center');
         const waiverField = document.getElementById('waiverAccepted');
         const selectedType = form.querySelector('input[name="type"]:checked');
@@ -1736,10 +1744,6 @@ Are there specific housekeeping rules for the studio?	Yes, the SOP includes deta
             errors.phoneNumber = 'Enter your phone number.';
         } else if (!validatePhoneField()) {
             errors.phoneNumber = 'Enter a valid phone number for the selected country.';
-        }
-
-        if (!timeField?.value) {
-            errors.time = 'Select a realistic class window.';
         }
 
         if (!centerField?.value) {
@@ -2138,23 +2142,7 @@ Are there specific housekeeping rules for the studio?	Yes, the SOP includes deta
         window.setTimeout(() => confettiLayer.remove(), 4200);
     }
 
-    async function handleSubmit(event) {
-        event.preventDefault();
-        clearStatus();
-        clearFieldErrors();
-
-        if (!paymentConfirmed || !paymentSessionId) {
-            showStatus(`Please complete the payment of ${getPaymentStageConfig().amountDisplay || tracking.appConfig?.paymentAmountDisplay || '₹1,838'} before submitting your request.`, 'error');
-            return;
-        }
-
-        const payload = buildLeadPayloadFromForm();
-        if (!payload) {
-            return;
-        }
-
-        payload.payment_session_id = paymentSessionId;
-
+    async function submitLeadToApi(payload) {
         setSubmitting(true);
         showStatus('Submitting your request and securing the next step.', 'success');
 
@@ -2197,6 +2185,30 @@ Are there specific housekeeping rules for the studio?	Yes, the SOP includes deta
             showStatus('We could not complete the request right now. Please try again in a moment.', 'error');
             setSubmitting(false);
         }
+    }
+
+    async function handleSubmit(event) {
+        event.preventDefault();
+        clearStatus();
+        clearFieldErrors();
+
+        if (!validateLeadForm()) {
+            return;
+        }
+
+        if (!paymentConfirmed || !paymentSessionId) {
+            showStatus(`Please complete the payment of ${getPaymentStageConfig().amountDisplay || tracking.appConfig?.paymentAmountDisplay || '₹1,838'} before submitting your request.`, 'error');
+            return;
+        }
+
+        const payload = buildLeadPayloadFromForm({ skipValidation: true });
+        if (!payload) {
+            return;
+        }
+
+        payload.payment_session_id = paymentSessionId;
+
+        await submitLeadToApi(payload);
     }
 
     renderHeroHeadline();
@@ -2246,8 +2258,11 @@ Are there specific housekeeping rules for the studio?	Yes, the SOP includes deta
     restoreCheckoutState();
     setPaymentState(false);
 
+    // Render all class options on page load (always visible)
+    renderClassOptions(null);
+
     centerSelect.addEventListener('change', () => {
-        renderClassOptions(centerSelect.value);
+        filterClassOptionsByCenter(centerSelect.value);
         clearStatus();
         updatePayButtonState();
     });
@@ -2369,6 +2384,11 @@ Are there specific housekeeping rules for the studio?	Yes, the SOP includes deta
             eventId: currentEventId || tracking.createEventId()
         });
 
+        // Cache the validated payload so auto-submit can use it on return from Stripe
+        try {
+            window.sessionStorage.setItem(paymentSubmitPayloadKey, JSON.stringify(payload));
+        } catch (e) { /* storage may be unavailable */ }
+
         try {
             setPaymentProcessing(true);
             const resp = await fetch(tracking.buildApiUrl('/api/create-checkout-session'), {
@@ -2406,24 +2426,31 @@ Are there specific housekeeping rules for the studio?	Yes, the SOP includes deta
             if (resp.ok && data.paid && data.fulfilled) {
                 applyPaymentStage(data.stage || getSelectedPaymentStage(), { resetPayment: false, persist: true });
                 setPaymentState(true, data.paymentSessionId || sessionId);
-                showStatus('Payment confirmed and your Momence package has been prepared — you can now submit your request.', 'success');
 
-                // Auto-submit the form if all validations pass
-                setTimeout(() => {
-                    try {
-                        // Check if form is valid using the same logic as handleSubmit
-                        const payload = buildLeadPayloadFromForm();
-                        if (payload && paymentConfirmed && paymentSessionId) {
-                            showStatus('Payment confirmed! Submitting your request now...', 'success');
-                            handleSubmit(new Event('submit')); // Automatically submit the form
+                // Auto-submit using the payload cached before the Stripe redirect
+                try {
+                    const stored = window.sessionStorage.getItem(paymentSubmitPayloadKey);
+                    const cachedPayload = stored ? JSON.parse(stored) : null;
+
+                    if (cachedPayload) {
+                        cachedPayload.payment_session_id = data.paymentSessionId || sessionId;
+                        showStatus('Payment confirmed! Submitting your request now…', 'success');
+                        await submitLeadToApi(cachedPayload);
+                    } else {
+                        // Fallback: try to build from the restored form state
+                        const livePayload = buildLeadPayloadFromForm({ skipValidation: true });
+                        if (livePayload) {
+                            livePayload.payment_session_id = data.paymentSessionId || sessionId;
+                            showStatus('Payment confirmed! Submitting your request now…', 'success');
+                            await submitLeadToApi(livePayload);
                         } else {
-                            showStatus('Payment confirmed! Please complete the form and click submit.', 'success');
+                            showStatus('Payment confirmed! Please click "Reserve my trial" to complete your booking.', 'success');
                         }
-                    } catch (error) {
-                        console.error('Auto-submit failed:', error);
-                        showStatus('Payment confirmed! Please click submit to complete your request.', 'success');
                     }
-                }, 500);
+                } catch (autoSubmitErr) {
+                    console.error('Auto-submit failed:', autoSubmitErr);
+                    showStatus('Payment confirmed! Please click "Reserve my trial" to complete your booking.', 'success');
+                }
 
                 return true;
             }

@@ -911,35 +911,34 @@ select:focus {
 
 .choice-fieldset {
     margin: 0;
-    margin-top: 32px;
-    padding: 32px 24px 24px;
-    border: 2px solid rgba(0, 245, 212, 0.18);
-    border-radius: var(--radius-lg);
-    background: linear-gradient(135deg,
-        rgba(0, 245, 212, 0.06),
-        rgba(18, 194, 255, 0.05)
-    );
-    backdrop-filter: blur(18px);
+    margin-top: 28px;
+    padding: 24px;
+    border: 1.5px solid rgba(0, 82, 204, 0.14);
+    border-radius: 14px;
+    background: rgba(240, 246, 255, 0.35);
+    backdrop-filter: blur(12px);
     position: relative;
 }
 
 .choice-fieldset legend {
-    padding: 8px 16px;
-    margin-bottom: 8px;
-    background: var(--bg);
-    border-radius: var(--radius-sm);
-    border: 2px solid var(--accent);
-    color: var(--text);
+    padding: 6px 14px;
+    margin-bottom: 6px;
+    background: white;
+    border-radius: 8px;
+    border: 1.5px solid rgba(0, 82, 204, 0.2);
+    color: #1a2a4a;
     font-weight: 700;
-    font-size: 1.05rem;
+    font-size: 0.95rem;
+    letter-spacing: -0.01em;
     position: relative;
+    box-shadow: 0 1px 4px rgba(0, 82, 204, 0.08);
 }
 
 .choice-fieldset .field-note {
-    font-size: 0.9rem;
-    color: var(--muted);
-    margin: 8px 0 20px 0;
-    line-height: 1.6;
+    font-size: 0.875rem;
+    color: #4a6fa5;
+    margin: 6px 0 16px 0;
+    line-height: 1.55;
 }
 
 .payment-stage-fieldset {
@@ -1143,35 +1142,33 @@ select:focus {
 
 .class-option-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 20px;
-    margin-top: 24px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-top: 20px;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 640px) {
     .class-option-grid {
         grid-template-columns: 1fr;
-        gap: 16px;
+        gap: 14px;
     }
 }
 
 .choice-card {
     position: relative;
-    display: grid;
-    gap: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
     min-height: 0;
     width: 100%;
-    padding: 24px;
+    padding: 20px;
     border-radius: 12px;
-    border: 1px solid rgba(0, 82, 204, 0.12);
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(240, 248, 255, 0.4) 100%);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    backdrop-filter: blur(20px);
-    overflow: visible;
+    border: 1.5px solid rgba(0, 82, 204, 0.12);
+    background: white;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    overflow: hidden;
     cursor: pointer;
-    box-shadow: 
-        0 1px 3px rgba(0, 0, 0, 0.06),
-        0 4px 12px rgba(0, 82, 204, 0.08);
+    box-shadow: 0 1px 4px rgba(0, 82, 204, 0.07);
 }
 
 .choice-card::before {
@@ -1179,32 +1176,26 @@ select:focus {
     position: absolute;
     inset: 0 auto 0 0;
     width: 0;
-    background: linear-gradient(90deg, #0052cc, #0052cc);
+    background: #0052cc;
     border-radius: 12px 0 0 12px;
-    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: width 0.3s ease;
 }
 
 .choice-card:hover {
-    transform: translateY(-4px);
-    border-color: rgba(0, 82, 204, 0.25);
-    box-shadow: 
-        0 8px 24px rgba(0, 82, 204, 0.15),
-        0 1px 3px rgba(0, 0, 0, 0.08);
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(230, 242, 255, 0.6) 100%);
+    transform: translateY(-3px);
+    border-color: rgba(0, 82, 204, 0.28);
+    box-shadow: 0 6px 20px rgba(0, 82, 204, 0.13);
 }
 
 .choice-card.is-muted {
-    opacity: 0.48;
-    filter: grayscale(0.25);
-    transform: scale(0.98);
-    box-shadow: 
-        0 1px 2px rgba(0, 0, 0, 0.04),
-        0 2px 6px rgba(0, 82, 204, 0.04);
+    opacity: 0.45;
+    filter: grayscale(0.2);
+    pointer-events: none;
 }
 
 .choice-card input {
     position: absolute;
-    inset: 22px 22px auto auto;
+    inset: 18px 18px auto auto;
     width: 18px;
     height: 18px;
     accent-color: #0052cc;
@@ -1214,10 +1205,8 @@ select:focus {
 
 .choice-card.is-selected {
     border-color: #0052cc;
-    box-shadow: 
-        0 8px 28px rgba(0, 82, 204, 0.18),
-        0 1px 3px rgba(0, 0, 0, 0.1);
-    background: linear-gradient(135deg, rgba(0, 82, 204, 0.08) 0%, rgba(30, 144, 255, 0.05) 100%);
+    background: linear-gradient(160deg, #f0f6ff 0%, #e8f0fe 100%);
+    box-shadow: 0 4px 20px rgba(0, 82, 204, 0.14);
 }
 
 .choice-card.is-selected::after {
@@ -1251,44 +1240,35 @@ select:focus {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 44px;
-    height: 44px;
+    width: 40px;
+    height: 40px;
     border-radius: 10px;
-    border: 1.5px solid rgba(0, 82, 204, 0.15);
-    background: linear-gradient(135deg, rgba(0, 82, 204, 0.08), rgba(30, 144, 255, 0.04));
-    font-size: 1.25rem;
-    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.6), 0 2px 6px rgba(0, 82, 204, 0.08);
-    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 82, 204, 0.14);
+    background: linear-gradient(135deg, #eef4ff, #dde9ff);
+    font-size: 1.2rem;
+    flex-shrink: 0;
 }
 
 .choice-card-badge {
     display: inline-flex;
     align-items: center;
-    min-height: 30px;
-    padding: 6px 10px;
+    padding: 4px 9px;
     border-radius: 6px;
-    background: linear-gradient(135deg, rgba(0, 82, 204, 0.12), rgba(30, 144, 255, 0.08));
+    background: #eef4ff;
     color: #0052cc;
-    font-size: 0.72rem;
+    font-size: 0.68rem;
     font-weight: 700;
     letter-spacing: 0.04em;
     text-transform: uppercase;
     white-space: nowrap;
-    border: 1px solid rgba(0, 82, 204, 0.15);
+    border: 1px solid rgba(0, 82, 204, 0.14);
 }
 
 .choice-card-icon-with-badge {
-    display: inline-flex;
+    display: flex;
     align-items: center;
     gap: 10px;
-    width: fit-content;
-    max-width: 100%;
-    padding: 10px 14px;
-    border-radius: 10px;
-    background: linear-gradient(135deg, rgba(0, 82, 204, 0.06), rgba(30, 144, 255, 0.03));
-    border: 1px solid rgba(0, 82, 204, 0.12);
-    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.5);
-    transition: all 0.3s ease;
+    flex-wrap: wrap;
 }
 
 .choice-card-icon-with-badge-modal {
@@ -1296,14 +1276,8 @@ select:focus {
 }
 
 .choice-card:hover .choice-card-icon {
-    border-color: rgba(0, 82, 204, 0.3);
-    background: linear-gradient(135deg, rgba(0, 82, 204, 0.12), rgba(30, 144, 255, 0.08));
-    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.6), 0 4px 12px rgba(0, 82, 204, 0.12);
-}
-
-.choice-card:hover .choice-card-icon-with-badge {
-    border-color: rgba(0, 82, 204, 0.2);
-    background: linear-gradient(135deg, rgba(0, 82, 204, 0.1), rgba(30, 144, 255, 0.06));
+    border-color: rgba(0, 82, 204, 0.28);
+    background: linear-gradient(135deg, #dce9ff, #c8dcff);
 }
 
 .choice-card-selected-pill {
@@ -1312,31 +1286,30 @@ select:focus {
     margin-left: auto;
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    min-height: 28px;
-    padding: 6px 12px;
-    border-radius: 8px;
-    background: rgba(0, 82, 204, 0.08);
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: #eef4ff;
     border: 1px solid rgba(0, 82, 204, 0.15);
     color: #0052cc;
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     font-weight: 700;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
     opacity: 0;
-    transform: translateY(4px);
-    transition: opacity 0.25s ease, transform 0.25s ease, background 0.3s ease, color 0.3s ease;
+    transform: translateY(3px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
     white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .choice-card.is-selected .choice-card-selected-pill {
     opacity: 1;
     transform: translateY(0);
-    background: linear-gradient(135deg, #0052cc, #1e90ff);
+    background: #0052cc;
     border-color: #0052cc;
     color: white;
-    font-weight: 700;
-    box-shadow: 0 4px 12px rgba(0, 82, 204, 0.25);
+    box-shadow: 0 2px 8px rgba(0, 82, 204, 0.3);
 }
 
 .choice-card.is-selected .choice-card-selected-pill::before {
@@ -1361,8 +1334,8 @@ select:focus {
 .choice-card-title {
     margin: 0;
     max-width: 100%;
-    color: #1a2a4a;
-    font-size: 1.15rem;
+    color: #0f1d35;
+    font-size: 1.05rem;
     font-weight: 700;
     letter-spacing: -0.01em;
     line-height: 1.3;
@@ -1371,9 +1344,9 @@ select:focus {
 .choice-card-subtitle {
     margin: 0;
     color: #4a6fa5;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     line-height: 1.5;
-    font-weight: 500;
+    font-weight: 400;
 }
 
 .choice-card-summary {
@@ -2465,11 +2438,11 @@ select:focus {
     content: '';
     position: absolute;
     inset: auto 0 0;
-    height: 70%;
+    height: 50%;
     background: linear-gradient(180deg, 
         rgba(0, 0, 0, 0) 0%, 
-        rgba(0, 0, 0, 0.3) 40%,
-        rgba(0, 0, 0, 0.84) 100%);
+        rgba(0, 0, 0, 0.2) 40%,
+        rgba(0, 0, 0, 0.6) 100%);
     pointer-events: none;
     z-index: 2;
 }
@@ -2480,16 +2453,14 @@ select:focus {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center center;
-    transition: transform var(--motion-base) ease;
-    filter: brightness(1.1) contrast(1.05) saturate(1.1);
+    object-position: top center;
+    transition: none;
+    filter: brightness(1.05) contrast(1.02) saturate(1.05);
 }
 
 .hero-visual:hover img {
-    transform: scale(1.02);
+    transform: none;
 }
-
-/* Enhanced Booking Card */
 .booking-card {
     padding: 40px;
     border: 2px solid var(--line);

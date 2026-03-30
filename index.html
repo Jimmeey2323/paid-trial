@@ -80,18 +80,6 @@
                             </div>
 
                             <div class="field-group field-group-full">
-                                <label for="time">Most realistic class window <span aria-hidden="true">*</span></label>
-                                <select id="time" name="time" required>
-                                    <option value="" selected disabled>Select a time window</option>
-                                    <option value="Early Morning (6 AM - 9 AM)">Early Morning (6 AM - 9 AM)</option>
-                                    <option value="Mid-Morning (9 AM - 12 PM)">Mid-Morning (9 AM - 12 PM)</option>
-                                    <option value="Afternoon (12 PM - 4 PM)">Afternoon (12 PM - 4 PM)</option>
-                                    <option value="Evening (4 PM - 8 PM)">Evening (4 PM - 8 PM)</option>
-                                    <option value="Flexible / Needs Recommendation">Flexible / Needs Recommendation</option>
-                                </select>
-                            </div>
-
-                            <div class="field-group field-group-full">
                                 <div class="center-field-row">
                                     <div class="center-field">
                                         <label for="center">Preferred studio <span aria-hidden="true">*</span></label>
@@ -106,7 +94,7 @@
                             </div>
                         </div>
 
-                        <fieldset id="class-options" class="choice-fieldset" hidden>
+                        <fieldset id="class-options" class="choice-fieldset">
                             <legend>Choose your first format <span aria-hidden="true">*</span></legend>
                             <p class="field-note">Choose the format that feels right for your first visit.</p>
                             <div id="class-option-grid" class="class-option-grid"></div>
@@ -179,7 +167,7 @@
                                     before confirming your request.
                                 </p>
                             </div>
-                            <label class="checkbox-row" for="waiverAccepted">
+                            <label class="checkbox-row">
                                 <input type="checkbox" id="waiverAccepted" name="waiverAccepted" value="accepted" required>
                                 <span class="checkbox-control" aria-hidden="true"></span>
                                 <span class="checkbox-copy">
