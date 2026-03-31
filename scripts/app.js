@@ -1491,13 +1491,27 @@ Are there specific housekeeping rules for the studio?	Yes, the SOP includes deta
     }
 
     function renderClassOptions(center) {
-        // Always use the full option set (Kwality House has all formats)
-        const fullSetCenter = 'Kwality House, Kemps Corner';
-        const options = content.classOptionsByStudio[fullSetCenter] || [];
+        // Determine which options to show based on selected center
+        let options = [];
+        let optionsCenter;
+        
+        if (!center || center === 'Supreme Headquarters, Bandra') {
+            // If no center selected or Supreme selected, show only PowerCycle from Supreme
+            options = content.classOptionsByStudio['Supreme Headquarters, Bandra'] || [];
+            optionsCenter = 'Supreme Headquarters, Bandra';
+        } else if (center === 'Kwality House, Kemps Corner') {
+            // If Kwality House selected, show both options
+            options = content.classOptionsByStudio['Kwality House, Kemps Corner'] || [];
+            optionsCenter = 'Kwality House, Kemps Corner';
+        } else {
+            // Fallback for any other center
+            options = content.classOptionsByStudio[center] || [];
+            optionsCenter = center;
+        }
 
         classOptionsSection.hidden = false;
         renderHeroSignals(true);
-        renderFormatModal(center || fullSetCenter);
+        renderFormatModal(center || optionsCenter);
         classOptionGrid.innerHTML = options.map((option) => `
             <article class="choice-card" data-option-value="${option.value}" role="radio" aria-checked="false">
                 <input type="radio" name="type" value="${option.value}" required>
@@ -1521,7 +1535,7 @@ Are there specific housekeeping rules for the studio?	Yes, the SOP includes deta
         `).join('');
 
         classOptionGrid.setAttribute('role', 'radiogroup');
-        classOptionGrid.setAttribute('data-center', center || fullSetCenter);
+        classOptionGrid.setAttribute('data-center', center || optionsCenter);
 
         classOptionGrid.querySelectorAll('.choice-card').forEach((card) => {
             const input = card.querySelector('input[name="type"]');
@@ -1565,21 +1579,21 @@ Are there specific housekeeping rules for the studio?	Yes, the SOP includes deta
     }
 
     function filterClassOptionsByCenter(center) {
-        const isSupreme = center === 'Supreme Headquarters, Bandra';
-        classOptionGrid.querySelectorAll('.choice-card').forEach((card) => {
-            const optionValue = card.getAttribute('data-option-value');
-            if (optionValue === 'Strength Lab' && isSupreme) {
-                card.hidden = true;
-                // Deselect if it was selected
-                const input = card.querySelector('input[name="type"]');
-                if (input?.checked) {
-                    input.checked = false;
-                    updateSelectedClassState();
-                }
-            } else {
-                card.hidden = false;
+        // Re-render the options based on the selected center
+        // This ensures the correct options are shown for each studio
+        renderClassOptions(center);
+        
+        // Clear any previously selected option since the available options may have changed
+        const selectedInput = classOptionGrid.querySelector('input[name="type"]:checked');
+        if (selectedInput) {
+            const optionValue = selectedInput.value;
+            const isOptionAvailable = classOptionGrid.querySelector(`input[name="type"][value="${optionValue}"]`);
+            
+            if (!isOptionAvailable) {
+                // If the previously selected option is no longer available, clear the selection
+                updateSelectedClassState();
             }
-        });
+        }
     }
 
     function getFieldErrorConfig(fieldName) {
