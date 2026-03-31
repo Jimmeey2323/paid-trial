@@ -2,6 +2,7 @@ const crypto = require('crypto');
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
+const portfinder = require('portfinder');
 const GoogleSheetsService = require('./googleSheets');
 const SupabaseLeadStore = require('./supabaseService');
 const ScheduleService = require('./scheduleService');
@@ -1392,24 +1393,32 @@ app.get('/api/sheets/test', requireAdmin, async (req, res) => {
 });
 
 if (require.main === module) {
-  app.listen(PORT, async () => {
-    console.log(`Server is running on port ${PORT}`);
-    console.log(`Form: http://localhost:${PORT}`);
-    console.log(`Health: http://localhost:${PORT}/health`);
-
-    if (supabaseLeadStore.isConfigured) {
-      console.log(`Supabase lead storage enabled (${supabaseLeadStore.config.schema}.${supabaseLeadStore.config.submissionsTable})`);
-    } else {
-      console.log(`Supabase lead storage disabled: ${supabaseLeadStore.status.reason}`);
+  portfinder.basePort = process.env.PORT || 3000;
+  portfinder.getPort((err, availablePort) => {
+    if (err) {
+      console.error('Error finding available port:', err);
+      process.exit(1);
     }
 
-    if (googleSheets.isConfigured) {
-      console.log('Testing Google Sheets connection...');
-      const connected = await googleSheets.testConnection();
-      console.log(connected ? 'Google Sheets ready for automatic sync' : 'Google Sheets connection failed');
-    } else {
-      console.log('Google Sheets integration disabled. Set environment variables to enable.');
-    }
+    app.listen(availablePort, async () => {
+      console.log(`Server is running on port ${availablePort}`);
+      console.log(`Form: http://localhost:${availablePort}`);
+      console.log(`Health: http://localhost:${availablePort}/health`);
+
+      if (supabaseLeadStore.isConfigured) {
+        console.log(`Supabase lead storage enabled (${supabaseLeadStore.config.schema}.${supabaseLeadStore.config.submissionsTable})`);
+      } else {
+        console.log(`Supabase lead storage disabled: ${supabaseLeadStore.status.reason}`);
+      }
+
+      if (googleSheets.isConfigured) {
+        console.log('Testing Google Sheets connection...');
+        const connected = await googleSheets.testConnection();
+        console.log(connected ? 'Google Sheets ready for automatic sync' : 'Google Sheets connection failed');
+      } else {
+        console.log('Google Sheets integration disabled. Set environment variables to enable.');
+      }
+    });
   });
 }
 

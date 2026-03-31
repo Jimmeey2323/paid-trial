@@ -4,7 +4,8 @@
   "description": "Trial form with UTM tracking for Physique 57",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
   "keywords": [
     "form",
@@ -22,5 +23,9 @@
   },
   "engines": {
     "node": ">=18.x"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14",
+    "portfinder": "^1.0.38"
   }
 }
