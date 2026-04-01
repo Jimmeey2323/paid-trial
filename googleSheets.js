@@ -27,7 +27,6 @@ class GoogleSheetsService {
   initialize() {
     try {
       if (!this.isConfigured) {
-        console.log('ℹ️ Google Sheets API skipped: missing environment variables');
         return;
       }
 
@@ -44,10 +43,27 @@ class GoogleSheetsService {
 
       this.auth = oauth2Client;
       this.sheets = google.sheets({ version: 'v4', auth: oauth2Client });
-      
-      console.log('✅ Google Sheets API initialized successfully');
     } catch (error) {
-      console.error('❌ Failed to initialize Google Sheets API:', error.message);
+      console.error('Failed to initialize Google Sheets API:', error.message);
+    }
+  }
+
+  async hasLeadEvent(eventId) {
+    if (!this.sheets || !eventId) {
+      return false;
+    }
+
+    try {
+      const response = await this.sheets.spreadsheets.values.get({
+        spreadsheetId: this.spreadsheetId,
+        range: `${this.sheetName}!X:X`
+      });
+
+      const rows = response.data.values || [];
+      return rows.some((row) => String(row?.[0] || '').trim() === String(eventId).trim());
+    } catch (error) {
+      console.error('Unable to check Google Sheet for duplicate event ID:', error.message);
+      return false;
     }
   }
 
@@ -62,6 +78,14 @@ class GoogleSheetsService {
     }
 
     try {
+      if (leadData.event_id && await this.hasLeadEvent(leadData.event_id)) {
+        return {
+          success: true,
+          skipped: true,
+          reason: 'Lead already exists in Google Sheets for this event ID.'
+        };
+      }
+
       // Prepare row data in the correct order
       const row = [
         new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }), // Timestamp
@@ -86,12 +110,13 @@ class GoogleSheetsService {
         leadData.fbp || '',
         leadData.fbc || '',
         leadData.landing_page || '',
-        leadData.referrer || ''
+        leadData.referrer || '',
+        leadData.event_id || ''
       ];
 
       const request = {
         spreadsheetId: this.spreadsheetId,
-        range: `${this.sheetName}!A:W`, // Columns A through W
+        range: `${this.sheetName}!A:X`,
         valueInputOption: 'USER_ENTERED',
         insertDataOption: 'INSERT_ROWS',
         resource: {
@@ -100,16 +125,14 @@ class GoogleSheetsService {
       };
 
       const response = await this.sheets.spreadsheets.values.append(request);
-      
-      console.log(`✅ Lead appended to Google Sheet: ${leadData.firstName} ${leadData.lastName}`);
-      
+
       return {
         success: true,
         updatedRange: response.data.updates.updatedRange,
         updatedRows: response.data.updates.updatedRows
       };
     } catch (error) {
-      console.error('❌ Error appending to Google Sheet:', error.message);
+      console.error('Error appending to Google Sheet:', error.message);
       throw error;
     }
   }
@@ -147,12 +170,13 @@ class GoogleSheetsService {
         'Meta Browser ID (fbp)',
         'Meta Click ID (fbc)',
         'Landing Page',
-        'Referrer'
+        'Referrer',
+        'Event ID'
       ];
 
       const request = {
         spreadsheetId: this.spreadsheetId,
-        range: `${this.sheetName}!A1:W1`,
+        range: `${this.sheetName}!A1:X1`,
         valueInputOption: 'USER_ENTERED',
         resource: {
           values: [headers]
@@ -190,10 +214,9 @@ class GoogleSheetsService {
         }
       });
 
-      console.log('✅ Headers setup successfully');
       return { success: true };
     } catch (error) {
-      console.error('❌ Error setting up headers:', error.message);
+      console.error('Error setting up Google Sheets headers:', error.message);
       throw error;
     }
   }
@@ -211,11 +234,10 @@ class GoogleSheetsService {
       const response = await this.sheets.spreadsheets.get({
         spreadsheetId: this.spreadsheetId
       });
-      
-      console.log(`✅ Connected to spreadsheet: ${response.data.properties.title}`);
+
       return true;
     } catch (error) {
-      console.error('❌ Connection test failed:', error.message);
+      console.error('Google Sheets connection test failed:', error.message);
       return false;
     }
   }

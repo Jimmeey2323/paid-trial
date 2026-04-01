@@ -19,16 +19,11 @@ const app = express();
 app.disable('x-powered-by');
 
 const PORT = process.env.PORT || 3000;
-const INDEX_TEMPLATE_PATH = path.join(__dirname, 'index.html');
-const INDEX_TEMPLATE = fs.readFileSync(INDEX_TEMPLATE_PATH, 'utf8');
+const CLIENT_APP_DIRECTORY = path.join(__dirname, 'public', 'app');
+const CLIENT_APP_INDEX_PATH = path.join(CLIENT_APP_DIRECTORY, 'index.html');
 const googleSheets = new GoogleSheetsService();
 const supabaseLeadStore = new SupabaseLeadStore();
 const scheduleService = new ScheduleService();
-const STATIC_DIRECTORY_ROUTES = [
-  ['/styles', path.join(__dirname, 'styles')],
-  ['/scripts', path.join(__dirname, 'scripts')],
-  ['/assets', path.join(__dirname, 'assets')]
-];
 
 const STUDIO_CLASS_OPTIONS = {
   'Supreme Headquarters, Bandra': ['powerCycle'],
@@ -86,8 +81,8 @@ const DEFAULT_STRIPE_CHECKOUT_CONFIG = {
   consentCollection: null,
   metadata: {},
   buttonLabel: 'Pay ₹1,838',
-  successUrl: '/?payment=success&session_id={CHECKOUT_SESSION_ID}',
-  cancelUrl: '/?payment=cancelled'
+  successUrl: '/app/?payment=success&session_id={CHECKOUT_SESSION_ID}',
+  cancelUrl: '/app/?payment=cancelled'
 };
 
 const DEFAULT_MOMENCE_MEMBERSHIP = {
@@ -109,7 +104,7 @@ const DEFAULT_MOMENCE_MEMBERSHIP = {
   description: 'Physique 57 Newcomers 2 For 1 package.'
 };
 
-const DEFAULT_PAYMENT_STAGE = 'production';
+const DEFAULT_PAYMENT_STAGE = 'testing';
 const DEFAULT_PAYMENT_STAGE_CONFIGS = {
   production: {
     label: 'Production',
@@ -146,9 +141,8 @@ app.use((req, res, next) => {
 
 app.use(express.json({ limit: JSON_BODY_LIMIT }));
 
-app.use('/styles', express.static(path.join(__dirname, 'styles')));
-app.use('/scripts', express.static(path.join(__dirname, 'scripts')));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
+app.use('/app', express.static(CLIENT_APP_DIRECTORY));
 
 // Stripe checkout endpoints (optional - requires STRIPE_SECRET_KEY in environment)
 let stripeClient = null;
@@ -161,45 +155,6 @@ if (stripeSecretKey) {
     console.error('Stripe module not available or failed to initialize:', err && err.message);
     stripeClient = null;
   }
-}
-
-function serializeForInlineScript(value) {
-  return JSON.stringify(value).replace(/</g, '\\u003c');
-}
-
-function escapeHtmlAttribute(value = '') {
-  return String(value)
-    .replace(/&/g, '&amp;')
-    .replace(/"/g, '&quot;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
-}
-
-function sendStaticFile(res, rootDirectory, relativeFilePath) {
-  const normalizedRoot = path.resolve(rootDirectory);
-  const sanitizedRelativePath = String(relativeFilePath || '').replace(/^\/+/, '');
-  const resolvedPath = path.resolve(normalizedRoot, sanitizedRelativePath);
-
-  if (!sanitizedRelativePath) {
-    return res.status(404).send('Not found');
-  }
-
-  if (resolvedPath !== normalizedRoot && !resolvedPath.startsWith(`${normalizedRoot}${path.sep}`)) {
-    return res.status(404).send('Not found');
-  }
-
-  return res.sendFile(resolvedPath, (error) => {
-    if (!error || res.headersSent) {
-      return;
-    }
-
-    if (error.code === 'ENOENT') {
-      res.status(404).send('Not found');
-      return;
-    }
-
-    res.status(error.statusCode || 500).send('Unable to load resource');
-  });
 }
 
 function parseBoolean(value, fallback = false) {
@@ -571,7 +526,7 @@ async function fulfillMomencePurchaseFromSession(session) {
   return normalizedResult;
 }
 
-async function retrieveAndValidatePaidSession(sessionId) {
+async function retrievePaidSession(sessionId) {
   if (!stripeClient) {
     throw new Error('Payments are not configured on this server.');
   }
@@ -581,30 +536,34 @@ async function retrieveAndValidatePaidSession(sessionId) {
     throw new Error('Missing payment session identifier.');
   }
 
-  const session = await stripeClient.checkout.sessions.retrieve(normalizedSessionId, {
-    expand: ['payment_intent']
-  });
+  let session;
+
+  try {
+    session = await stripeClient.checkout.sessions.retrieve(normalizedSessionId, {
+      expand: ['payment_intent']
+    });
+  } catch (error) {
+    if (error && error.type === 'StripeInvalidRequestError' && error.code === 'resource_missing') {
+      const missingSessionError = new Error('This checkout session could not be found. It may belong to an older test run or a different Stripe key. Please start the payment flow again.');
+      missingSessionError.code = 'checkout_session_missing';
+      throw missingSessionError;
+    }
+
+    throw error;
+  }
 
   if (!isPaidStripeSession(session)) {
     throw new Error('Payment has not been completed yet.');
   }
 
+  return session;
+}
+
+async function retrieveAndValidatePaidSession(sessionId) {
+  const session = await retrievePaidSession(sessionId);
   const fulfillment = await fulfillMomencePurchaseFromSession(session);
   return { session, fulfillment };
 }
-
-app.get(['/styles/*', '/scripts/*', '/assets/*'], (req, res, next) => {
-  const staticRoute = STATIC_DIRECTORY_ROUTES.find(([routePrefix]) => req.path.startsWith(`${routePrefix}/`));
-
-  if (!staticRoute) {
-    return next();
-  }
-
-  const [routePrefix, rootDirectory] = staticRoute;
-  const relativeFilePath = req.path.slice(routePrefix.length);
-
-  return sendStaticFile(res, rootDirectory, relativeFilePath);
-});
 
 function getPublicClientConfig() {
   const mockRequest = {
@@ -647,18 +606,6 @@ function getPublicClientConfig() {
     paymentAmountDisplay: formatMoney(checkoutConfig.amount, checkoutConfig.currency),
     paymentCurrency: String(checkoutConfig.currency || 'inr').toUpperCase()
   };
-}
-
-function renderIndexHtml() {
-  const publicConfig = serializeForInlineScript(getPublicClientConfig());
-  const gtmId = process.env.GTM_ID || '';
-  const gtmNoscript = gtmId
-    ? `<noscript>\n        <iframe src="https://www.googletagmanager.com/ns.html?id=${escapeHtmlAttribute(gtmId)}" height="0" width="0" style="display:none;visibility:hidden"></iframe>\n    </noscript>`
-    : '';
-
-  return INDEX_TEMPLATE
-    .replace('<script id="app-config-data" type="application/json">{}</script>', `<script id="app-config-data" type="application/json">${publicConfig}</script>`)
-    .replace('<!-- __GTM_NOSCRIPT__ -->', gtmNoscript);
 }
 
 function sha256(value) {
@@ -790,8 +737,8 @@ function validateLeadPayload(payload) {
     fieldErrors.phoneNumber = 'Enter a valid phone number including country code.';
   }
 
-  const time = sanitizeText(payload.time, 80);
-  if (!ALLOWED_TIME_WINDOWS.includes(time)) {
+  const time = sanitizeText(payload.time, 80) || 'Flexible / Needs Recommendation';
+  if (time && !ALLOWED_TIME_WINDOWS.includes(time)) {
     fieldErrors.time = 'Choose an available time window.';
   }
 
@@ -1068,26 +1015,14 @@ async function submitToMomence(leadData) {
 }
 
 async function storeLeadData(leadData, requestMeta = {}) {
-  console.log('New lead captured', {
-    id: leadData.id,
-    name: `${leadData.firstName} ${leadData.lastName}`.trim(),
-    studio: leadData.center,
-    format: leadData.type,
-    source: leadData.utm_source || 'direct',
-    campaign: leadData.utm_campaign || 'none'
-  });
-
   try {
     const supabaseResult = await supabaseLeadStore.saveSubmittedLead(leadData, requestMeta);
     if (supabaseResult.success) {
-      console.log('Lead synced to Supabase');
-
       const submissionRowId = Array.isArray(supabaseResult.data) && supabaseResult.data[0] ? supabaseResult.data[0].id : null;
 
       if (leadData.draft_id) {
         try {
           await supabaseLeadStore.markPartialSubmitted(leadData.draft_id, leadData, submissionRowId);
-          console.log('Partial lead marked as submitted in Supabase');
         } catch (error) {
           console.error('Supabase partial lead update failed:', error.message);
         }
@@ -1099,7 +1034,6 @@ async function storeLeadData(leadData, requestMeta = {}) {
 
   try {
     await googleSheets.appendLead(leadData);
-    console.log('Lead synced to Google Sheets');
   } catch (error) {
     console.error('Google Sheets sync failed:', error.message);
   }
@@ -1207,13 +1141,23 @@ app.post('/api/create-checkout-session', async (req, res) => {
 
 app.get('/api/verify-payment', async (req, res) => {
   try {
-    const { session, fulfillment } = await retrieveAndValidatePaidSession(req.query.session_id);
+    const session = await retrievePaidSession(req.query.session_id);
     const paymentStage = normalizePaymentStage(session?.metadata?.payment_stage);
+    let fulfillment = null;
+    let fulfillmentError = '';
+
+    try {
+      fulfillment = await fulfillMomencePurchaseFromSession(session);
+    } catch (error) {
+      fulfillmentError = error.message || 'Unable to complete Momence fulfillment.';
+      console.error('verify-payment fulfillment error:', fulfillmentError);
+    }
 
     return res.json({
       success: true,
       paid: true,
       fulfilled: Boolean(fulfillment?.success),
+      fulfillmentError,
       stage: paymentStage,
       paymentSessionId: session.id,
       session: {
@@ -1226,12 +1170,26 @@ app.get('/api/verify-payment', async (req, res) => {
     });
   } catch (error) {
     console.error('verify-payment error:', error && error.message);
-    return res.status(500).json({ success: false, error: error.message || 'Unable to verify payment session.' });
+    const statusCode = error && error.code === 'checkout_session_missing' ? 404 : 500;
+    return res.status(statusCode).json({ success: false, error: error.message || 'Unable to verify payment session.' });
   }
 });
 
 app.get(['/', '/index.html'], (req, res) => {
-  res.type('html').send(renderIndexHtml());
+  const query = req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '';
+  res.redirect(302, `/app/${query}`);
+});
+
+app.get(['/app', '/app/*'], (req, res, next) => {
+  if (!fs.existsSync(CLIENT_APP_INDEX_PATH)) {
+    return next();
+  }
+
+  return res.sendFile(CLIENT_APP_INDEX_PATH);
+});
+
+app.get('/api/public-config', (req, res) => {
+  return res.json(getPublicClientConfig());
 });
 
 app.get('/health', (req, res) => {
@@ -1330,7 +1288,7 @@ app.post('/api/submit-lead', applySubmissionRateLimit, async (req, res) => {
     }
 
     try {
-      await retrieveAndValidatePaidSession(validation.data.payment_session_id);
+      await retrievePaidSession(validation.data.payment_session_id);
     } catch (paymentError) {
       return res.status(400).json({
         success: false,
@@ -1342,8 +1300,7 @@ app.post('/api/submit-lead', applySubmissionRateLimit, async (req, res) => {
     }
 
     const leadData = buildLeadRecord(validation.data);
-
-    await submitToMomence(leadData);
+    let momenceSyncResult = { success: true, error: '' };
     await storeLeadData(leadData, {
       ip_address: getClientIp(req),
       user_agent: req.get('user-agent') || ''
@@ -1358,6 +1315,27 @@ app.post('/api/submit-lead', applySubmissionRateLimit, async (req, res) => {
       }
     } catch (error) {
       console.error('Meta Conversions API send failed:', error.message);
+    }
+
+    try {
+      await submitToMomence(leadData);
+    } catch (error) {
+      momenceSyncResult = {
+        success: false,
+        error: error.message || 'Unable to submit to Momence.'
+      };
+      console.error('Momence sync failed:', momenceSyncResult.error);
+    }
+
+    if (!momenceSyncResult.success) {
+      return res.status(200).json({
+        success: true,
+        stored: true,
+        warning: 'Your payment was verified and your lead was stored, but the Momence sync failed. Please contact the studio team to complete the booking.',
+        error: 'Your payment was verified and your lead was stored, but the Momence sync failed. Please contact the studio team to complete the booking.',
+        detail: momenceSyncResult.error,
+        redirectUrl: getPublicClientConfig().redirectUrl
+      });
     }
 
     return res.json({
@@ -1402,7 +1380,7 @@ if (require.main === module) {
 
     app.listen(availablePort, async () => {
       console.log(`Server is running on port ${availablePort}`);
-      console.log(`Form: http://localhost:${availablePort}`);
+      console.log(`App: http://localhost:${availablePort}/app/`);
       console.log(`Health: http://localhost:${availablePort}/health`);
 
       if (supabaseLeadStore.isConfigured) {
