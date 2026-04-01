@@ -283,6 +283,14 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
   const [isCreatingCheckout, setIsCreatingCheckout] = useState(false)
   const [paymentSessionId, setPaymentSessionId] = useState("")
   const [paymentVerified, setPaymentVerified] = useState(false)
+  const [isPostPaymentProcessing, setIsPostPaymentProcessing] = useState(() => {
+    if (typeof window === "undefined") {
+      return false
+    }
+
+    const params = new URLSearchParams(window.location.search)
+    return params.get("payment") === "success" && Boolean(params.get("session_id"))
+  })
   const [statusMessage, setStatusMessage] = useState<{ tone: "error" | "success"; text: string } | null>(null)
   const [showSchedule, setShowSchedule] = useState(false)
   const [showFormatInfo, setShowFormatInfo] = useState<string | null>(null)
@@ -330,6 +338,8 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
   const primaryButtonLabel = paymentVerified && paymentSessionId
     ? "Complete booking"
     : publicConfig?.paymentButtonLabel || "Pay ₹1,838.00"
+
+  const shouldHideFormForProcessing = isPostPaymentProcessing && !showSuccessModal
 
   useEffect(() => {
     const imageNodes = heroImages.map((src, index) => {
@@ -543,6 +553,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
     const hasPendingCheckout = window.sessionStorage.getItem(STORAGE_KEYS.checkoutPending) === "true"
 
     if (paymentStatus === "cancelled") {
+      setIsPostPaymentProcessing(false)
       try {
         window.sessionStorage.removeItem(STORAGE_KEYS.paymentSession)
         window.sessionStorage.removeItem(STORAGE_KEYS.checkoutPending)
@@ -565,9 +576,11 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
     }
 
     if (!returnedSessionId || !hasPendingCheckout || paymentStatus !== "success") {
+      setIsPostPaymentProcessing(false)
       return
     }
 
+    setIsPostPaymentProcessing(true)
     hasProcessedCheckoutReturnRef.current = true
 
     void (async () => {
@@ -579,6 +592,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
         if (!response.ok || !result.paid) {
           setPaymentVerified(false)
           setPaymentSessionId("")
+          setIsPostPaymentProcessing(false)
           if (response.status === 404) {
             try {
               window.sessionStorage.removeItem(STORAGE_KEYS.paymentSession)
@@ -616,11 +630,13 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
             payment_session_id: result.paymentSessionId || returnedSessionId,
           })
         } else {
+          setIsPostPaymentProcessing(false)
           setStatusMessage({ tone: "success", text: "Payment confirmed. You can complete your booking now." })
         }
       } catch {
         setPaymentVerified(false)
         setPaymentSessionId("")
+        setIsPostPaymentProcessing(false)
         setStatusMessage({ tone: "error", text: "Unable to verify payment right now. Please try again." })
       } finally {
         try {
@@ -683,6 +699,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
 
   async function submitLeadToApi(payload: Record<string, unknown>) {
     setIsSubmitting(true)
+    setIsPostPaymentProcessing(true)
     setStatusMessage({ tone: "success", text: "Submitting your request and syncing the booking workflow..." })
 
     try {
@@ -722,6 +739,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
             text: result.error || "Your payment was verified and your details were saved. Our team will complete the booking follow-up shortly.",
           })
           setShowSuccessModal(true)
+          setIsPostPaymentProcessing(false)
           return
         }
 
@@ -763,7 +781,9 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
 
       setStatusMessage({ tone: "success", text: "Payment verified and booking completed successfully." })
       setShowSuccessModal(true)
+      setIsPostPaymentProcessing(false)
     } catch {
+      setIsPostPaymentProcessing(false)
       setStatusMessage({ tone: "error", text: "We could not complete the request right now. Please try again in a moment." })
     } finally {
       setIsSubmitting(false)
@@ -778,6 +798,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
     try {
       window.sessionStorage.setItem(STORAGE_KEYS.submitPayload, JSON.stringify(payload))
       window.sessionStorage.setItem(STORAGE_KEYS.checkoutPending, "true")
+      setIsPostPaymentProcessing(true)
       const response = await fetch("/api/create-checkout-session", {
         method: "POST",
         headers: {
@@ -789,6 +810,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
       const result = await response.json().catch(() => ({}))
 
       if (!response.ok || !result.url) {
+        setIsPostPaymentProcessing(false)
         try {
           window.sessionStorage.removeItem(STORAGE_KEYS.checkoutPending)
         } catch {
@@ -816,6 +838,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
 
       window.location.assign(result.url)
     } catch {
+      setIsPostPaymentProcessing(false)
       try {
         window.sessionStorage.removeItem(STORAGE_KEYS.checkoutPending)
       } catch {
@@ -945,7 +968,25 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
 
         <div className="relative min-h-screen bg-background/95 backdrop-blur-sm lg:h-screen lg:overflow-y-auto">
           <div className="mx-auto w-full max-w-[1120px] px-4 pt-6 pb-6 sm:px-6 sm:pt-8 lg:px-10 lg:pt-10 xl:px-14 xl:pt-12">
-            <div className="rounded-[28px] border border-slate-200/80 bg-white/80 p-5 shadow-[0_20px_60px_rgba(15,23,42,0.08)] backdrop-blur-xl sm:p-6 lg:p-8">
+              {shouldHideFormForProcessing ? (
+                <div className="flex min-h-[78vh] items-center justify-center">
+                  <div className="w-full max-w-2xl rounded-[32px] border border-slate-200/80 bg-white/85 px-8 py-16 text-center shadow-[0_24px_80px_rgba(15,23,42,0.10)] backdrop-blur-xl sm:px-12">
+                    <div className="mx-auto flex h-18 w-18 items-center justify-center rounded-full bg-gradient-to-br from-blue-900 to-blue-700 text-white shadow-lg">
+                      <Loader2 className="h-8 w-8 animate-spin" />
+                    </div>
+                    <p className="mt-8 text-xs font-semibold uppercase tracking-[0.24em] text-blue-900/70">Booking in progress</p>
+                    <h2 className="mt-3 text-3xl font-bold text-slate-950 sm:text-4xl">Confirming your payment and finalising your booking</h2>
+                    <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-slate-600 sm:text-lg">
+                      Please stay on this page while we capture your successful payment, submit your details, and finish the studio booking workflow.
+                    </p>
+                    <div className="mx-auto mt-8 flex max-w-md items-center gap-3 rounded-2xl border border-blue-900/10 bg-blue-50/80 px-4 py-3 text-left text-sm text-blue-900 shadow-sm">
+                      <CheckCircle2 className="h-5 w-5 flex-shrink-0" />
+                      <span>{statusMessage?.text || "Secure checkout completed. We’re submitting your form automatically."}</span>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+              <div className="rounded-[28px] border border-slate-200/80 bg-white/80 p-5 shadow-[0_20px_60px_rgba(15,23,42,0.08)] backdrop-blur-xl sm:p-6 lg:p-8">
               <div className="mb-8">
                 <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-900/30 bg-gradient-to-r from-blue-900/20 to-slate-300/30 px-4 py-2 backdrop-blur-sm">
                   <Sparkles className="h-4 w-4 text-blue-900" />
@@ -987,7 +1028,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)]">
                   <div className="space-y-2">
                     <Label htmlFor="email">Email <span className="text-destructive">*</span></Label>
                     <Input
@@ -1005,7 +1046,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
 
                   <div className="space-y-2">
                     <Label htmlFor="phone">Phone number <span className="text-destructive">*</span></Label>
-                    <div className="grid grid-cols-[128px_minmax(0,1fr)] items-stretch gap-2">
+                    <div className="grid grid-cols-[92px_minmax(0,1fr)] items-stretch gap-2 sm:grid-cols-[24%_76%]">
                       <Select value={formData.countryCode} onValueChange={(value) => handleInputChange("countryCode", value)}>
                         <SelectTrigger size="lg" className="h-12 w-full shrink-0 border-slate-300/95 bg-white/70 backdrop-blur-sm focus:border-slate-800 focus:ring-slate-800/15">
                           <SelectValue placeholder="Code">
@@ -1158,50 +1199,72 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                   <Label className="text-base font-semibold">Membership included</Label>
                 </div>
                 <p className="text-sm text-muted-foreground">Your checkout secures the introductory package tied to this first-class experience.</p>
-                <div className="flex flex-col gap-4 rounded-xl border border-slate-200/80 bg-white/45 px-4 py-4 sm:flex-row sm:items-start sm:justify-between sm:px-5">
-                  <div className="space-y-3">
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-900/70">Membership</p>
-                      <h3 className="mt-1 text-xl font-bold text-slate-950">{membershipOffer.name}</h3>
-                    </div>
-                    <div className="flex flex-wrap gap-2 text-sm">
-                      <span className="rounded-full border border-slate-300 bg-white px-3 py-1 font-medium text-slate-700">{membershipOffer.sessions}</span>
-                      <span className="rounded-full border border-slate-300 bg-white px-3 py-1 font-medium text-slate-700">Valid for {membershipOffer.validFor}</span>
-                      <span className="rounded-full border border-slate-400 bg-slate-900 px-3 py-1 font-semibold text-white">{membershipOffer.price}</span>
+                <div className="overflow-hidden rounded-[26px] border border-slate-200/90 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 text-white shadow-[0_22px_55px_rgba(15,23,42,0.16)]">
+                  <div className="border-b border-white/10 px-5 py-4 sm:px-6">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                      <div>
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-blue-200/80">Membership</p>
+                        <h3 className="mt-2 text-2xl font-semibold text-white sm:text-[1.7rem]">{membershipOffer.name}</h3>
+                        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-300">
+                          A premium introductory package curated to guide your first Physique 57 sessions with structure, value, and flexibility.
+                        </p>
+                      </div>
+                      <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left shadow-inner backdrop-blur-sm sm:min-w-[168px] sm:text-right">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-blue-100/75">Package price</p>
+                        <p className="mt-2 text-2xl font-bold text-white">{membershipOffer.price}</p>
+                      </div>
                     </div>
                   </div>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="border-slate-300 text-slate-800 hover:border-slate-900 hover:bg-slate-900 hover:text-white"
-                    onClick={() => setShowMembershipModal(true)}
-                  >
-                    Know more
-                  </Button>
+
+                  <div className="grid gap-3 px-5 py-5 sm:grid-cols-3 sm:px-6">
+                    <div className="rounded-2xl border border-white/10 bg-white/6 px-4 py-4 backdrop-blur-sm">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-300">Sessions</p>
+                      <p className="mt-2 text-lg font-semibold text-white">{membershipOffer.sessions}</p>
+                    </div>
+                    <div className="rounded-2xl border border-white/10 bg-white/6 px-4 py-4 backdrop-blur-sm">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-300">Validity</p>
+                      <p className="mt-2 text-lg font-semibold text-white">{membershipOffer.validFor}</p>
+                    </div>
+                    <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-blue-500/18 to-emerald-500/12 px-4 py-4 backdrop-blur-sm">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-blue-100/90">Included</p>
+                      <p className="mt-2 text-lg font-semibold text-white">First-class access package</p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-3 border-t border-white/10 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+                    <p className="text-sm leading-relaxed text-slate-300">
+                      Includes a guided onboarding flow, secure checkout, and the studio follow-up needed to complete your booking.
+                    </p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="border-white/18 bg-white/6 text-white hover:border-white/35 hover:bg-white/12 hover:text-white"
+                      onClick={() => setShowMembershipModal(true)}
+                    >
+                      Know more
+                    </Button>
+                  </div>
                 </div>
               </div>
 
-              <div className="space-y-4 border-t border-slate-200/90 pt-1">
-                <div className="space-y-1">
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-900/70">Before you confirm</p>                  
-                  <p className="text-sm text-muted-foreground">Take a moment to read the terms of service before proceeding with payment.</p>
-                </div>
-                <div className="flex items-start gap-2 sm:gap-4">
+              <div className="space-y-3 border-t border-slate-200/90 pt-2">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-900/70">Before you confirm</p>
+                <div className="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/70 px-4 py-3 sm:items-center sm:gap-4">
                   <Checkbox
                     id="terms"
                     checked={formData.acceptedTerms}
                     onCheckedChange={(checked) => handleInputChange("acceptedTerms", Boolean(checked))}
-                    className={cn("mt-1 h-5 w-5 rounded-md border-slate-400 data-[state=checked]:border-blue-900 data-[state=checked]:bg-blue-900", errors.acceptedTerms && "border-destructive")}
+                    className={cn("mt-0.5 h-5 w-5 rounded-md border-slate-400 data-[state=checked]:border-blue-900 data-[state=checked]:bg-blue-900 sm:mt-0", errors.acceptedTerms && "border-destructive")}
                   />
-                  <div className="flex-1 py-1">
-                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex-1">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                       <label htmlFor="terms" className="cursor-pointer text-sm font-medium leading-relaxed text-slate-900 sm:flex-1">
                         I have read and accept the waiver and booking terms. <span className="text-destructive">*</span>
                       </label>
                       <Button
                         type="button"
                         variant="outline"
-                        className="h-9 rounded-full border-slate-300 bg-white px-4 text-xs font-semibold tracking-[0.08em] text-slate-800 hover:border-slate-900 hover:bg-slate-900 hover:text-white"
+                        className="h-9 rounded-full border-slate-300 bg-white px-4 text-xs font-semibold tracking-[0.08em] text-slate-800 hover:border-slate-900 hover:bg-slate-900 hover:text-white sm:self-auto"
                         onClick={(event) => {
                           event.preventDefault()
                           setShowWaiverModal(true)
@@ -1209,10 +1272,10 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                       >
                         View terms & conditions
                       </Button>
-                    </div>                    
+                    </div>
                   </div>
                 </div>
-                {errors.acceptedTerms ? <p className="text-sm text-destructive">{errors.acceptedTerms}</p> : null}                
+                {errors.acceptedTerms ? <p className="text-sm text-destructive">{errors.acceptedTerms}</p> : null}
               </div>
 
               {statusMessage ? (
@@ -1247,6 +1310,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
               </Button>
               </form>
             </div>
+            )}
 
             <section className="mt-20 space-y-12">
               <div className="mx-auto max-w-5xl">
