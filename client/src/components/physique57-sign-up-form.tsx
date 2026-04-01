@@ -1183,11 +1183,10 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
 
               <div className="space-y-4 border-t border-slate-200/90 pt-1">
                 <div className="space-y-1">
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-900/70">Before you confirm</p>
-                  <h3 className="text-lg font-semibold text-slate-950">Review the waiver and booking terms</h3>
-                  <p className="text-sm text-muted-foreground">Take a moment to read the detailed terms before proceeding with payment.</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-900/70">Before you confirm</p>                  
+                  <p className="text-sm text-muted-foreground">Take a moment to read the terms of service before proceeding with payment.</p>
                 </div>
-                <div className="flex items-start gap-3 sm:gap-4">
+                <div className="flex items-start gap-2 sm:gap-4">
                   <Checkbox
                     id="terms"
                     checked={formData.acceptedTerms}
@@ -1195,7 +1194,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                     className={cn("mt-1 h-5 w-5 rounded-md border-slate-400 data-[state=checked]:border-blue-900 data-[state=checked]:bg-blue-900", errors.acceptedTerms && "border-destructive")}
                   />
                   <div className="flex-1 py-1">
-                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                       <label htmlFor="terms" className="cursor-pointer text-sm font-medium leading-relaxed text-slate-900 sm:flex-1">
                         I have read and accept the waiver and booking terms. <span className="text-destructive">*</span>
                       </label>
