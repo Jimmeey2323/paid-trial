@@ -104,7 +104,7 @@ const DEFAULT_MOMENCE_MEMBERSHIP = {
   description: 'Physique 57 Newcomers 2 For 1 package.'
 };
 
-const DEFAULT_PAYMENT_STAGE = 'testing';
+const DEFAULT_PAYMENT_STAGE = 'production';
 const DEFAULT_PAYMENT_STAGE_CONFIGS = {
   production: {
     label: 'Production',
