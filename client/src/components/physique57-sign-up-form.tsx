@@ -1210,12 +1210,10 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                       >
                         View terms & conditions
                       </Button>
-                    </div>
-                    <p className="mt-2 text-xs leading-relaxed text-muted-foreground">Required to unlock checkout and submit your trial request.</p>
+                    </div>                    
                   </div>
                 </div>
-                {errors.acceptedTerms ? <p className="text-sm text-destructive">{errors.acceptedTerms}</p> : null}
-                <p className="text-xs text-muted-foreground">Your details are used only for booking coordination, studio follow-up, and attribution tracking.</p>
+                {errors.acceptedTerms ? <p className="text-sm text-destructive">{errors.acceptedTerms}</p> : null}                
               </div>
 
               {statusMessage ? (
