@@ -1214,6 +1214,13 @@ app.get(['/app', '/app/*'], (req, res) => {
   return res.redirect(301, `${targetPath}${query}`);
 });
 
+app.get(['/barre', '/barre/*'], (req, res) => {
+  if (!fs.existsSync(CLIENT_APP_INDEX_PATH)) {
+    return res.status(404).send('App not found');
+  }
+  return res.sendFile(CLIENT_APP_INDEX_PATH);
+});
+
 app.get(['/', '/index.html'], (req, res, next) => {
   if (!fs.existsSync(CLIENT_APP_INDEX_PATH)) {
     return next();
@@ -1371,6 +1378,94 @@ app.post('/api/submit-lead', applySubmissionRateLimit, async (req, res) => {
     });
   } catch (error) {
     console.error('Error submitting lead:', error);
+    return res.status(500).json({
+      success: false,
+      error: error.message || 'An unexpected error occurred.'
+    });
+  }
+});
+
+app.post('/api/submit-barre-lead', applySubmissionRateLimit, async (req, res) => {
+  try {
+    const validation = validateLeadPayload(req.body);
+
+    if (validation.isBot) {
+      return res.status(202).json({
+        success: true,
+        id: 'filtered',
+        redirectUrl: getPublicClientConfig().redirectUrl
+      });
+    }
+
+    if (!validation.isValid) {
+      return res.status(400).json({
+        success: false,
+        error: 'Validation failed.',
+        fieldErrors: validation.fieldErrors
+      });
+    }
+
+    // Barre submissions don't require payment - remove that check
+    const leadData = buildLeadRecord({
+      ...validation.data,
+      source_form: 'barre-trial-form',
+      class_format: 'Barre 57'
+    });
+
+    let momenceSyncResult = { success: true, error: '' };
+    
+    // Store Barre lead data
+    const storeResult = await supabaseLeadStore.saveBarreLeadData(leadData, {
+      ip_address: getClientIp(req),
+      user_agent: req.get('user-agent') || ''
+    });
+
+    if (!storeResult.success) {
+      return res.status(400).json({
+        success: false,
+        error: 'Unable to save your trial request. Please try again.'
+      });
+    }
+
+    // Track Meta event
+    try {
+      const metaResult = await sendMetaLeadEvent(leadData, req);
+      if (metaResult.sent) {
+        console.log(`Meta Conversions API event sent for Barre: ${metaResult.eventId}`);
+      }
+    } catch (error) {
+      console.error('Meta Conversions API send failed for Barre:', error.message);
+    }
+
+    // Try to submit to Momence
+    try {
+      await submitToMomence(leadData);
+    } catch (error) {
+      momenceSyncResult = {
+        success: false,
+        error: error.message || 'Unable to submit to Momence.'
+      };
+      console.error('Momence sync failed for Barre:', momenceSyncResult.error);
+    }
+
+    if (!momenceSyncResult.success) {
+      return res.status(200).json({
+        success: true,
+        stored: true,
+        warning: 'Your trial request was saved, but we had an issue notifying the studio. Please contact us to confirm.',
+        error: 'Your trial request was saved, but we had an issue notifying the studio. Please contact us to confirm.',
+        detail: momenceSyncResult.error,
+        redirectUrl: getPublicClientConfig().redirectUrl
+      });
+    }
+
+    return res.json({
+      success: true,
+      id: leadData.id,
+      redirectUrl: getPublicClientConfig().redirectUrl
+    });
+  } catch (error) {
+    console.error('Error submitting Barre lead:', error);
     return res.status(500).json({
       success: false,
       error: error.message || 'An unexpected error occurred.'

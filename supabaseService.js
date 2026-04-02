@@ -253,6 +253,62 @@ class SupabaseLeadStore {
 
     return { success: true, data: data || [], rowCount: Array.isArray(data) ? data.length : 0 };
   }
+
+  async saveBarreLeadData(leadData, requestMeta = {}) {
+    if (!this.isConfigured || !this.client) {
+      return { success: false, skipped: true, reason: this.status.reason || 'Supabase not configured' };
+    }
+
+    const record = {
+      event_id: leadData.event_id || null,
+      external_lead_id: leadData.id,
+      source_form: 'barre-trial-form',
+      status: 'submitted',
+      first_name: leadData.firstName || '',
+      last_name: leadData.lastName || '',
+      email: leadData.email || '',
+      phone_number: leadData.phoneNumber || '',
+      phone_country: leadData.phoneCountry || 'IN',
+      studio_location: leadData.center || leadData.studio_location || '',
+      class_format: 'Barre 57',
+      waiver_accepted: asBoolean(leadData.waiverAccepted),
+      utm_source: leadData.utm_source || null,
+      utm_medium: leadData.utm_medium || null,
+      utm_campaign: leadData.utm_campaign || null,
+      utm_content: leadData.utm_content || null,
+      utm_id: leadData.utm_id || null,
+      utm_term: leadData.utm_term || null,
+      gclid: leadData.gclid || null,
+      fbclid: leadData.fbclid || null,
+      msclkid: leadData.msclkid || null,
+      ttclid: leadData.ttclid || null,
+      gbraid: leadData.gbraid || null,
+      wbraid: leadData.wbraid || null,
+      fbp: leadData.fbp || null,
+      fbc: leadData.fbc || null,
+      landing_page: leadData.landing_page || null,
+      referrer: leadData.referrer || null,
+      ip_address: safeIpAddress(requestMeta.ip_address),
+      user_agent: requestMeta.user_agent || null,
+      submitted_at: leadData.timestamp || new Date().toISOString(),
+      raw_payload: leadData,
+      metadata: {
+        draft_id: leadData.draft_id || null,
+        session_id: leadData.session_id || null
+      }
+    };
+
+    const { data, error } = await this.client
+      .from('barre57_trial_form_submissions')
+      .upsert(record, { onConflict: 'event_id' })
+      .select('id,event_id');
+
+    if (error) {
+      throw new Error(`Supabase Barre lead sync failed: ${error.message}`);
+    }
+
+    return { success: true, data: data || [], rowCount: Array.isArray(data) ? data.length : 0 };
+  }
 }
 
 module.exports = SupabaseLeadStore;
