@@ -1125,7 +1125,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
               />
             </motion.div>
           </AnimatePresence>
-          <div className="absolute inset-0 bg-black/20" />
+          <div className="absolute inset-0 bg-black/40" />
           <motion.div
             className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.22),transparent_38%),radial-gradient(circle_at_80%_18%,rgba(59,130,246,0.18),transparent_34%),linear-gradient(180deg,rgba(15,23,42,0.04)_0%,rgba(15,23,42,0.34)_100%)]"
             animate={{ opacity: [0.8, 1, 0.82], scale: [1, 1.03, 1] }}
