@@ -15,6 +15,7 @@ import {
   Loader2,
   MapPin,
   Minus,
+  Mail,
   Phone,
   Plus,
   Shield,
@@ -81,6 +82,18 @@ const STORAGE_KEYS = {
 }
 
 const DEFAULT_REDIRECT_URL = "https://momence.com/u/physique-57-india-fffoSp"
+
+const bookingStepStyles = {
+  shell: "relative overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-sm transition-all duration-300 hover:shadow-lg",
+  badge: "absolute -top-2.5 left-5 inline-flex items-center gap-1.5 rounded-full bg-blue-900 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-white shadow-sm",
+  title: "text-lg font-semibold text-slate-950",
+  description: "text-sm leading-relaxed text-slate-600",
+  fieldLabel: "flex items-center gap-2 text-sm font-medium text-slate-700",
+  fieldIcon: "h-4 w-4 text-blue-900",
+  input: "h-11 border-slate-300/95 bg-white/80 backdrop-blur-sm transition-all focus:border-blue-900 focus:ring-blue-900/15",
+  selectTrigger: "h-11 border-slate-300/95 bg-white/80 backdrop-blur-sm transition-all focus:border-blue-900 focus:ring-blue-900/15",
+  surface: "rounded-xl border border-slate-200/80 bg-slate-50/80 p-4",
+} as const
 
 function createEventId() {
   return `lead_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`
@@ -1091,7 +1104,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
         ))}
       </div>
 
-        <div className="relative grid min-h-screen lg:grid-cols-[40%_60%]">
+      <div className="relative grid min-h-screen lg:grid-cols-[40%_60%]">
         <div
           className="relative hidden h-screen cursor-pointer overflow-hidden bg-black lg:block"
           onClick={redirectToMomence}
@@ -1125,7 +1138,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
               />
             </motion.div>
           </AnimatePresence>
-          <div className="absolute inset-0 bg-black/20" />
+          <div className="absolute inset-0 bg-black/60" />
           <motion.div
             className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.22),transparent_38%),radial-gradient(circle_at_80%_18%,rgba(59,130,246,0.18),transparent_34%),linear-gradient(180deg,rgba(15,23,42,0.04)_0%,rgba(15,23,42,0.34)_100%)]"
             animate={{ opacity: [0.8, 1, 0.82], scale: [1, 1.03, 1] }}
@@ -1150,363 +1163,356 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
           </div>
         </div>
 
-        <div className="relative min-h-screen bg-background/95 backdrop-blur-sm lg:h-screen lg:overflow-y-auto">
-          <div className="mx-auto w-full max-w-[1120px] px-4 pt-6 pb-6 sm:px-6 sm:pt-8 lg:px-10 lg:pt-10 xl:px-14 xl:pt-12">
-              {shouldHideFormForProcessing ? (
-                <div className="flex min-h-[78vh] items-center justify-center">
-                  <div className="w-full max-w-2xl rounded-[32px] border border-slate-200/80 bg-white/85 px-8 py-16 text-center shadow-[0_24px_80px_rgba(15,23,42,0.10)] backdrop-blur-xl sm:px-12">
-                    <div className="mx-auto flex h-18 w-18 items-center justify-center rounded-full bg-gradient-to-br from-blue-900 to-blue-700 text-white shadow-lg">
-                      <Loader2 className="h-8 w-8 animate-spin" />
+        <div className="relative min-h-screen bg-black backdrop-blur-sm lg:h-screen lg:overflow-y-auto">
+          <div className="mx-auto w-full max-w-[1120px] px-4 py-6 sm:px-6 sm:py-8 lg:px-10 lg:py-10 xl:px-14 xl:py-12">
+            {shouldHideFormForProcessing ? (
+              <div className="flex min-h-[78vh] items-center justify-center">
+                <div className="w-full max-w-2xl rounded-[32px] border border-slate-200/80 bg-white/85 px-8 py-16 text-center shadow-[0_24px_80px_rgba(15,23,42,0.10)] backdrop-blur-xl sm:px-12">
+                  <div className="mx-auto flex h-18 w-18 items-center justify-center rounded-full bg-gradient-to-br from-blue-900 to-blue-700 text-white shadow-lg">
+                    <Loader2 className="h-8 w-8 animate-spin" />
+                  </div>
+                  <p className="mt-8 text-xs font-semibold uppercase tracking-[0.24em] text-blue-900/70">Booking in progress</p>
+                  <h2 className="mt-3 text-3xl font-bold text-slate-950 sm:text-4xl">Confirming your payment and finalising your booking</h2>
+                  <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-slate-600 sm:text-lg">
+                    Please stay on this page while we capture your successful payment, submit your details, and finish the studio booking workflow.
+                  </p>
+                  <div className="mx-auto mt-8 flex max-w-md items-center gap-3 rounded-2xl border border-blue-900/10 bg-blue-50/80 px-4 py-3 text-left text-sm text-blue-900 shadow-sm">
+                    <CheckCircle2 className="h-5 w-5 flex-shrink-0" />
+                    <span>{statusMessage?.text || "Secure checkout completed. We’re submitting your form automatically."}</span>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="overflow-hidden rounded-[32px] border border-slate-200/80 bg-white/90 shadow-[0_28px_90px_rgba(15,23,42,0.12)] backdrop-blur-xl">
+                <div className="border-b border-slate-200/80 bg-gradient-to-r from-slate-50 via-white to-blue-50/70 px-5 py-6 sm:px-6 sm:py-7 lg:px-8">
+                  <div className="mx-auto max-w-3xl text-center">
+                    <div className="mx-auto mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-blue-900 text-white shadow-lg">
+                      <Sparkles className="h-6 w-6" />
                     </div>
-                    <p className="mt-8 text-xs font-semibold uppercase tracking-[0.24em] text-blue-900/70">Booking in progress</p>
-                    <h2 className="mt-3 text-3xl font-bold text-slate-950 sm:text-4xl">Confirming your payment and finalising your booking</h2>
-                    <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-slate-600 sm:text-lg">
-                      Please stay on this page while we capture your successful payment, submit your details, and finish the studio booking workflow.
+                    <h2 className="text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">Book Your First Session</h2>
+                    <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-slate-600 sm:text-base">
+                      Complete your details to begin a polished checkout flow for your first Physique 57 class.
                     </p>
-                    <div className="mx-auto mt-8 flex max-w-md items-center gap-3 rounded-2xl border border-blue-900/10 bg-blue-50/80 px-4 py-3 text-left text-sm text-blue-900 shadow-sm">
-                      <CheckCircle2 className="h-5 w-5 flex-shrink-0" />
-                      <span>{statusMessage?.text || "Secure checkout completed. We’re submitting your form automatically."}</span>
+                  </div>
+                </div>
+
+                <form onSubmit={handleSubmit} className="space-y-6 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+                  <div className={bookingStepStyles.shell}>
+                    <div className={bookingStepStyles.badge}>
+                      <span>STEP 1</span>
+                    </div>
+                    <div className="px-5 pb-5 pt-9 sm:px-6 sm:pb-6">
+                      <div className="mb-5">
+                        <h3 className={bookingStepStyles.title}>Personal Information</h3>
+                        <p className={cn("mt-1", bookingStepStyles.description)}>Tell us who is booking so we can keep the checkout and follow-up smooth.</p>
+                      </div>
+
+                      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        <div className="space-y-2">
+                          <Label htmlFor="firstName" className={bookingStepStyles.fieldLabel}>
+                            <Users className={bookingStepStyles.fieldIcon} />
+                            First name <span className="text-destructive">*</span>
+                          </Label>
+                          <Input
+                            id="firstName"
+                            placeholder="Enter your first name"
+                            value={formData.firstName}
+                            onChange={(event) => handleInputChange("firstName", event.target.value)}
+                            className={cn(bookingStepStyles.input, errors.firstName && "border-destructive")}
+                          />
+                          {errors.firstName ? <p className="text-sm text-destructive">{errors.firstName}</p> : null}
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="lastName" className={bookingStepStyles.fieldLabel}>
+                            <Users className={bookingStepStyles.fieldIcon} />
+                            Last name <span className="text-destructive">*</span>
+                          </Label>
+                          <Input
+                            id="lastName"
+                            placeholder="Enter your last name"
+                            value={formData.lastName}
+                            onChange={(event) => handleInputChange("lastName", event.target.value)}
+                            className={cn(bookingStepStyles.input, errors.lastName && "border-destructive")}
+                          />
+                          {errors.lastName ? <p className="text-sm text-destructive">{errors.lastName}</p> : null}
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="email" className={bookingStepStyles.fieldLabel}>
+                            <Mail className={bookingStepStyles.fieldIcon} />
+                            Email address <span className="text-destructive">*</span>
+                          </Label>
+                          <Input
+                            id="email"
+                            type="email"
+                            placeholder="your.email@example.com"
+                            value={formData.email}
+                            onChange={(event) => handleInputChange("email", event.target.value)}
+                            className={cn(bookingStepStyles.input, errors.email && "border-destructive")}
+                          />
+                          {errors.email ? <p className="text-sm text-destructive">{errors.email}</p> : null}
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="phone" className={bookingStepStyles.fieldLabel}>
+                            <Phone className={bookingStepStyles.fieldIcon} />
+                            Phone number <span className="text-destructive">*</span>
+                          </Label>
+                          <div className="grid grid-cols-[96px_minmax(0,1fr)] items-stretch gap-2">
+                            <Select value={formData.countryCode} onValueChange={(value) => handleInputChange("countryCode", value)}>
+                              <SelectTrigger size="lg" className={cn("justify-center px-3", bookingStepStyles.selectTrigger)}>
+                                <SelectValue placeholder="Code">
+                                  <span className="text-base leading-none">{getCountryOption(formData.countryCode)?.flag}</span>
+                                </SelectValue>
+                              </SelectTrigger>
+                              <SelectContent className="border-slate-200 bg-white/98">
+                                {countryCodes.map((item, index) => (
+                                  <SelectItem key={`${item.code}-${item.country}-${index}`} value={item.country}>
+                                    <div className="flex items-center gap-2">
+                                      <span>{item.flag}</span>
+                                      <span className="font-medium">{item.code}</span>
+                                      <span className="text-xs text-muted-foreground">{item.name}</span>
+                                    </div>
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <Input
+                              id="phone"
+                              placeholder="98765 43210"
+                              value={formData.phone}
+                              onChange={(event) => handleInputChange("phone", event.target.value)}
+                              className={cn(bookingStepStyles.input, errors.phone && "border-destructive")}
+                            />
+                          </div>
+                          <p className="text-sm text-slate-500">Choose your country code, then enter your number.</p>
+                          {errors.phone ? <p className="text-sm text-destructive">{errors.phone}</p> : null}
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ) : (
-              <div className="rounded-[28px] border border-slate-200/80 bg-white/80 p-5 shadow-[0_32px_100px_rgba(15,23,42,0.14)] ring-1 ring-slate-200/40 backdrop-blur-xl sm:p-6 lg:p-8">
-              <div className="mb-8">
-                <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-900/30 bg-gradient-to-r from-blue-900/20 to-slate-300/30 px-4 py-2 backdrop-blur-sm">
-                  <Sparkles className="h-4 w-4 text-blue-900" />
-                  <span className="text-sm font-semibold text-blue-900">Book Your First Class</span>
-                </div>
-                <h2 className="mb-2 text-3xl font-bold text-foreground">Get Started</h2>
-                <p className="text-muted-foreground">Sign up for your first class at Physique 57.</p>
-              </div>
 
-              <form onSubmit={handleSubmit} className="space-y-8">
-              <div className="relative space-y-6 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-6 shadow-sm sm:p-6 sm:pt-7">
-                <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
-                  <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">Personal details</span>
-                  <span className="text-destructive">*</span>
-                </div>
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="firstName" className="font-semibold">First name <span className="text-destructive">*</span></Label>
-                    <Input
-                      id="firstName"
-                      value={formData.firstName}
-                      onChange={(event) => handleInputChange("firstName", event.target.value)}
-                      className={cn(
-                        "h-12 border-slate-300/95 bg-white/70 backdrop-blur-sm focus:border-slate-800 focus:ring-slate-800/15",
-                        errors.firstName && "border-destructive"
-                      )}
-                    />
-                    {errors.firstName ? <p className="text-sm text-destructive">{errors.firstName}</p> : null}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="lastName" className="font-semibold">Last name <span className="text-destructive">*</span></Label>
-                    <Input
-                      id="lastName"
-                      value={formData.lastName}
-                      onChange={(event) => handleInputChange("lastName", event.target.value)}
-                      className={cn(
-                        "h-12 border-slate-300/95 bg-white/70 backdrop-blur-sm focus:border-slate-800 focus:ring-slate-800/15",
-                        errors.lastName && "border-destructive"
-                      )}
-                    />
-                    {errors.lastName ? <p className="text-sm text-destructive">{errors.lastName}</p> : null}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="email" className="font-semibold">Email <span className="text-destructive">*</span></Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={(event) => handleInputChange("email", event.target.value)}
-                      className={cn(
-                        "h-12 border-slate-300/95 bg-white/70 backdrop-blur-sm focus:border-slate-800 focus:ring-slate-800/15",
-                        errors.email && "border-destructive"
-                      )}
-                    />
-                    {errors.email ? <p className="text-sm text-destructive">{errors.email}</p> : null}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="phone" className="font-semibold">Phone number <span className="text-destructive">*</span></Label>
-                    <div className="grid grid-cols-[56px_minmax(0,1fr)] items-stretch gap-2">
-                      <Select value={formData.countryCode} onValueChange={(value) => handleInputChange("countryCode", value)}>
-                        <SelectTrigger size="lg" className="h-12 w-[56px] min-w-[56px] shrink-0 justify-center border-slate-300/95 bg-white/70 px-2 backdrop-blur-sm focus:border-slate-800 focus:ring-slate-800/15">
-                          <SelectValue placeholder="Code">
-                            <span className="text-base leading-none">{getCountryOption(formData.countryCode)?.flag}</span>
-                          </SelectValue>
-                        </SelectTrigger>
-                        <SelectContent className="border-slate-300 bg-white/95">
-                          {countryCodes.map((item, index) => (
-                            <SelectItem key={`${item.code}-${item.country}-${index}`} value={item.country}>
-                              <div className="flex items-center gap-2">
-                                <span>{item.flag}</span>
-                                <span className="font-medium">{item.code}</span>
-                                <span className="text-xs text-muted-foreground">{item.name}</span>
-                              </div>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <Input
-                        id="phone"
-                        placeholder="98765 43210"
-                        value={formData.phone}
-                        onChange={(event) => handleInputChange("phone", event.target.value)}
-                        className={cn(
-                          "h-12 flex-1 border-slate-300/95 bg-white/70 backdrop-blur-sm focus:border-slate-800 focus:ring-slate-800/15",
-                          errors.phone && "border-destructive"
-                        )}
-                      />
+                  <div className={bookingStepStyles.shell}>
+                    <div className={bookingStepStyles.badge}>
+                      <span>STEP 2</span>
                     </div>
-                    <p className="text-sm text-muted-foreground">Choose your country code, then enter your number.</p>
-                    {errors.phone ? <p className="text-sm text-destructive">{errors.phone}</p> : null}
-                  </div>
-                </div>
-              </div>
+                    <div className="px-5 pb-5 pt-9 sm:px-6 sm:pb-6">
+                      <div className="mb-5 flex flex-col gap-1.5">
+                        <h3 className={bookingStepStyles.title}>Choose Your Experience</h3>
+                        <p className={bookingStepStyles.description}>Choose the format that feels right for your first visit.</p>
+                      </div>
 
-              <div className="relative space-y-5 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-6 shadow-sm sm:p-6 sm:pt-7">
-                <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
-                  <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">Studio & format</span>
-                  <span className="text-destructive">*</span>
-                </div>
-                <div className="space-y-6 pt-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="studio" className="font-semibold">Preferred studio <span className="text-destructive">*</span></Label>
-                    <div className="flex flex-col gap-3 sm:flex-row">
-                      <Select value={formData.studio} onValueChange={(value) => handleInputChange("studio", value)}>
-                        <SelectTrigger
-                          size="lg"
-                          className={cn(
-                            "w-full border-slate-300/95 bg-white/70 backdrop-blur-sm focus:border-slate-800 focus:ring-slate-800/15",
-                            errors.studio && "border-destructive"
-                          )}
-                        >
-                          <SelectValue placeholder="Select a studio" />
-                        </SelectTrigger>
-                        <SelectContent className="border-slate-300 bg-white/95">
-                          {studios.map((studio) => (
-                            <SelectItem key={studio.name} value={studio.name}>
-                              <div>
-                                <div className="font-medium">{studio.name}</div>
-                                <div className="text-xs text-muted-foreground">{studio.location}</div>
-                              </div>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="h-12 w-full border-slate-300 text-slate-800 hover:border-slate-800 hover:bg-slate-100 sm:w-auto sm:min-w-[170px]"
-                        onClick={() => setShowSchedule(true)}
-                      >
-                        <Calendar className="mr-2 h-4 w-4" />
-                        View schedule
-                      </Button>
-                    </div>
-                    {errors.studio ? <p className="text-sm text-destructive">{errors.studio}</p> : null}
-                  </div>
+                      <div className="space-y-4" role="radiogroup" aria-label="Choose your first format">
+                        {availableFormats.map((format) => {
+                          const isSelected = formData.format === format.id
 
-                  <div className="space-y-4 rounded-2xl border border-slate-300/90 bg-white/60 p-4 pt-5 shadow-sm sm:p-5 sm:pt-6">
-                    <Label className="block text-sm font-semibold text-slate-950">Select a preferred format</Label>
-                    <p className="text-sm text-muted-foreground">Choose the format that feels right for your first visit.</p>
-                    <div role="radiogroup" aria-label="Choose your first format" className="space-y-2.5">
-                      {availableFormats.map((format) => (
-                        <div
-                          key={format.id}
-                          className={cn(
-                            "relative cursor-pointer rounded-xl border-2 p-3.5 transition-all backdrop-blur-sm sm:p-4",
-                            formData.format === format.id
-                              ? "border-blue-900 bg-gradient-to-br from-blue-900/10 to-slate-200/30 shadow-lg shadow-blue-900/10"
-                              : "border-border/50 bg-white/60 hover:border-blue-900/30 hover:shadow-md"
-                          )}
-                        >
-                          <div className="flex items-start gap-3">
-                            <button
-                              type="button"
-                              role="radio"
-                              aria-checked={formData.format === format.id}
-                              aria-label={`Select ${format.subtitle}`}
-                              onClick={() => handleInputChange("format", format.id)}
-                              className="mt-0.5 flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full border border-slate-400 text-blue-900 outline-none transition-[color,box-shadow,border-color] focus-visible:border-blue-900 focus-visible:ring-2 focus-visible:ring-blue-900/20"
+                          return (
+                            <div
+                              key={format.id}
+                              className={cn(
+                                "rounded-2xl border-2 p-4 transition-all duration-300",
+                                isSelected
+                                  ? "border-blue-900 bg-gradient-to-br from-blue-50 to-slate-50 shadow-md shadow-blue-900/10"
+                                  : "border-slate-200 bg-white hover:border-blue-300 hover:shadow-sm"
+                              )}
                             >
-                              <span
-                                className={cn(
-                                  "h-2 w-2 rounded-full bg-blue-900 transition-opacity",
-                                  formData.format === format.id ? "opacity-100" : "opacity-0"
-                                )}
-                              />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => handleInputChange("format", format.id)}
-                              className="flex flex-1 items-start gap-2.5 text-left"
-                            >
-                              <div className="flex items-start gap-2.5">
-                                <span className="text-2xl leading-none sm:text-[1.65rem]">{format.icon}</span>
-                                <div className="flex-1">
-                                  <div className="text-[15px] font-semibold leading-snug text-slate-950">{format.title}</div>
-                                  <div className="text-xs font-semibold uppercase tracking-[0.14em] text-blue-900">{format.subtitle}</div>
-                                  <p className="mt-1 text-xs leading-relaxed text-muted-foreground sm:text-[13px]">{format.description}</p>
-                                </div>
+                              <div className="flex items-start gap-4">
+                                <button
+                                  type="button"
+                                  role="radio"
+                                  aria-checked={isSelected}
+                                  aria-label={`Select ${format.subtitle}`}
+                                  onClick={() => handleInputChange("format", format.id)}
+                                  className="mt-1 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border border-slate-400 text-blue-900 outline-none transition focus-visible:border-blue-900 focus-visible:ring-2 focus-visible:ring-blue-900/20"
+                                >
+                                  <span className={cn("h-2.5 w-2.5 rounded-full bg-blue-900 transition-opacity", isSelected ? "opacity-100" : "opacity-0")} />
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() => handleInputChange("format", format.id)}
+                                  className="flex flex-1 items-start gap-3 text-left"
+                                >
+                                  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-slate-100 text-2xl shadow-sm">
+                                    {format.icon}
+                                  </div>
+                                  <div className="flex-1">
+                                    <div className="flex flex-wrap items-start justify-between gap-3">
+                                      <div>
+                                        <h4 className="text-base font-semibold text-slate-950">{format.title}</h4>
+                                        <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-blue-900">{format.subtitle}</p>
+                                      </div>
+                                      {isSelected ? (
+                                        <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500 px-3 py-1.5 text-[11px] font-semibold text-white shadow-sm">
+                                          <CheckCircle2 className="h-3.5 w-3.5" />
+                                          Selected
+                                        </div>
+                                      ) : null}
+                                    </div>
+                                    <p className="mt-2 text-sm leading-relaxed text-slate-600">{format.description}</p>
+                                  </div>
+                                </button>
                               </div>
-                            </button>
-                            <div className="flex shrink-0 flex-col items-end gap-2 self-start pl-2">
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                className="h-7 rounded-full px-2.5 text-[11px] font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-950 sm:h-8 sm:px-3"
-                                onClick={(event) => {
-                                  event.stopPropagation()
-                                  setShowFormatInfo(format.id)
-                                }}
-                              >
-                                Know more
-                              </Button>
-                              {formData.format === format.id ? (
-                                <div className="flex items-center gap-1 rounded-full border border-blue-900/15 bg-blue-50 px-2 py-1 text-[11px] font-semibold text-blue-900 shadow-sm">
-                                  <CheckCircle2 className="h-3.5 w-3.5" />
-                                  <span>Selected</span>
-                                </div>
-                              ) : null}
+
+                              <div className="mt-4 flex items-center justify-between gap-3 border-t border-slate-200 pt-4">
+                                <Button
+                                  type="button"
+                                  variant="link"
+                                  className="h-auto p-0 text-sm font-medium text-blue-900 hover:text-blue-950"
+                                  onClick={(event) => {
+                                    event.stopPropagation()
+                                    setShowFormatInfo(format.id)
+                                  }}
+                                >
+                                  Know more →
+                                </Button>
+                                <div className="text-xs font-medium text-slate-500">{format.duration}</div>
+                              </div>
                             </div>
+                          )
+                        })}
+                      </div>
+                      {errors.format ? <p className="mt-3 text-sm text-destructive">{errors.format}</p> : null}
+                    </div>
+                  </div>
+
+                  <div className={bookingStepStyles.shell}>
+                    <div className={bookingStepStyles.badge}>
+                      <span>STEP 3</span>
+                    </div>
+                    <div className="px-5 pb-5 pt-9 sm:px-6 sm:pb-6">
+                      <div className="mb-5 flex flex-col gap-1.5">
+                        <h3 className={bookingStepStyles.title}>Membership Package</h3>
+                        <p className={bookingStepStyles.description}>Your checkout secures the introductory package tied to this first-class experience.</p>
+                      </div>
+
+                      <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-5">
+                        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+                          <div className="max-w-2xl">
+                            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-blue-900/70">Membership</p>
+                            <h4 className="mt-2 text-2xl font-semibold text-slate-950">{membershipOffer.name}</h4>
+                            <p className="mt-3 text-sm leading-relaxed text-slate-600">
+                              A premium introductory package curated to guide your first Physique 57 sessions with structure, value, and flexibility.
+                            </p>
+                          </div>
+
+                          <div className="rounded-2xl border border-blue-100 bg-white px-4 py-3 shadow-sm lg:min-w-[180px] lg:text-right">
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">Package price</p>
+                            <p className="mt-2 text-2xl font-bold text-blue-900">{membershipOffer.price}</p>
                           </div>
                         </div>
-                      ))}
-                    </div>
-                    {errors.format ? <p className="text-sm text-destructive">{errors.format}</p> : null}
-                  </div>
-                </div>
-              </div>
 
-              <div className="relative space-y-4 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-6 shadow-sm sm:p-6 sm:pt-7">
-                <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
-                  <CreditCard className="h-3.5 w-3.5 text-blue-900" />
-                  <span className="mb-1 text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">Membership included</span>
-                </div>
-                <p className="text-sm text-muted-foreground">Your checkout secures the introductory package tied to this first-class experience.</p>
-                <div className="overflow-hidden rounded-[26px] border border-blue-900/15 bg-gradient-to-br from-blue-900/10 to-slate-200/30 text-slate-950 shadow-[0_22px_55px_rgba(15,23,42,0.10)]">
-                  <div className="relative border-b border-blue-900/10 px-5 py-4 sm:px-6 sm:pr-[11.5rem]">
-                    <div className="flex flex-col gap-4 sm:items-start">
-                      <div className="max-w-2xl pt-3">
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-blue-900/70">Membership</p>
-                        <h3 className="mt-2 text-xl font-semibold text-slate-950 sm:text-[1.4rem]">{membershipOffer.name}</h3>
-                        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-700">
-                          A premium introductory package curated to guide your first Physique 57 sessions with structure, value, and flexibility.
-                        </p>
+                        <div className="my-5">
+                          <div className="h-px w-full bg-slate-200" />
+                        </div>
+
+                        <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+                          <div className={bookingStepStyles.surface}>
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">Sessions</p>
+                            <p className="mt-2 text-lg font-semibold text-slate-950">{membershipOffer.sessions}</p>
+                          </div>
+                          <div className={bookingStepStyles.surface}>
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">Validity</p>
+                            <p className="mt-2 text-lg font-semibold text-slate-950">{membershipOffer.validFor}</p>
+                          </div>
+                          <div className={cn(bookingStepStyles.surface, "bg-gradient-to-br from-blue-50 to-emerald-50") }>
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-blue-900/70">Included</p>
+                            <p className="mt-2 text-lg font-semibold text-slate-950">First-class access package</p>
+                          </div>
+                        </div>
+
+                        <div className="mt-5 flex flex-col gap-3 border-t border-slate-200 pt-4 sm:flex-row sm:items-center sm:justify-between">
+                          <p className="text-sm leading-relaxed text-slate-600">
+                            Includes a guided onboarding flow, secure checkout, and the studio follow-up needed to complete your booking.
+                          </p>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="h-10 rounded-full border-blue-900 px-4 font-medium text-blue-900 hover:bg-blue-50"
+                            onClick={() => setShowMembershipModal(true)}
+                          >
+                            Know more
+                          </Button>
+                        </div>
                       </div>
-                      <motion.div
-                        className="rounded-2xl border border-slate-950/20 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 px-3.5 py-2.5 text-center text-white shadow-[0_18px_38px_rgba(15,23,42,0.22)] sm:absolute sm:right-5 sm:top-5 sm:min-w-[170px]"
-                        animate={{ y: [0, -2, 0], scale: [1, 1.01, 1] }}
-                        transition={{ duration: 4.5, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
-                      >
-                        <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/60">Package price</p>
-                        <p className="mt-1.5 text-[1.45rem] font-bold leading-none text-white">{membershipOffer.price}</p>
-                      </motion.div>
                     </div>
                   </div>
 
-                  <div className="grid gap-3 px-5 py-5 sm:grid-cols-3 sm:px-6">
-                    <div className="rounded-2xl border border-blue-900/10 bg-white/70 px-4 py-4 backdrop-blur-sm">
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-blue-900/70">Sessions</p>
-                      <p className="mt-2 text-base font-semibold text-slate-950">{membershipOffer.sessions}</p>
+                  <div className={bookingStepStyles.shell}>
+                    <div className={bookingStepStyles.badge}>
+                      <span>FINAL STEP</span>
                     </div>
-                    <div className="rounded-2xl border border-blue-900/10 bg-white/70 px-4 py-4 backdrop-blur-sm">
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-blue-900/70">Validity</p>
-                      <p className="mt-2 text-base font-semibold text-slate-950">{membershipOffer.validFor}</p>
-                    </div>
-                    <div className="rounded-2xl border border-blue-900/10 bg-white/70 px-4 py-4 backdrop-blur-sm shadow-sm">
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-blue-900/70">Included</p>
-                      <p className="mt-2 text-base font-semibold text-slate-950">First-class access package</p>
-                    </div>
-                  </div>
+                    <div className="px-5 pb-5 pt-9 sm:px-6 sm:pb-6">
+                      <div className="mb-5 flex flex-col gap-1.5">
+                        <h3 className={bookingStepStyles.title}>Confirm & Pay</h3>
+                        <p className={bookingStepStyles.description}>Review the waiver, accept the terms, then continue to secure checkout.</p>
+                      </div>
 
-                  <div className="flex flex-col gap-3 border-t border-blue-900/10 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-                    <p className="text-sm leading-relaxed text-slate-700">
-                      Includes a guided onboarding flow, secure checkout, and the studio follow-up needed to complete your booking.
-                    </p>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="border-blue-900/15 bg-white/70 text-slate-950 hover:border-blue-900/25 hover:bg-white/90 hover:text-slate-950"
-                      onClick={() => setShowMembershipModal(true)}
-                    >
-                      Know more
-                    </Button>
-                  </div>
-                </div>
-              </div>
+                      <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4">
+                        <div className="flex items-start gap-3">
+                          <Checkbox
+                            id="terms"
+                            checked={formData.acceptedTerms}
+                            onCheckedChange={(checked) => handleInputChange("acceptedTerms", Boolean(checked))}
+                            className={cn("mt-1 h-5 w-5 rounded-md border-slate-400 data-[state=checked]:border-blue-900 data-[state=checked]:bg-blue-900", errors.acceptedTerms && "border-destructive")}
+                          />
+                          <div className="flex-1 space-y-3">
+                            <label htmlFor="terms" className="block cursor-pointer text-sm font-medium leading-relaxed text-slate-900">
+                              I have read and accept the waiver and booking terms. <span className="text-destructive">*</span>
+                            </label>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              className="h-10 rounded-full border-slate-300 bg-white px-4 text-sm font-medium text-slate-800 hover:border-blue-900 hover:bg-blue-50 hover:text-blue-900"
+                              onClick={(event) => {
+                                event.preventDefault()
+                                setShowWaiverModal(true)
+                              }}
+                            >
+                              View terms & conditions
+                            </Button>
+                          </div>
+                        </div>
+                        {errors.acceptedTerms ? <p className="mt-3 text-sm text-destructive">{errors.acceptedTerms}</p> : null}
+                      </div>
 
-                <div className="relative space-y-3 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-7 shadow-sm sm:p-6 sm:pt-8">
-                <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
-                  <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">Before you confirm</span>
-                </div>
-                <div className="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/70 px-4 py-3 sm:items-center sm:gap-4">
-                  <Checkbox
-                    id="terms"
-                    checked={formData.acceptedTerms}
-                    onCheckedChange={(checked) => handleInputChange("acceptedTerms", Boolean(checked))}
-                    className={cn("mt-0.5 h-5 w-5 rounded-md border-slate-400 data-[state=checked]:border-blue-900 data-[state=checked]:bg-blue-900 sm:mt-0", errors.acceptedTerms && "border-destructive")}
-                  />
-                  <div className="flex-1">
-                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                      <label htmlFor="terms" className="cursor-pointer text-sm font-semibold leading-relaxed text-slate-900 sm:flex-1">
-                        I have read and accept the waiver and booking terms. <span className="text-destructive">*</span>
-                      </label>
+                      {statusMessage ? (
+                        <div
+                          className={cn(
+                            "mt-4 rounded-xl border px-4 py-3 text-sm",
+                            statusMessage.tone === "error"
+                              ? "border-red-300 bg-red-50 text-red-800"
+                              : "border-emerald-300 bg-emerald-50 text-emerald-800"
+                          )}
+                        >
+                          {statusMessage.text}
+                        </div>
+                      ) : null}
+
+                      {(errors.payment || errors.form) ? (
+                        <p className="mt-4 text-sm text-destructive">{errors.payment || errors.form}</p>
+                      ) : null}
+
                       <Button
-                        type="button"
-                        variant="outline"
-                        className="h-9 rounded-full border-slate-300 bg-white px-4 text-xs font-semibold tracking-[0.08em] text-slate-800 hover:border-slate-900 hover:bg-slate-900 hover:text-white sm:self-auto"
-                        onClick={(event) => {
-                          event.preventDefault()
-                          setShowWaiverModal(true)
-                        }}
+                        type="submit"
+                        size="lg"
+                        className="mt-5 h-12 w-full bg-gradient-to-r from-emerald-600 to-green-700 text-base font-semibold text-white shadow-md transition-all duration-300 hover:from-emerald-700 hover:to-green-800 hover:shadow-lg"
+                        disabled={isSubmitting || isCreatingCheckout || !isFormValid}
                       >
-                        View terms & conditions
+                        {isSubmitting || isCreatingCheckout ? (
+                          <>
+                            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                            {isCreatingCheckout ? "Starting secure checkout..." : "Submitting your booking..."}
+                          </>
+                        ) : (
+                          primaryButtonLabel
+                        )}
                       </Button>
                     </div>
                   </div>
-                </div>
-                {errors.acceptedTerms ? <p className="text-sm text-destructive">{errors.acceptedTerms}</p> : null}
+                </form>
               </div>
-
-              {statusMessage ? (
-                <div className={cn(
-                  "rounded-xl border px-4 py-3 text-sm",
-                  statusMessage.tone === "error"
-                    ? "border-red-300 bg-red-50 text-red-800"
-                    : "border-emerald-300 bg-emerald-50 text-emerald-800"
-                )}>
-                  {statusMessage.text}
-                </div>
-              ) : null}
-
-              {(errors.payment || errors.form) ? (
-                <p className="text-sm text-destructive">{errors.payment || errors.form}</p>
-              ) : null}
-
-              <Button
-                type="submit"
-                size="lg"
-                className="h-14 w-full bg-gradient-to-r from-blue-900 to-blue-800 text-lg shadow-lg transition-all duration-300 hover:from-blue-950 hover:to-blue-900 hover:shadow-xl"
-                disabled={isSubmitting || isCreatingCheckout || !isFormValid}
-              >
-                {isSubmitting || isCreatingCheckout ? (
-                  <>
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    {isCreatingCheckout ? "Starting secure checkout..." : "Submitting your booking..."}
-                  </>
-                ) : (
-                  primaryButtonLabel
-                )}
-              </Button>
-              </form>
-            </div>
             )}
 
             <section className="mt-20 space-y-12">
