@@ -118,7 +118,7 @@ export const countryCodes: CountryCode[] = [
 
 export const heroImages = [
   "https://i.postimg.cc/hGqdH7S1/IMG-7825.png",
-  "https://i.postimg.cc/GtbTLsVZ/IMG-7809.jpg",
+  "https://i.postimg.cc/1XWy5H3w/main2.png",
   "https://i.postimg.cc/SRV2Jxpp/IMG-7810.jpg",
   "https://i.postimg.cc/Znr89FKR/IMG-7826.jpg",
   "https://i.postimg.cc/Xv0CTyVf/IMG-7828.png",
