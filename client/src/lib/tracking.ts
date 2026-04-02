@@ -5,6 +5,7 @@ export interface PublicClientConfig {
   googleAdsConversionValue: string | number
   googleAdsConversionCurrency: string
   metaPixelId: string
+  snapPixelId: string
   apiBaseUrl: string
   scheduleUrl: string
   redirectUrl: string
@@ -34,6 +35,7 @@ declare global {
     gtag?: (...args: unknown[]) => void
     fbq?: (...args: unknown[]) => void
     _fbq?: (...args: unknown[]) => void
+    snaptr?: (...args: unknown[]) => void
   }
 }
 
@@ -139,6 +141,27 @@ export function initializeTracking(config: PublicClientConfig) {
     fbq?.("init", config.metaPixelId)
     fbq?.("track", "PageView")
   }
+
+  if (config.snapPixelId && !window.snaptr) {
+    ;((windowObject, documentObject, tagName, scriptSource) => {
+      const snapProxy = function (...args: unknown[]) {
+        snapProxy.queue.push(args)
+      } as ((...args: unknown[]) => void) & { queue: unknown[][] }
+
+      snapProxy.queue = []
+      windowObject.snaptr = snapProxy
+
+      const script = documentObject.createElement(tagName) as HTMLScriptElement
+      script.async = true
+      script.src = scriptSource
+      const firstScript = documentObject.getElementsByTagName(tagName)[0]
+      firstScript.parentNode?.insertBefore(script, firstScript)
+    })(window, document, "script", "https://sc-static.net/scevent.min.js")
+
+    const snaptr = (window as Window & { snaptr?: (...args: unknown[]) => void }).snaptr
+    snaptr?.("init", config.snapPixelId)
+    snaptr?.("track", "PAGE_VIEW")
+  }
 }
 
 export function getSubmissionTrackingPayload() {
@@ -217,6 +240,14 @@ export function trackLeadSubmission(config: PublicClientConfig | null, leadPaylo
       value: Number(config.googleAdsConversionValue || 0) || 0,
       currency: config.googleAdsConversionCurrency || "INR",
       transaction_id: leadPayload.event_id,
+    })
+  }
+
+  if (typeof window.snaptr === "function" && config.snapPixelId) {
+    window.snaptr("track", "SIGN_UP", {
+      description: leadPayload.utm_campaign || "trial_signup",
+      sign_up_method: leadPayload.utm_source || "direct",
+      client_dedup_id: leadPayload.event_id,
     })
   }
 }

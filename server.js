@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 const express = require('express');
 const fs = require('fs');
+const { parsePhoneNumberFromString } = require('libphonenumber-js/min');
 const path = require('path');
 const portfinder = require('portfinder');
 const GoogleSheetsService = require('./googleSheets');
@@ -19,7 +20,7 @@ const app = express();
 app.disable('x-powered-by');
 
 const PORT = process.env.PORT || 3000;
-const CLIENT_APP_DIRECTORY = path.join(__dirname, 'public', 'app');
+const CLIENT_APP_DIRECTORY = path.join(__dirname, 'public');
 const CLIENT_APP_INDEX_PATH = path.join(CLIENT_APP_DIRECTORY, 'index.html');
 const googleSheets = new GoogleSheetsService();
 const supabaseLeadStore = new SupabaseLeadStore();
@@ -81,8 +82,8 @@ const DEFAULT_STRIPE_CHECKOUT_CONFIG = {
   consentCollection: null,
   metadata: {},
   buttonLabel: 'Pay ₹1,838',
-  successUrl: '/app/?payment=success&session_id={CHECKOUT_SESSION_ID}',
-  cancelUrl: '/app/?payment=cancelled'
+  successUrl: '/?payment=success&session_id={CHECKOUT_SESSION_ID}',
+  cancelUrl: '/?payment=cancelled'
 };
 
 const DEFAULT_MOMENCE_MEMBERSHIP = {
@@ -141,8 +142,8 @@ app.use((req, res, next) => {
 
 app.use(express.json({ limit: JSON_BODY_LIMIT }));
 
-app.use('/assets', express.static(path.join(__dirname, 'assets')));
-app.use('/app', express.static(CLIENT_APP_DIRECTORY));
+app.use('/static-assets', express.static(path.join(__dirname, 'assets')));
+app.use(express.static(CLIENT_APP_DIRECTORY));
 
 // Stripe checkout endpoints (optional - requires STRIPE_SECRET_KEY in environment)
 let stripeClient = null;
@@ -656,6 +657,28 @@ function sanitizePhone(value) {
   return `+${digits}`;
 }
 
+function normalizeCountryIso(value) {
+  const normalized = sanitizeText(value, 4).toUpperCase();
+  return /^[A-Z]{2}$/.test(normalized) ? normalized : 'IN';
+}
+
+function normalizeAndValidatePhone(value, countryIso) {
+  const rawValue = String(value || '').trim();
+  if (!rawValue) {
+    return { number: '', isValid: false };
+  }
+
+  const parsed = parsePhoneNumberFromString(rawValue, normalizeCountryIso(countryIso));
+  if (!parsed || !parsed.isValid()) {
+    return { number: '', isValid: false };
+  }
+
+  return {
+    number: parsed.number,
+    isValid: true
+  };
+}
+
 function sanitizeTrackingValue(value) {
   return sanitizeText(value, 255);
 }
@@ -729,12 +752,14 @@ function validateLeadPayload(payload) {
     fieldErrors.email = 'Enter a valid email address.';
   }
 
-  const phoneNumber = sanitizePhone(payload.phoneNumber);
+  const phoneCountry = normalizeCountryIso(payload.phoneCountry);
+  const normalizedPhone = normalizeAndValidatePhone(payload.phoneNumber, phoneCountry);
+  const phoneNumber = normalizedPhone.number;
   const phoneDigits = normalizePhone(phoneNumber);
   if (!phoneNumber) {
     fieldErrors.phoneNumber = 'Phone number is required.';
-  } else if (phoneDigits.length < 10 || phoneDigits.length > 15) {
-    fieldErrors.phoneNumber = 'Enter a valid phone number including country code.';
+  } else if (!normalizedPhone.isValid || phoneDigits.length < 8 || phoneDigits.length > 15) {
+    fieldErrors.phoneNumber = `Enter a valid phone number for ${phoneCountry}.`;
   }
 
   const time = sanitizeText(payload.time, 80) || 'Flexible / Needs Recommendation';
@@ -770,7 +795,7 @@ function validateLeadPayload(payload) {
     lastName,
     email,
     phoneNumber,
-    phoneCountry: sanitizeText(payload.phoneCountry, 4).toUpperCase(),
+    phoneCountry,
     time,
     center,
     type,
@@ -1175,25 +1200,26 @@ app.get('/api/verify-payment', async (req, res) => {
   }
 });
 
-app.get(['/', '/index.html'], (req, res) => {
-  const query = req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '';
-  res.redirect(302, `/app/${query}`);
-});
-
-app.get(['/app', '/app/*'], (req, res, next) => {
-  if (!fs.existsSync(CLIENT_APP_INDEX_PATH)) {
-    return next();
-  }
-
-  return res.sendFile(CLIENT_APP_INDEX_PATH);
-});
-
 app.get('/api/public-config', (req, res) => {
   return res.json(getPublicClientConfig());
 });
 
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'healthy' });
+});
+
+app.get(['/app', '/app/*'], (req, res) => {
+  const targetPath = req.path.replace(/^\/app/, '') || '/';
+  const query = req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '';
+  return res.redirect(301, `${targetPath}${query}`);
+});
+
+app.get(['/', '/index.html'], (req, res, next) => {
+  if (!fs.existsSync(CLIENT_APP_INDEX_PATH)) {
+    return next();
+  }
+
+  return res.sendFile(CLIENT_APP_INDEX_PATH);
 });
 
 app.post('/api/partial-lead', async (req, res) => {
@@ -1380,7 +1406,7 @@ if (require.main === module) {
 
     app.listen(availablePort, async () => {
       console.log(`Server is running on port ${availablePort}`);
-      console.log(`App: http://localhost:${availablePort}/app/`);
+      console.log(`App: http://localhost:${availablePort}/`);
       console.log(`Health: http://localhost:${availablePort}/health`);
 
       if (supabaseLeadStore.isConfigured) {

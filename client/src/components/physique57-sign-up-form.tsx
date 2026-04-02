@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 import confetti from "canvas-confetti"
 import { AnimatePresence, motion } from "framer-motion"
+import { parsePhoneNumberFromString, type CountryCode as PhoneCountryCode } from "libphonenumber-js/min"
 import {
   Award,
   Building2,
@@ -76,7 +77,10 @@ const STORAGE_KEYS = {
   submitPayload: "physique57-react-submit-payload-v1",
   paymentSession: "physique57-react-payment-session-v1",
   checkoutPending: "physique57-react-checkout-pending-v1",
+  draftId: "physique57-react-draft-id-v1",
 }
+
+const DEFAULT_REDIRECT_URL = "https://momence.com/u/physique-57-india-fffoSp"
 
 function createEventId() {
   return `lead_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`
@@ -107,20 +111,43 @@ function buildWhatsAppMessage(formData: Physique57FormData, selectedFormat?: { b
   return lines.join("\n")
 }
 
-function normalizePhoneNumber(countryCode: string, phone: string) {
-  const digits = phone.replace(/\D/g, "")
-  if (!digits) {
+function getCountryOption(countrySelection: string) {
+  return (
+    countryCodes.find((item) => item.country === countrySelection)
+    ?? countryCodes.find((item) => item.code === countrySelection)
+    ?? countryCodes.find((item) => item.country === "IN")
+    ?? countryCodes[0]
+  )
+}
+
+function normalizePhoneNumber(countrySelection: string, phone: string) {
+  const normalizedPhone = phone.trim()
+  if (!normalizedPhone) {
     return ""
   }
 
-  const normalizedCode = countryCode.startsWith("+") ? countryCode : `+${countryCode}`
-  const codeDigits = normalizedCode.replace(/\D/g, "")
-  const mergedDigits = digits.startsWith(codeDigits) ? digits : `${codeDigits}${digits}`
-  return `+${mergedDigits}`
+  const country = getCountryOption(countrySelection)
+  const parsed = parsePhoneNumberFromString(normalizedPhone, country.country as PhoneCountryCode)
+  return parsed?.isValid() ? parsed.number : ""
 }
 
-function getCountryIsoFromCode(countryCode: string) {
-  return countryCodes.find((item) => item.code === countryCode)?.country || "IN"
+function getCountryIsoFromCode(countrySelection: string) {
+  return getCountryOption(countrySelection)?.country || "IN"
+}
+
+function getPhoneValidationMessage(countrySelection: string, phone: string) {
+  if (!phone.trim()) {
+    return "Phone number is required"
+  }
+
+  const country = getCountryOption(countrySelection)
+  const parsed = parsePhoneNumberFromString(phone.trim(), country.country as PhoneCountryCode)
+
+  if (!parsed || !parsed.isValid()) {
+    return `Enter a valid phone number for ${country.name}`
+  }
+
+  return null
 }
 
 const benefitIcons: Record<Benefit["icon"], LucideIcon> = {
@@ -264,6 +291,10 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
   const scheduleHostRef = useRef<HTMLDivElement | null>(null)
   const confettiCanvasRef = useRef<HTMLCanvasElement | null>(null)
   const confettiInstanceRef = useRef<ReturnType<typeof confetti.create> | null>(null)
+  const redirectTimeoutRef = useRef<number | null>(null)
+  const partialSaveTimeoutRef = useRef<number | null>(null)
+  const draftIdRef = useRef<string>(createEventId())
+  const lastPartialPayloadRef = useRef("")
   const eventIdRef = useRef<string>(createEventId())
   const hasRestoredStateRef = useRef(false)
   const hasProcessedCheckoutReturnRef = useRef(false)
@@ -273,7 +304,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
     lastName: "",
     email: "",
     phone: "",
-    countryCode: "+91",
+    countryCode: "IN",
     studio: "",
     format: "powercycle",
     acceptedTerms: false,
@@ -329,7 +360,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
     formData.lastName.trim() !== "" &&
     formData.email.trim() !== "" &&
     /\S+@\S+\.\S+/.test(formData.email) &&
-    formData.phone.trim() !== "" &&
+    getPhoneValidationMessage(formData.countryCode, formData.phone) === null &&
     formData.studio !== "" &&
     formData.acceptedTerms
 
@@ -340,6 +371,50 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
     : publicConfig?.paymentButtonLabel || "Pay ₹1,838.00"
 
   const shouldHideFormForProcessing = isPostPaymentProcessing && !showSuccessModal
+  const redirectUrl = publicConfig?.redirectUrl || DEFAULT_REDIRECT_URL
+
+  function redirectToMomence() {
+    if (typeof window === "undefined") {
+      return
+    }
+
+    window.location.assign(redirectUrl)
+  }
+
+  function scheduleRedirectToMomence(delay = 1400) {
+    if (typeof window === "undefined") {
+      return
+    }
+
+    if (redirectTimeoutRef.current) {
+      window.clearTimeout(redirectTimeoutRef.current)
+    }
+
+    redirectTimeoutRef.current = window.setTimeout(() => {
+      redirectToMomence()
+    }, delay)
+  }
+
+  function buildPartialLeadPayload(): Record<string, string> {
+    const trackingPayload = getSubmissionTrackingPayload() as Record<string, string>
+
+    return {
+      draft_id: draftIdRef.current,
+      event_id: eventIdRef.current,
+      session_id: paymentSessionId,
+      status: paymentVerified && paymentSessionId ? "payment_verified" : "in_progress",
+      firstName: formData.firstName.trim(),
+      lastName: formData.lastName.trim(),
+      email: formData.email.trim(),
+      phoneNumber: formData.phone.trim(),
+      phoneCountry: getCountryIsoFromCode(formData.countryCode),
+      center: selectedStudio?.backendName ?? formData.studio,
+      time: "Flexible / Needs Recommendation",
+      type: selectedFormat?.backendValue ?? formData.format,
+      waiverAccepted: formData.acceptedTerms ? "accepted" : "",
+      ...trackingPayload,
+    }
+  }
 
   useEffect(() => {
     const imageNodes = heroImages.map((src, index) => {
@@ -365,6 +440,14 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
       imageNodes.forEach((image) => {
         image.onload = null
       })
+    }
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      if (redirectTimeoutRef.current && typeof window !== "undefined") {
+        window.clearTimeout(redirectTimeoutRef.current)
+      }
     }
   }, [])
 
@@ -441,6 +524,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
     try {
       const storedState = window.sessionStorage.getItem(STORAGE_KEYS.formState)
       const storedSessionId = window.sessionStorage.getItem(STORAGE_KEYS.paymentSession)
+      const storedDraftId = window.sessionStorage.getItem(STORAGE_KEYS.draftId)
 
       if (storedState) {
         const parsed = JSON.parse(storedState) as {
@@ -449,7 +533,15 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
         }
 
         if (parsed.formData) {
-          setFormData((prev) => ({ ...prev, ...parsed.formData }))
+          const restoredCountry = typeof parsed.formData.countryCode === "string"
+            ? getCountryIsoFromCode(parsed.formData.countryCode)
+            : undefined
+
+          setFormData((prev) => ({
+            ...prev,
+            ...parsed.formData,
+            ...(restoredCountry ? { countryCode: restoredCountry } : {}),
+          }))
         }
 
         if (parsed.eventId) {
@@ -459,6 +551,10 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
 
       if (storedSessionId) {
         setPaymentSessionId(storedSessionId)
+      }
+
+      if (storedDraftId) {
+        draftIdRef.current = storedDraftId
       }
     } catch {
       // Ignore storage restoration failures.
@@ -477,6 +573,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
         STORAGE_KEYS.formState,
         JSON.stringify({ formData, eventId: eventIdRef.current })
       )
+      window.sessionStorage.setItem(STORAGE_KEYS.draftId, draftIdRef.current)
 
       if (paymentSessionId) {
         window.sessionStorage.setItem(STORAGE_KEYS.paymentSession, paymentSessionId)
@@ -487,6 +584,63 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
       // Ignore persistence failures.
     }
   }, [formData, paymentSessionId])
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !hasRestoredStateRef.current || showSuccessModal) {
+      return
+    }
+
+    const partialPayload = buildPartialLeadPayload()
+    const hasMeaningfulDraftData = Boolean(
+      partialPayload.firstName ||
+      partialPayload.lastName ||
+      partialPayload.email ||
+      partialPayload.phoneNumber ||
+      partialPayload.center ||
+      partialPayload.type ||
+      partialPayload.waiverAccepted ||
+      partialPayload.utm_source ||
+      partialPayload.utm_medium ||
+      partialPayload.utm_campaign ||
+      partialPayload.gclid ||
+      partialPayload.fbclid
+    )
+
+    if (!hasMeaningfulDraftData) {
+      return
+    }
+
+    const payloadSignature = JSON.stringify(partialPayload)
+    if (lastPartialPayloadRef.current === payloadSignature) {
+      return
+    }
+
+    if (partialSaveTimeoutRef.current) {
+      window.clearTimeout(partialSaveTimeoutRef.current)
+    }
+
+    partialSaveTimeoutRef.current = window.setTimeout(() => {
+      void fetch("/api/partial-lead", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: payloadSignature,
+      }).then((response) => {
+        if (response.ok) {
+          lastPartialPayloadRef.current = payloadSignature
+        }
+      }).catch(() => {
+        // Ignore draft persistence issues; they should never block conversion.
+      })
+    }, 700)
+
+    return () => {
+      if (partialSaveTimeoutRef.current) {
+        window.clearTimeout(partialSaveTimeoutRef.current)
+      }
+    }
+  }, [formData, paymentSessionId, paymentVerified, selectedFormat, selectedStudio, showSuccessModal])
 
   useEffect(() => {
     if (!confettiCanvasRef.current) {
@@ -668,7 +822,8 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
     if (!formData.lastName.trim()) nextErrors.lastName = "Last name is required"
     if (!formData.email.trim()) nextErrors.email = "Email is required"
     else if (!/\S+@\S+\.\S+/.test(formData.email)) nextErrors.email = "Enter a valid email"
-    if (!formData.phone.trim()) nextErrors.phone = "Phone number is required"
+    const phoneValidationMessage = getPhoneValidationMessage(formData.countryCode, formData.phone)
+    if (phoneValidationMessage) nextErrors.phone = phoneValidationMessage
     if (!formData.studio) nextErrors.studio = "Please select a studio"
     if (!selectedFormat) nextErrors.format = "Please choose a valid format"
     if (!formData.acceptedTerms) nextErrors.acceptedTerms = "You must accept the terms"
@@ -720,11 +875,14 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
             window.sessionStorage.removeItem(STORAGE_KEYS.submitPayload)
             window.sessionStorage.removeItem(STORAGE_KEYS.paymentSession)
             window.sessionStorage.removeItem(STORAGE_KEYS.checkoutPending)
+            window.sessionStorage.removeItem(STORAGE_KEYS.draftId)
           } catch {
             // Ignore storage cleanup failures.
           }
 
           eventIdRef.current = createEventId()
+          draftIdRef.current = createEventId()
+          lastPartialPayloadRef.current = ""
           setPaymentVerified(false)
           setPaymentSessionId("")
           trackLeadSubmission(publicConfig, payload as { event_id?: string; utm_campaign?: string; utm_source?: string })
@@ -740,6 +898,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
           })
           setShowSuccessModal(true)
           setIsPostPaymentProcessing(false)
+          scheduleRedirectToMomence()
           return
         }
 
@@ -769,9 +928,13 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
         window.sessionStorage.removeItem(STORAGE_KEYS.submitPayload)
         window.sessionStorage.removeItem(STORAGE_KEYS.paymentSession)
         window.sessionStorage.removeItem(STORAGE_KEYS.checkoutPending)
+        window.sessionStorage.removeItem(STORAGE_KEYS.draftId)
       } catch {
         // Ignore storage cleanup failures.
       }
+
+      draftIdRef.current = createEventId()
+      lastPartialPayloadRef.current = ""
 
       await celebrateSuccess()
 
@@ -782,6 +945,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
       setStatusMessage({ tone: "success", text: "Payment verified and booking completed successfully." })
       setShowSuccessModal(true)
       setIsPostPaymentProcessing(false)
+      scheduleRedirectToMomence()
     } catch {
       setIsPostPaymentProcessing(false)
       setStatusMessage({ tone: "error", text: "We could not complete the request right now. Please try again in a moment." })
@@ -927,31 +1091,51 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
         ))}
       </div>
 
-        <div className="relative grid min-h-screen lg:grid-cols-[45%_55%]">
-        <div className="relative hidden h-screen overflow-hidden bg-black lg:block">
+        <div className="relative grid min-h-screen lg:grid-cols-[40%_60%]">
+        <div
+          className="relative hidden h-screen cursor-pointer overflow-hidden bg-black lg:block"
+          onClick={redirectToMomence}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault()
+              redirectToMomence()
+            }
+          }}
+          role="link"
+          tabIndex={0}
+          aria-label="Open Physique 57 schedule page"
+        >
           <AnimatePresence mode="sync">
             <motion.div
               key={currentHeroImage}
               className="absolute inset-0 overflow-hidden bg-black"
-              initial={{ opacity: 0, scale: 1.015, filter: "blur(3px)" }}
-              animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-              exit={{ opacity: 0, scale: 1.01, filter: "blur(2px)" }}
-              transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+              initial={{ opacity: 0, scale: 1.04, filter: "blur(6px)", rotate: -0.35 }}
+              animate={{ opacity: 1, scale: 1, filter: "blur(0px)", rotate: 0 }}
+              exit={{ opacity: 0, scale: 1.02, filter: "blur(4px)", rotate: 0.25 }}
+              transition={{ duration: 1.3, ease: [0.22, 1, 0.36, 1] }}
             >
               <motion.img
                 src={heroImages[currentHeroImage]}
                 alt="Physique 57 studio"
-                className="h-full w-full object-cover object-top opacity-95"
-                initial={{ scale: 1.08, x: 12, y: 0 }}
-                animate={{ scale: 1, x: 0, y: -6 }}
-                exit={{ scale: 1.02, x: -10, y: 4 }}
-                transition={{ duration: 6.5, ease: [0.22, 1, 0.36, 1] }}
+                className="h-full w-full object-cover object-top"
+                initial={{ scale: 1.12, x: 18, y: 8 }}
+                animate={{ scale: 1.03, x: -8, y: -10 }}
+                exit={{ scale: 1.08, x: -18, y: 6 }}
+                transition={{ duration: 8.5, ease: [0.22, 1, 0.36, 1] }}
               />
             </motion.div>
           </AnimatePresence>
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.07),transparent_44%)]" />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/38 via-black/26 to-black/62" />
-          <div className="absolute inset-0 bg-black/8" />
+          <div className="absolute inset-0 bg-black/20" />
+          <motion.div
+            className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.22),transparent_38%),radial-gradient(circle_at_80%_18%,rgba(59,130,246,0.18),transparent_34%),linear-gradient(180deg,rgba(15,23,42,0.04)_0%,rgba(15,23,42,0.34)_100%)]"
+            animate={{ opacity: [0.8, 1, 0.82], scale: [1, 1.03, 1] }}
+            transition={{ duration: 10, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+          />
+          <motion.div
+            className="absolute inset-y-0 -left-1/3 w-2/3 bg-gradient-to-r from-white/0 via-white/12 to-white/0 mix-blend-screen"
+            animate={{ x: ["-20%", "120%"] }}
+            transition={{ duration: 7.5, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut", repeatDelay: 1.2 }}
+          />
           <div className="absolute inset-x-0 bottom-0 p-12 text-white">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/35 px-4 py-2 backdrop-blur-md">
               <Sparkles className="h-4 w-4 text-blue-200" />
@@ -1028,7 +1212,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)]">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="email">Email <span className="text-destructive">*</span></Label>
                     <Input
@@ -1046,19 +1230,16 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
 
                   <div className="space-y-2">
                     <Label htmlFor="phone">Phone number <span className="text-destructive">*</span></Label>
-                    <div className="grid grid-cols-[92px_minmax(0,1fr)] items-stretch gap-2 sm:grid-cols-[24%_76%]">
+                    <div className="grid grid-cols-[56px_minmax(0,1fr)] items-stretch gap-2">
                       <Select value={formData.countryCode} onValueChange={(value) => handleInputChange("countryCode", value)}>
-                        <SelectTrigger size="lg" className="h-12 w-full shrink-0 border-slate-300/95 bg-white/70 backdrop-blur-sm focus:border-slate-800 focus:ring-slate-800/15">
+                        <SelectTrigger size="lg" className="h-12 w-[56px] min-w-[56px] shrink-0 justify-center border-slate-300/95 bg-white/70 px-2 backdrop-blur-sm focus:border-slate-800 focus:ring-slate-800/15">
                           <SelectValue placeholder="Code">
-                            <div className="flex items-center gap-2">
-                              <span>{countryCodes.find((item) => item.code === formData.countryCode)?.flag}</span>
-                              <span>{formData.countryCode}</span>
-                            </div>
+                            <span className="text-base leading-none">{getCountryOption(formData.countryCode)?.flag}</span>
                           </SelectValue>
                         </SelectTrigger>
                         <SelectContent className="border-slate-300 bg-white/95">
                           {countryCodes.map((item, index) => (
-                            <SelectItem key={`${item.code}-${item.country}-${index}`} value={item.code}>
+                            <SelectItem key={`${item.code}-${item.country}-${index}`} value={item.country}>
                               <div className="flex items-center gap-2">
                                 <span>{item.flag}</span>
                                 <span className="font-medium">{item.code}</span>
@@ -1670,8 +1851,8 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
         <p className="mb-8 leading-relaxed text-muted-foreground">
           Your booking is confirmed. Check your email for class details and arrival instructions.
         </p>
-        <Button className="w-full bg-gradient-to-r from-blue-600 to-emerald-600 py-6 text-lg text-white hover:from-blue-700 hover:to-emerald-700" onClick={() => setShowSuccessModal(false)}>
-          Got it!
+        <Button className="w-full bg-gradient-to-r from-blue-600 to-emerald-600 py-6 text-lg text-white hover:from-blue-700 hover:to-emerald-700" onClick={redirectToMomence}>
+          Continue to Momence
         </Button>
       </ModalShell>
 

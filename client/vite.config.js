@@ -9,12 +9,26 @@ export default defineConfig({
             "@": path.resolve(__dirname, "./src"),
         },
     },
-    base: "/app/",
+    base: "/",
     server: {
         port: 5173,
+        proxy: {
+            "/api": {
+                target: "http://localhost:3000",
+                changeOrigin: true,
+            },
+            "/health": {
+                target: "http://localhost:3000",
+                changeOrigin: true,
+            },
+            "/static-assets": {
+                target: "http://localhost:3000",
+                changeOrigin: true,
+            },
+        },
     },
     build: {
-        outDir: path.resolve(__dirname, "../public/app"),
+        outDir: path.resolve(__dirname, "../public"),
         emptyOutDir: true,
     },
 });
