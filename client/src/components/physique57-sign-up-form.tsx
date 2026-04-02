@@ -1131,11 +1131,6 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
             animate={{ opacity: [0.8, 1, 0.82], scale: [1, 1.03, 1] }}
             transition={{ duration: 10, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
           />
-          <motion.div
-            className="absolute inset-y-0 -left-1/3 w-2/3 bg-gradient-to-r from-white/0 via-white/12 to-white/0 mix-blend-screen"
-            animate={{ x: ["-20%", "120%"] }}
-            transition={{ duration: 7.5, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut", repeatDelay: 1.2 }}
-          />
           <div className="absolute inset-x-0 bottom-0 p-12 text-white">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/35 px-4 py-2 backdrop-blur-md">
               <Sparkles className="h-4 w-4 text-blue-200" />
@@ -1183,7 +1178,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
               <form onSubmit={handleSubmit} className="space-y-8">
               <div className="relative space-y-6 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-6 shadow-sm sm:p-6 sm:pt-7">
                 <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
-                  <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">Personal details</span>
+                  <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">1. Personal details</span>
                   <span className="text-destructive">*</span>
                 </div>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -1270,7 +1265,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
 
               <div className="relative space-y-5 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-6 shadow-sm sm:p-6 sm:pt-7">
                 <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
-                  <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">Studio & format</span>
+                  <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">2. Studio & format</span>
                   <span className="text-destructive">*</span>
                 </div>
                 <div className="space-y-6 pt-2">
@@ -1311,12 +1306,11 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                     {errors.studio ? <p className="text-sm text-destructive">{errors.studio}</p> : null}
                   </div>
 
-                  <div className="relative space-y-5 rounded-2xl border border-slate-300/90 bg-white/60 p-5 pt-7 shadow-sm sm:p-6 sm:pt-8">
-                    <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
-                      <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">Select a preferred format</span>
-                      <span className="text-destructive">*</span>
+                  <div className="space-y-3 pt-1">
+                    <div className="space-y-2">
+                      <Label className="font-semibold">Select a preferred format <span className="text-destructive">*</span></Label>
+                      <p className="text-sm text-muted-foreground">Choose the format that feels right for your first visit.</p>
                     </div>
-                    <p className="text-sm text-muted-foreground">Choose the format that feels right for your first visit.</p>
                     <div role="radiogroup" aria-label="Choose your first format" className="space-y-2.5">
                       {availableFormats.map((format) => (
                         <div
@@ -1390,7 +1384,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
               <div className="relative space-y-4 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-6 shadow-sm sm:p-6 sm:pt-7">
                 <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
                   <CreditCard className="h-3.5 w-3.5 text-blue-900" />
-                  <span className="mb-1 text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">Membership included</span>
+                  <span className="mb-0 text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">3. Membership included</span>
                 </div>
                 <p className="text-sm text-muted-foreground">Your checkout secures the introductory package tied to this first-class experience.</p>
                 <div className="overflow-hidden rounded-[26px] border border-blue-900/15 bg-gradient-to-br from-blue-900/10 to-slate-200/30 text-slate-950 shadow-[0_22px_55px_rgba(15,23,42,0.10)]">
@@ -1447,7 +1441,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
 
                 <div className="relative space-y-3 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-7 shadow-sm sm:p-6 sm:pt-8">
                 <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
-                  <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">Before you confirm</span>
+                  <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">4. Before you confirm</span>
                 </div>
                 <div className="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/70 px-4 py-3 sm:items-center sm:gap-4">
                   <Checkbox
@@ -1496,7 +1490,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
               <Button
                 type="submit"
                 size="lg"
-                className="h-14 w-full bg-gradient-to-r from-blue-900 to-blue-800 text-lg shadow-lg transition-all duration-300 hover:from-blue-950 hover:to-blue-900 hover:shadow-xl"
+                className="h-14 w-full bg-gradient-to-r from-blue-950 to-blue-900 text-lg shadow-lg transition-all duration-300 hover:from-slate-950 hover:to-blue-950 hover:shadow-xl"
                 disabled={isSubmitting || isCreatingCheckout || !isFormValid}
               >
                 {isSubmitting || isCreatingCheckout ? (
