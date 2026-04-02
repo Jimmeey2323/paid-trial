@@ -1386,54 +1386,54 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                   <CreditCard className="h-3.5 w-3.5 text-blue-900" />
                   <span className="mb-0 text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">3. Membership included</span>
                 </div>
-                <p className="text-sm text-muted-foreground">Your checkout secures the introductory package tied to this first-class experience.</p>
-                <div className="overflow-hidden rounded-[26px] border border-blue-900/15 bg-gradient-to-br from-blue-900/10 to-slate-200/30 text-slate-950 shadow-[0_22px_55px_rgba(15,23,42,0.10)]">
-                  <div className="relative border-b border-blue-900/10 px-5 py-4 sm:px-6 sm:pr-[11.5rem]">
+                <p className="text-sm leading-relaxed text-slate-600">Your checkout secures the introductory package tied to this first-class experience.</p>
+                <div className="overflow-hidden rounded-[28px] border-2 border-blue-900/20 bg-gradient-to-br from-blue-50/60 via-white/80 to-slate-50/40 text-slate-950 shadow-lg">
+                  <div className="relative border-b-2 border-blue-900/15 px-5 py-6 sm:px-6 sm:pr-[11.5rem]">
                     <div className="flex flex-col gap-4 sm:items-start">
-                      <div className="max-w-2xl pt-3">
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-blue-900/70">Membership</p>
-                        <h3 className="mt-2 text-xl font-semibold text-slate-950 sm:text-[1.4rem]">{membershipOffer.name}</h3>
-                        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-700">
+                      <div className="max-w-2xl pt-2">
+                        <p className="text-[10px] font-bold uppercase tracking-[0.26em] text-blue-900/60">Premium membership</p>
+                        <h3 className="mt-3 text-2xl font-bold text-slate-950 sm:text-[1.5rem]">{membershipOffer.name}</h3>
+                        <p className="mt-2.5 max-w-2xl text-sm leading-relaxed text-slate-600">
                           A premium introductory package curated to guide your first Physique 57 sessions with structure, value, and flexibility.
                         </p>
                       </div>
                       <motion.div
-                        className="rounded-2xl border border-slate-950/20 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 px-3.5 py-2.5 text-center text-white shadow-[0_18px_38px_rgba(15,23,42,0.22)] sm:absolute sm:right-5 sm:top-5 sm:min-w-[170px]"
-                        animate={{ y: [0, -2, 0], scale: [1, 1.01, 1] }}
+                        className="rounded-3xl border-2 border-slate-950/30 bg-gradient-to-br from-blue-950 via-slate-900 to-slate-950 px-4 py-3 text-center text-white shadow-xl sm:absolute sm:right-5 sm:top-5 sm:min-w-[180px]"
+                        animate={{ y: [0, -3, 0], scale: [1, 1.02, 1] }}
                         transition={{ duration: 4.5, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
                       >
-                        <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/60">Package price</p>
-                        <p className="mt-1.5 text-[1.45rem] font-bold leading-none text-white">{membershipOffer.price}</p>
+                        <p className="text-[9px] font-bold uppercase tracking-[0.24em] text-white/70">Package price</p>
+                        <p className="mt-2.5 text-[1.6rem] font-black leading-none text-white">{membershipOffer.price}</p>
                       </motion.div>
                     </div>
                   </div>
 
-                  <div className="grid gap-3 px-5 py-5 sm:grid-cols-3 sm:px-6">
-                    <div className="rounded-2xl border border-blue-900/10 bg-white/70 px-4 py-4 backdrop-blur-sm">
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-blue-900/70">Sessions</p>
-                      <p className="mt-2 text-base font-semibold text-slate-950">{membershipOffer.sessions}</p>
+                  <div className="grid gap-4 px-5 py-6 sm:grid-cols-3 sm:px-6">
+                    <div className="rounded-2xl border-2 border-blue-900/15 bg-gradient-to-br from-white to-blue-50/40 px-5 py-4 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-blue-900/70">Sessions included</p>
+                      <p className="mt-3 text-lg font-bold text-slate-950">{membershipOffer.sessions}</p>
                     </div>
-                    <div className="rounded-2xl border border-blue-900/10 bg-white/70 px-4 py-4 backdrop-blur-sm">
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-blue-900/70">Validity</p>
-                      <p className="mt-2 text-base font-semibold text-slate-950">{membershipOffer.validFor}</p>
+                    <div className="rounded-2xl border-2 border-blue-900/15 bg-gradient-to-br from-white to-blue-50/40 px-5 py-4 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-blue-900/70">Validity period</p>
+                      <p className="mt-3 text-lg font-bold text-slate-950">{membershipOffer.validFor}</p>
                     </div>
-                    <div className="rounded-2xl border border-blue-900/10 bg-white/70 px-4 py-4 backdrop-blur-sm shadow-sm">
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-blue-900/70">Included</p>
-                      <p className="mt-2 text-base font-semibold text-slate-950">First-class access package</p>
+                    <div className="rounded-2xl border-2 border-blue-900/15 bg-gradient-to-br from-white to-blue-50/40 px-5 py-4 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-blue-900/70">What's included</p>
+                      <p className="mt-3 text-lg font-bold text-slate-950">Full access</p>
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-3 border-t border-blue-900/10 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-                    <p className="text-sm leading-relaxed text-slate-700">
-                      Includes a guided onboarding flow, secure checkout, and the studio follow-up needed to complete your booking.
+                  <div className="flex flex-col gap-4 border-t-2 border-blue-900/10 px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+                    <p className="text-sm font-medium leading-relaxed text-slate-700">
+                      Includes guided onboarding, secure checkout, and dedicated studio follow-up to complete your booking.
                     </p>
                     <Button
                       type="button"
                       variant="outline"
-                      className="border-blue-900/15 bg-white/70 text-slate-950 hover:border-blue-900/25 hover:bg-white/90 hover:text-slate-950"
+                      className="border-2 border-blue-900/25 bg-white/80 text-slate-950 font-semibold hover:border-blue-900/40 hover:bg-blue-50/60 hover:text-slate-950 transition-all shadow-sm"
                       onClick={() => setShowMembershipModal(true)}
                     >
-                      Know more
+                      Learn more
                     </Button>
                   </div>
                 </div>
