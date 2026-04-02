@@ -1170,7 +1170,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                   </div>
                 </div>
               ) : (
-              <div className="rounded-[28px] border border-slate-200/80 bg-white/80 p-5 shadow-[0_20px_60px_rgba(15,23,42,0.08)] backdrop-blur-xl sm:p-6 lg:p-8">
+              <div className="rounded-[28px] border border-slate-200/80 bg-white/80 p-5 shadow-[0_32px_100px_rgba(15,23,42,0.14)] ring-1 ring-slate-200/40 backdrop-blur-xl sm:p-6 lg:p-8">
               <div className="mb-8">
                 <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-900/30 bg-gradient-to-r from-blue-900/20 to-slate-300/30 px-4 py-2 backdrop-blur-sm">
                   <Sparkles className="h-4 w-4 text-blue-900" />
@@ -1181,10 +1181,14 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-8">
-              <div className="space-y-6">
+              <div className="relative space-y-6 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-6 shadow-sm sm:p-6 sm:pt-7">
+                <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
+                  <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">Personal details</span>
+                  <span className="text-destructive">*</span>
+                </div>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="firstName">First name <span className="text-destructive">*</span></Label>
+                    <Label htmlFor="firstName" className="font-semibold">First name <span className="text-destructive">*</span></Label>
                     <Input
                       id="firstName"
                       value={formData.firstName}
@@ -1198,7 +1202,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="lastName">Last name <span className="text-destructive">*</span></Label>
+                    <Label htmlFor="lastName" className="font-semibold">Last name <span className="text-destructive">*</span></Label>
                     <Input
                       id="lastName"
                       value={formData.lastName}
@@ -1210,11 +1214,9 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                     />
                     {errors.lastName ? <p className="text-sm text-destructive">{errors.lastName}</p> : null}
                   </div>
-                </div>
 
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="email">Email <span className="text-destructive">*</span></Label>
+                    <Label htmlFor="email" className="font-semibold">Email <span className="text-destructive">*</span></Label>
                     <Input
                       id="email"
                       type="email"
@@ -1229,7 +1231,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="phone">Phone number <span className="text-destructive">*</span></Label>
+                    <Label htmlFor="phone" className="font-semibold">Phone number <span className="text-destructive">*</span></Label>
                     <div className="grid grid-cols-[56px_minmax(0,1fr)] items-stretch gap-2">
                       <Select value={formData.countryCode} onValueChange={(value) => handleInputChange("countryCode", value)}>
                         <SelectTrigger size="lg" className="h-12 w-[56px] min-w-[56px] shrink-0 justify-center border-slate-300/95 bg-white/70 px-2 backdrop-blur-sm focus:border-slate-800 focus:ring-slate-800/15">
@@ -1266,160 +1268,172 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="studio">Preferred studio <span className="text-destructive">*</span></Label>
-                <div className="flex flex-col gap-3 sm:flex-row">
-                  <Select value={formData.studio} onValueChange={(value) => handleInputChange("studio", value)}>
-                    <SelectTrigger
-                      size="lg"
-                      className={cn(
-                        "w-full border-slate-300/95 bg-white/70 backdrop-blur-sm focus:border-slate-800 focus:ring-slate-800/15",
-                        errors.studio && "border-destructive"
-                      )}
-                    >
-                      <SelectValue placeholder="Select a studio" />
-                    </SelectTrigger>
-                    <SelectContent className="border-slate-300 bg-white/95">
-                      {studios.map((studio) => (
-                        <SelectItem key={studio.name} value={studio.name}>
-                          <div>
-                            <div className="font-medium">{studio.name}</div>
-                            <div className="text-xs text-muted-foreground">{studio.location}</div>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="h-12 w-full border-slate-300 text-slate-800 hover:border-slate-800 hover:bg-slate-100 sm:w-auto sm:min-w-[170px]"
-                    onClick={() => setShowSchedule(true)}
-                  >
-                    <Calendar className="mr-2 h-4 w-4" />
-                    View schedule
-                  </Button>
+              <div className="relative space-y-5 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-6 shadow-sm sm:p-6 sm:pt-7">
+                <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
+                  <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">Studio & format</span>
+                  <span className="text-destructive">*</span>
                 </div>
-                {errors.studio ? <p className="text-sm text-destructive">{errors.studio}</p> : null}
-              </div>
-
-              <div className="space-y-4 rounded-2xl border border-slate-300/90 bg-white/55 p-5 shadow-sm sm:p-6">
-                <Label>Choose your first format <span className="text-destructive">*</span></Label>
-                <p className="text-sm text-muted-foreground">Choose the format that feels right for your first visit.</p>
-                <div role="radiogroup" aria-label="Choose your first format" className="space-y-2.5">
-                  {availableFormats.map((format) => (
-                    <div
-                      key={format.id}
-                      className={cn(
-                        "relative cursor-pointer rounded-xl border-2 p-3.5 transition-all backdrop-blur-sm sm:p-4",
-                        formData.format === format.id
-                          ? "border-blue-900 bg-gradient-to-br from-blue-900/10 to-slate-200/30 shadow-lg shadow-blue-900/10"
-                          : "border-border/50 bg-white/60 hover:border-blue-900/30 hover:shadow-md"
-                      )}
-                    >
-                      <div className="flex items-start gap-3">
-                        <button
-                          type="button"
-                          role="radio"
-                          aria-checked={formData.format === format.id}
-                          aria-label={`Select ${format.subtitle}`}
-                          onClick={() => handleInputChange("format", format.id)}
-                          className="mt-0.5 flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full border border-slate-400 text-blue-900 outline-none transition-[color,box-shadow,border-color] focus-visible:border-blue-900 focus-visible:ring-2 focus-visible:ring-blue-900/20"
+                <div className="space-y-6 pt-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="studio" className="font-semibold">Preferred studio <span className="text-destructive">*</span></Label>
+                    <div className="flex flex-col gap-3 sm:flex-row">
+                      <Select value={formData.studio} onValueChange={(value) => handleInputChange("studio", value)}>
+                        <SelectTrigger
+                          size="lg"
+                          className={cn(
+                            "w-full border-slate-300/95 bg-white/70 backdrop-blur-sm focus:border-slate-800 focus:ring-slate-800/15",
+                            errors.studio && "border-destructive"
+                          )}
                         >
-                          <span
-                            className={cn(
-                              "h-2 w-2 rounded-full bg-blue-900 transition-opacity",
-                              formData.format === format.id ? "opacity-100" : "opacity-0"
-                            )}
-                          />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleInputChange("format", format.id)}
-                          className="flex flex-1 items-start gap-2.5 text-left"
-                        >
-                          <div className="flex items-start gap-2.5">
-                            <span className="text-2xl leading-none sm:text-[1.65rem]">{format.icon}</span>
-                            <div className="flex-1">
-                              <div className="text-[15px] font-semibold leading-snug text-slate-950">{format.title}</div>
-                              <div className="text-xs font-semibold uppercase tracking-[0.14em] text-blue-900">{format.subtitle}</div>
-                              <p className="mt-1 text-xs leading-relaxed text-muted-foreground sm:text-[13px]">{format.description}</p>
-                            </div>
-                          </div>
-                        </button>
-                        <div className="flex shrink-0 flex-col items-end gap-2 self-start pl-2">
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            className="h-7 rounded-full px-2.5 text-[11px] font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-950 sm:h-8 sm:px-3"
-                            onClick={(event) => {
-                              event.stopPropagation()
-                              setShowFormatInfo(format.id)
-                            }}
-                          >
-                            Know more
-                          </Button>
-                          {formData.format === format.id ? (
-                            <div className="flex items-center gap-1 rounded-full border border-blue-900/15 bg-blue-50 px-2 py-1 text-[11px] font-semibold text-blue-900 shadow-sm">
-                              <CheckCircle2 className="h-3.5 w-3.5" />
-                              <span>Selected</span>
-                            </div>
-                          ) : null}
-                        </div>
-                      </div>
+                          <SelectValue placeholder="Select a studio" />
+                        </SelectTrigger>
+                        <SelectContent className="border-slate-300 bg-white/95">
+                          {studios.map((studio) => (
+                            <SelectItem key={studio.name} value={studio.name}>
+                              <div>
+                                <div className="font-medium">{studio.name}</div>
+                                <div className="text-xs text-muted-foreground">{studio.location}</div>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="h-12 w-full border-slate-300 text-slate-800 hover:border-slate-800 hover:bg-slate-100 sm:w-auto sm:min-w-[170px]"
+                        onClick={() => setShowSchedule(true)}
+                      >
+                        <Calendar className="mr-2 h-4 w-4" />
+                        View schedule
+                      </Button>
                     </div>
-                  ))}
+                    {errors.studio ? <p className="text-sm text-destructive">{errors.studio}</p> : null}
+                  </div>
+
+                  <div className="space-y-4 rounded-2xl border border-slate-300/90 bg-white/60 p-4 pt-5 shadow-sm sm:p-5 sm:pt-6">
+                    <Label className="block text-sm font-semibold text-slate-950">Select a preferred format</Label>
+                    <p className="text-sm text-muted-foreground">Choose the format that feels right for your first visit.</p>
+                    <div role="radiogroup" aria-label="Choose your first format" className="space-y-2.5">
+                      {availableFormats.map((format) => (
+                        <div
+                          key={format.id}
+                          className={cn(
+                            "relative cursor-pointer rounded-xl border-2 p-3.5 transition-all backdrop-blur-sm sm:p-4",
+                            formData.format === format.id
+                              ? "border-blue-900 bg-gradient-to-br from-blue-900/10 to-slate-200/30 shadow-lg shadow-blue-900/10"
+                              : "border-border/50 bg-white/60 hover:border-blue-900/30 hover:shadow-md"
+                          )}
+                        >
+                          <div className="flex items-start gap-3">
+                            <button
+                              type="button"
+                              role="radio"
+                              aria-checked={formData.format === format.id}
+                              aria-label={`Select ${format.subtitle}`}
+                              onClick={() => handleInputChange("format", format.id)}
+                              className="mt-0.5 flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full border border-slate-400 text-blue-900 outline-none transition-[color,box-shadow,border-color] focus-visible:border-blue-900 focus-visible:ring-2 focus-visible:ring-blue-900/20"
+                            >
+                              <span
+                                className={cn(
+                                  "h-2 w-2 rounded-full bg-blue-900 transition-opacity",
+                                  formData.format === format.id ? "opacity-100" : "opacity-0"
+                                )}
+                              />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleInputChange("format", format.id)}
+                              className="flex flex-1 items-start gap-2.5 text-left"
+                            >
+                              <div className="flex items-start gap-2.5">
+                                <span className="text-2xl leading-none sm:text-[1.65rem]">{format.icon}</span>
+                                <div className="flex-1">
+                                  <div className="text-[15px] font-semibold leading-snug text-slate-950">{format.title}</div>
+                                  <div className="text-xs font-semibold uppercase tracking-[0.14em] text-blue-900">{format.subtitle}</div>
+                                  <p className="mt-1 text-xs leading-relaxed text-muted-foreground sm:text-[13px]">{format.description}</p>
+                                </div>
+                              </div>
+                            </button>
+                            <div className="flex shrink-0 flex-col items-end gap-2 self-start pl-2">
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="h-7 rounded-full px-2.5 text-[11px] font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-950 sm:h-8 sm:px-3"
+                                onClick={(event) => {
+                                  event.stopPropagation()
+                                  setShowFormatInfo(format.id)
+                                }}
+                              >
+                                Know more
+                              </Button>
+                              {formData.format === format.id ? (
+                                <div className="flex items-center gap-1 rounded-full border border-blue-900/15 bg-blue-50 px-2 py-1 text-[11px] font-semibold text-blue-900 shadow-sm">
+                                  <CheckCircle2 className="h-3.5 w-3.5" />
+                                  <span>Selected</span>
+                                </div>
+                              ) : null}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    {errors.format ? <p className="text-sm text-destructive">{errors.format}</p> : null}
+                  </div>
                 </div>
-                {errors.format ? <p className="text-sm text-destructive">{errors.format}</p> : null}
               </div>
 
-              <div className="space-y-4 border-t border-slate-200/90 pt-1">
-                <div className="flex items-center gap-2">
-                  <CreditCard className="h-5 w-5 text-muted-foreground" />
-                  <Label className="text-base font-semibold">Membership included</Label>
+              <div className="relative space-y-4 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-6 shadow-sm sm:p-6 sm:pt-7">
+                <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
+                  <CreditCard className="h-3.5 w-3.5 text-blue-900" />
+                  <span className="mb-1 text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">Membership included</span>
                 </div>
                 <p className="text-sm text-muted-foreground">Your checkout secures the introductory package tied to this first-class experience.</p>
-                <div className="overflow-hidden rounded-[26px] border border-slate-200/90 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 text-white shadow-[0_22px_55px_rgba(15,23,42,0.16)]">
-                  <div className="border-b border-white/10 px-5 py-4 sm:px-6">
-                    <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                      <div>
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-blue-200/80">Membership</p>
-                        <h3 className="mt-2 text-2xl font-semibold text-white sm:text-[1.7rem]">{membershipOffer.name}</h3>
-                        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-300">
+                <div className="overflow-hidden rounded-[26px] border border-blue-900/15 bg-gradient-to-br from-blue-900/10 to-slate-200/30 text-slate-950 shadow-[0_22px_55px_rgba(15,23,42,0.10)]">
+                  <div className="relative border-b border-blue-900/10 px-5 py-4 sm:px-6 sm:pr-[11.5rem]">
+                    <div className="flex flex-col gap-4 sm:items-start">
+                      <div className="max-w-2xl pt-3">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-blue-900/70">Membership</p>
+                        <h3 className="mt-2 text-xl font-semibold text-slate-950 sm:text-[1.4rem]">{membershipOffer.name}</h3>
+                        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-700">
                           A premium introductory package curated to guide your first Physique 57 sessions with structure, value, and flexibility.
                         </p>
                       </div>
-                      <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left shadow-inner backdrop-blur-sm sm:min-w-[168px] sm:text-right">
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-blue-100/75">Package price</p>
-                        <p className="mt-2 text-2xl font-bold text-white">{membershipOffer.price}</p>
-                      </div>
+                      <motion.div
+                        className="rounded-2xl border border-slate-950/20 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 px-3.5 py-2.5 text-center text-white shadow-[0_18px_38px_rgba(15,23,42,0.22)] sm:absolute sm:right-5 sm:top-5 sm:min-w-[170px]"
+                        animate={{ y: [0, -2, 0], scale: [1, 1.01, 1] }}
+                        transition={{ duration: 4.5, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+                      >
+                        <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/60">Package price</p>
+                        <p className="mt-1.5 text-[1.45rem] font-bold leading-none text-white">{membershipOffer.price}</p>
+                      </motion.div>
                     </div>
                   </div>
 
                   <div className="grid gap-3 px-5 py-5 sm:grid-cols-3 sm:px-6">
-                    <div className="rounded-2xl border border-white/10 bg-white/6 px-4 py-4 backdrop-blur-sm">
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-300">Sessions</p>
-                      <p className="mt-2 text-lg font-semibold text-white">{membershipOffer.sessions}</p>
+                    <div className="rounded-2xl border border-blue-900/10 bg-white/70 px-4 py-4 backdrop-blur-sm">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-blue-900/70">Sessions</p>
+                      <p className="mt-2 text-base font-semibold text-slate-950">{membershipOffer.sessions}</p>
                     </div>
-                    <div className="rounded-2xl border border-white/10 bg-white/6 px-4 py-4 backdrop-blur-sm">
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-300">Validity</p>
-                      <p className="mt-2 text-lg font-semibold text-white">{membershipOffer.validFor}</p>
+                    <div className="rounded-2xl border border-blue-900/10 bg-white/70 px-4 py-4 backdrop-blur-sm">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-blue-900/70">Validity</p>
+                      <p className="mt-2 text-base font-semibold text-slate-950">{membershipOffer.validFor}</p>
                     </div>
-                    <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-blue-500/18 to-emerald-500/12 px-4 py-4 backdrop-blur-sm">
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-blue-100/90">Included</p>
-                      <p className="mt-2 text-lg font-semibold text-white">First-class access package</p>
+                    <div className="rounded-2xl border border-blue-900/10 bg-white/70 px-4 py-4 backdrop-blur-sm shadow-sm">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-blue-900/70">Included</p>
+                      <p className="mt-2 text-base font-semibold text-slate-950">First-class access package</p>
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-3 border-t border-white/10 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-                    <p className="text-sm leading-relaxed text-slate-300">
+                  <div className="flex flex-col gap-3 border-t border-blue-900/10 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+                    <p className="text-sm leading-relaxed text-slate-700">
                       Includes a guided onboarding flow, secure checkout, and the studio follow-up needed to complete your booking.
                     </p>
                     <Button
                       type="button"
                       variant="outline"
-                      className="border-white/18 bg-white/6 text-white hover:border-white/35 hover:bg-white/12 hover:text-white"
+                      className="border-blue-900/15 bg-white/70 text-slate-950 hover:border-blue-900/25 hover:bg-white/90 hover:text-slate-950"
                       onClick={() => setShowMembershipModal(true)}
                     >
                       Know more
@@ -1428,8 +1442,10 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                 </div>
               </div>
 
-              <div className="space-y-3 border-t border-slate-200/90 pt-2">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-900/70">Before you confirm</p>
+                <div className="relative space-y-3 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-7 shadow-sm sm:p-6 sm:pt-8">
+                <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
+                  <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">Before you confirm</span>
+                </div>
                 <div className="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/70 px-4 py-3 sm:items-center sm:gap-4">
                   <Checkbox
                     id="terms"
@@ -1439,7 +1455,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                   />
                   <div className="flex-1">
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                      <label htmlFor="terms" className="cursor-pointer text-sm font-medium leading-relaxed text-slate-900 sm:flex-1">
+                      <label htmlFor="terms" className="cursor-pointer text-sm font-semibold leading-relaxed text-slate-900 sm:flex-1">
                         I have read and accept the waiver and booking terms. <span className="text-destructive">*</span>
                       </label>
                       <Button
