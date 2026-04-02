@@ -1181,8 +1181,8 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-8">
-              <div className="relative space-y-6 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-6 shadow-sm sm:p-6 sm:pt-7">
-                <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
+              <div className="relative space-y-6 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-12 shadow-sm sm:p-6 sm:pt-14">
+                <div className="absolute -top-1/2 left-4 inline-flex translate-y-1/2 items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
                   <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">Personal details</span>
                   <span className="text-destructive">*</span>
                 </div>
@@ -1268,12 +1268,12 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                 </div>
               </div>
 
-              <div className="relative space-y-5 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-6 shadow-sm sm:p-6 sm:pt-7">
-                <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
+              <div className="relative space-y-5 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-12 shadow-sm sm:p-6 sm:pt-14">
+                <div className="absolute -top-1/2 left-4 inline-flex translate-y-1/2 items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
                   <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">Studio & format</span>
                   <span className="text-destructive">*</span>
                 </div>
-                <div className="space-y-6 pt-2">
+                <div className="space-y-6 pt-0">
                   <div className="space-y-2">
                     <Label htmlFor="studio" className="font-semibold">Preferred studio <span className="text-destructive">*</span></Label>
                     <div className="flex flex-col gap-3 sm:flex-row">
@@ -1311,8 +1311,8 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                     {errors.studio ? <p className="text-sm text-destructive">{errors.studio}</p> : null}
                   </div>
 
-                  <div className="relative space-y-5 rounded-2xl border border-slate-300/90 bg-white/60 p-5 pt-7 shadow-sm sm:p-6 sm:pt-8">
-                    <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
+                  <div className="relative space-y-5 rounded-2xl border border-slate-300/90 bg-white/60 p-5 pt-12 shadow-sm sm:p-6 sm:pt-14">
+                    <div className="absolute -top-1/2 left-4 inline-flex translate-y-1/2 items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
                       <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">Select a preferred format</span>
                       <span className="text-destructive">*</span>
                     </div>
@@ -1445,8 +1445,8 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                 </div>
               </div>
 
-                <div className="relative space-y-3 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-7 shadow-sm sm:p-6 sm:pt-8">
-                <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
+                <div className="relative space-y-3 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-12 shadow-sm sm:p-6 sm:pt-14">
+                <div className="absolute -top-1/2 left-4 inline-flex translate-y-1/2 items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-m backdrop-blur-md">
                   <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">Before you confirm</span>
                 </div>
                 <div className="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/70 px-4 py-3 sm:items-center sm:gap-4">
