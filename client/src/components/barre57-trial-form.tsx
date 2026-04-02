@@ -104,6 +104,8 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
     }
   }, [])
 
+  const selectedStudio = studios.find((studio) => studio.name === formData.studio)
+
   const handleInputChange = (field: string, value: any) => {
     setFormData((prev) => ({
       ...prev,
@@ -180,10 +182,10 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
         email: formData.email,
         phoneNumber: parsedPhone.formatInternational(),
         phoneCountry: getCountryOption(formData.countryCode)?.country || "IN",
-        studio: formData.studio,
-        classFormat: "Barre 57",
+        center: selectedStudio?.backendName ?? formData.studio,
+        type: "Barre 57",
         waiverAccepted: formData.acceptedTerms ? "accepted" : "",
-        sourceForm: "barre-trial-form",
+        source_form: "barre-trial-form",
         ...trackingPayload,
       }
 

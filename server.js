@@ -27,8 +27,8 @@ const supabaseLeadStore = new SupabaseLeadStore();
 const scheduleService = new ScheduleService();
 
 const STUDIO_CLASS_OPTIONS = {
-  'Supreme Headquarters, Bandra': ['powerCycle'],
-  'Kwality House, Kemps Corner': ['powerCycle', 'Strength Lab']
+  'Supreme Headquarters, Bandra': ['powerCycle', 'Barre 57'],
+  'Kwality House, Kemps Corner': ['powerCycle', 'Strength Lab', 'Barre 57']
 };
 
 const ALLOWED_TIME_WINDOWS = [
