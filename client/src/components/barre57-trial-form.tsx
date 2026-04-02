@@ -13,11 +13,20 @@ import {
   Shield,
   Sparkles,
   X,
+  Award,
+  Trophy,
+  Target,
+  Zap,
+  Users,
+  Dumbbell,
+  ChevronDown,
+  type LucideIcon,
 } from "lucide-react"
 
 import {
   countryCodes,
-  heroImages,
+  faqs,
+  keyBenefits,
   studios,
   waiverSections,
 } from "@/data/physique57"
@@ -39,6 +48,86 @@ interface Barre57TrialFormProps {
   onSubmit?: (data: any) => void
 }
 
+// Barre 57 specific hero images
+const BARRE_HERO_IMAGES = [
+  "https://i.postimg.cc/CKKVdJSK/images_(10).jpg",
+  "https://i.postimg.cc/PqqkNKTC/10210_Physique_57_by_Atelier_Birjis_3.webp",
+  "https://i.postimg.cc/FKKQ1GN0/40d320_4ed6cb4eb34a4fd29ba8bd26aa62cb5a_mv2.jpg",
+  "https://i.postimg.cc/255f3TrB/9.jpg",
+  "https://i.postimg.cc/VvZTF5Sj/hp_Img_1770172692.png",
+]
+
+// Barre 57 specific USPs
+const BARRE_BENEFITS = [
+  {
+    icon: "sparkles" as const,
+    color: "rose" as const,
+    title: "Low Impact, High Intensity",
+    description: "Barre combines ballet, yoga, and pilates for a full-body workout that's easy on joints",
+    tooltip: "Perfect for building lean muscle without impact"
+  },
+  {
+    icon: "trophy" as const,
+    color: "amber" as const,
+    title: "Posture & Flexibility",
+    description: "Strengthen your core and improve flexibility through controlled, ballet-inspired movements",
+    tooltip: "Achieve elegant posture and graceful movement"
+  },
+  {
+    icon: "heart" as const,
+    color: "rose" as const,
+    title: "Confidence Building",
+    description: "Feel empowered as you build strength and achieve visible results in a supportive environment",
+    tooltip: "Join a community of empowered women"
+  },
+  {
+    icon: "zap" as const,
+    color: "violet" as const,
+    title: "Effective & Efficient",
+    description: "See results in just 3-4 weeks with consistent practice",
+    tooltip: "Efficient workouts that deliver real results"
+  },
+]
+
+// Barre 57 specific FAQs
+const BARRE_FAQS = [
+  {
+    question: "Is Barre 57 suitable for beginners?",
+    answer: [
+      "Absolutely! Barre is designed to be accessible for all fitness levels. Our instructors provide modifications for every movement, so you can progress at your own pace.",
+      "You'll use the barre for balance, not for pulling yourself up, so it's completely safe and effective whether you're a beginner or advanced."
+    ]
+  },
+  {
+    question: "What should I wear to Barre class?",
+    answer: [
+      "Wear comfortable, fitted clothing that lets you move freely. Many people wear leggings, shorts, or athletic wear.",
+      "Bring grip socks or non-slip shoes to use during class for safety and stability."
+    ]
+  },
+  {
+    question: "Do I need to be flexible to do Barre?",
+    answer: [
+      "No! Flexibility is not a prerequisite. Barre actually helps you build flexibility over time as part of the workout.",
+      "Our instructors will help you find your range of motion and work safely within it."
+    ]
+  },
+  {
+    question: "Can I do Barre if I'm pregnant or have an injury?",
+    answer: [
+      "Please consult with your doctor first. Many pregnant women find Barre gentle and effective, and we can provide modifications.",
+      "If you have an injury, let your instructor know so they can suggest alternatives or lighter versions of movements."
+    ]
+  },
+  {
+    question: "How quickly will I see results?",
+    answer: [
+      "Many people notice improved posture and feel stronger within 2-3 weeks of regular classes.",
+      "Visible toning and muscle definition typically appear within 4-6 weeks of consistent practice."
+    ]
+  },
+]
+
 export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -58,15 +147,54 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
   const confettiCanvasRef = useRef<HTMLCanvasElement | null>(null)
   const confettiInstanceRef = useRef<ReturnType<typeof confetti.create> | null>(null)
   const [currentHeroImage, setCurrentHeroImage] = useState(0)
+  const [loadedHeroImages, setLoadedHeroImages] = useState<Set<number>>(new Set())
   const [publicConfig, setPublicConfig] = useState<PublicClientConfig | null>(null)
+  const [showAllFaqsModal, setShowAllFaqsModal] = useState(false)
+  const [openFaq, setOpenFaq] = useState<number | null>(0)
 
   useEffect(() => {
-    const imageRotationInterval = setInterval(() => {
-      setCurrentHeroImage((prev) => (prev + 1) % heroImages.length)
-    }, 8000)
+    const imageNodes = BARRE_HERO_IMAGES.map((src, index) => {
+      const image = new window.Image()
 
-    return () => clearInterval(imageRotationInterval)
+      image.onload = () => {
+        setLoadedHeroImages((prev) => {
+          if (prev.has(index)) {
+            return prev
+          }
+
+          const next = new Set(prev)
+          next.add(index)
+          return next
+        })
+      }
+
+      image.src = src
+      return image
+    })
+
+    return () => {
+      imageNodes.forEach((image) => {
+        image.onload = null
+      })
+    }
   }, [])
+
+  useEffect(() => {
+    if (!loadedHeroImages.has(currentHeroImage)) {
+      return
+    }
+
+    const heroInterval = window.setInterval(() => {
+      setCurrentHeroImage((prev) => {
+        const next = (prev + 1) % BARRE_HERO_IMAGES.length
+        return loadedHeroImages.has(next) ? next : prev
+      })
+    }, 6500)
+
+    return () => {
+      window.clearInterval(heroInterval)
+    }
+  }, [currentHeroImage, loadedHeroImages])
 
   useEffect(() => {
     let cancelled = false
@@ -314,7 +442,7 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
               transition={{ duration: 1.3 }}
             >
               <motion.img
-                src={heroImages[currentHeroImage]}
+                src={BARRE_HERO_IMAGES[currentHeroImage]}
                 alt="Physique 57 Barre"
                 className="h-full w-full object-cover object-top"
                 initial={{ scale: 1.12, x: 18, y: 8 }}
@@ -557,9 +685,167 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
                 </form>
               </div>
             )}
+
+            {/* Benefits Section */}
+            <div className="mt-16 space-y-6">
+              <div>
+                <h2 className="mb-2 text-3xl font-bold text-foreground">Why Choose Barre 57?</h2>
+                <p className="text-muted-foreground">Discover what makes Barre an effective full-body workout</p>
+              </div>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {BARRE_BENEFITS.map((benefit, index) => {
+                  const Icon = {
+                    sparkles: Sparkles,
+                    trophy: Trophy,
+                    shield: Shield,
+                    heart: Heart,
+                    award: Award,
+                    zap: Zap,
+                    target: Target,
+                    users: Users,
+                  }[benefit.icon]
+
+                  return (
+                    <div
+                      key={index}
+                      className="group rounded-2xl border border-slate-200/80 bg-white/60 p-5 shadow-sm transition-all duration-300 hover:border-slate-300/80 hover:bg-white/80 hover:shadow-md"
+                    >
+                      <div className={cn(
+                        "mb-3 inline-flex h-12 w-12 items-center justify-center rounded-full",
+                        {
+                          "bg-gradient-to-br from-rose-400 to-rose-600": benefit.color === "rose",
+                          "bg-gradient-to-br from-amber-400 to-amber-600": benefit.color === "amber",
+                          "bg-gradient-to-br from-violet-400 to-violet-600": benefit.color === "violet",
+                        }
+                      )}>
+                        <Icon className="h-6 w-6 text-white" />
+                      </div>
+                      <h3 className="mb-2 font-semibold text-foreground group-hover:text-slate-900">{benefit.title}</h3>
+                      <p className="text-sm text-muted-foreground">{benefit.description}</p>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* Locations Section */}
+            <div className="mt-16 space-y-6">
+              <div>
+                <h2 className="mb-2 text-3xl font-bold text-foreground">Our Locations</h2>
+                <p className="text-muted-foreground">Visit us at one of our premium studios</p>
+              </div>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {studios.map((studio) => (
+                  <div key={studio.name} className="rounded-2xl border border-slate-200/80 bg-white/60 p-5 shadow-sm transition-all duration-300 hover:border-slate-300/80 hover:bg-white/80 hover:shadow-md">
+                    <div className="mb-3 flex items-start gap-3">
+                      <MapPin className="h-5 w-5 flex-shrink-0 text-blue-900 mt-0.5" />
+                      <div className="min-w-0 flex-1">
+                        <h3 className="font-semibold text-foreground">{studio.name}</h3>
+                        <p className="text-sm text-muted-foreground line-clamp-2">{studio.address}</p>
+                      </div>
+                    </div>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Phone className="h-4 w-4" />
+                        <span>{studio.phone}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Clock className="h-4 w-4" />
+                        <span>{studio.hours}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* FAQs Section */}
+            <div className="mt-16 mb-16 space-y-6">
+              <div>
+                <h2 className="mb-2 text-3xl font-bold text-foreground">Frequently Asked Questions</h2>
+                <p className="text-muted-foreground">Everything you need to know about Barre 57</p>
+              </div>
+              <div className="space-y-3">
+                {BARRE_FAQS.map((faq, index) => (
+                  <div
+                    key={index}
+                    className="rounded-2xl border border-slate-200/80 bg-white/60 overflow-hidden transition-all duration-300 hover:border-slate-300/80"
+                  >
+                    <button
+                      onClick={() => setOpenFaq(openFaq === index ? null : index)}
+                      className="flex w-full items-center justify-between p-5 text-left hover:bg-white/40"
+                    >
+                      <h3 className="font-semibold text-foreground pr-4">{faq.question}</h3>
+                      <ChevronDown
+                        className={cn(
+                          "h-5 w-5 flex-shrink-0 transition-transform duration-300 text-muted-foreground",
+                          openFaq === index && "rotate-180"
+                        )}
+                      />
+                    </button>
+                    {openFaq === index && (
+                      <div className="border-t border-slate-200/50 px-5 py-4 space-y-3">
+                        {faq.answer.map((answer, ansIndex) => (
+                          <p key={ansIndex} className="text-sm text-muted-foreground leading-relaxed">
+                            {answer}
+                          </p>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <Button
+                variant="outline"
+                className="w-full border-blue-900 text-blue-900 hover:bg-blue-900 hover:text-white"
+                onClick={() => setShowAllFaqsModal(true)}
+              >
+                View More FAQs
+              </Button>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* All FAQs Modal */}
+      <ModalShell open={showAllFaqsModal} onClose={() => setShowAllFaqsModal(false)} className="max-h-[85vh] max-w-4xl overflow-y-auto">
+        <div className="mb-6 flex items-center justify-between">
+          <h3 className="text-2xl font-bold">All FAQs</h3>
+          <button onClick={() => setShowAllFaqsModal(false)} className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground">
+            <X className="h-6 w-6" />
+          </button>
+        </div>
+        <div className="space-y-3">
+          {[...BARRE_FAQS, ...faqs].map((faq, index) => (
+            <div key={index} className="rounded-xl border border-slate-200/50 bg-white/40 overflow-hidden">
+              <button
+                onClick={() => setOpenFaq(openFaq === index ? null : index)}
+                className="flex w-full items-center justify-between p-4 text-left hover:bg-white/20"
+              >
+                <h4 className="font-semibold text-foreground pr-4">{faq.question}</h4>
+                <ChevronDown
+                  className={cn(
+                    "h-5 w-5 flex-shrink-0 transition-transform duration-300 text-muted-foreground",
+                    openFaq === index && "rotate-180"
+                  )}
+                />
+              </button>
+              {openFaq === index && (
+                <div className="border-t border-slate-200/30 px-4 py-3 space-y-2">
+                  {faq.answer.map((answer, ansIndex) => (
+                    <p key={ansIndex} className="text-sm text-muted-foreground leading-relaxed">
+                      {answer}
+                    </p>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+        <Button onClick={() => setShowAllFaqsModal(false)} className="mt-6 w-full bg-blue-900 hover:bg-blue-950">
+          Close
+        </Button>
+      </ModalShell>
 
       <ModalShell open={showWaiverModal} onClose={() => setShowWaiverModal(false)} className="max-h-[85vh] max-w-4xl overflow-y-auto">
         <div className="mb-6 flex items-center justify-between">
