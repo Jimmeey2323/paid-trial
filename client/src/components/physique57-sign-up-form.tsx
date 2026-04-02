@@ -1176,7 +1176,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-8">
-              <div className="relative space-y-6 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-6 shadow-sm sm:p-6 sm:pt-7">
+              <div className="relative space-y-6 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-8 shadow-sm sm:p-6 sm:pt-9">
                 <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
                   <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">1. Personal details</span>
                   <span className="text-destructive">*</span>
@@ -1263,7 +1263,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                 </div>
               </div>
 
-              <div className="relative space-y-5 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-6 shadow-sm sm:p-6 sm:pt-7">
+              <div className="relative space-y-5 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-8 shadow-sm sm:p-6 sm:pt-9">
                 <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
                   <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">2. Studio & format</span>
                   <span className="text-destructive">*</span>
@@ -1381,7 +1381,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                 </div>
               </div>
 
-              <div className="relative space-y-4 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-6 shadow-sm sm:p-6 sm:pt-7">
+              <div className="relative space-y-4 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-8 shadow-sm sm:p-6 sm:pt-9">
                 <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
                   <CreditCard className="h-3.5 w-3.5 text-blue-900" />
                   <span className="mb-0 text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">3. Membership included</span>
@@ -1439,7 +1439,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                 </div>
               </div>
 
-                <div className="relative space-y-3 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-7 shadow-sm sm:p-6 sm:pt-8">
+                <div className="relative space-y-3 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-9 shadow-sm sm:p-6 sm:pt-10">
                 <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
                   <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">4. Before you confirm</span>
                 </div>
