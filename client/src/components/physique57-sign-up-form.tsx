@@ -1170,7 +1170,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                   </div>
                 </div>
               ) : (
-              <div className="rounded-[28px] border border-slate-200/80 bg-white/80 p-5 shadow-[0_32px_100px_rgba(15,23,42,0.14)] ring-1 ring-slate-200/40 backdrop-blur-xl sm:p-6 lg:p-8">
+              <div className="rounded-[28px] border border-slate-200/80 bg-white/80 p-5 shadow-[0_48px_140px_rgba(15,23,42,0.18)] ring-1 ring-slate-200/50 backdrop-blur-xl sm:p-6 lg:p-8">
               <div className="mb-8">
                 <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-900/30 bg-gradient-to-r from-blue-900/20 to-slate-300/30 px-4 py-2 backdrop-blur-sm">
                   <Sparkles className="h-4 w-4 text-blue-900" />
@@ -1311,8 +1311,11 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                     {errors.studio ? <p className="text-sm text-destructive">{errors.studio}</p> : null}
                   </div>
 
-                  <div className="space-y-4 rounded-2xl border border-slate-300/90 bg-white/60 p-4 pt-5 shadow-sm sm:p-5 sm:pt-6">
-                    <Label className="block text-sm font-semibold text-slate-950">Select a preferred format</Label>
+                  <div className="relative space-y-5 rounded-2xl border border-slate-300/90 bg-white/60 p-5 pt-7 shadow-sm sm:p-6 sm:pt-8">
+                    <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
+                      <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">Select a preferred format</span>
+                      <span className="text-destructive">*</span>
+                    </div>
                     <p className="text-sm text-muted-foreground">Choose the format that feels right for your first visit.</p>
                     <div role="radiogroup" aria-label="Choose your first format" className="space-y-2.5">
                       {availableFormats.map((format) => (
