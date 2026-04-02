@@ -1150,7 +1150,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
           </div>
         </div>
 
-        <div className="relative min-h-screen bg-background/95 backdrop-blur-sm lg:h-screen lg:overflow-y-auto">
+        <div className="relative min-h-screen bg-black backdrop-blur-sm lg:h-screen lg:overflow-y-auto">
           <div className="mx-auto w-full max-w-[1120px] px-4 pt-6 pb-6 sm:px-6 sm:pt-8 lg:px-10 lg:pt-10 xl:px-14 xl:pt-12">
               {shouldHideFormForProcessing ? (
                 <div className="flex min-h-[78vh] items-center justify-center">
