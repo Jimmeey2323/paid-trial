@@ -1131,16 +1131,16 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
               />
             </motion.div>
           </AnimatePresence>
-          <div className="absolute inset-0 bg-black/20" />
+          <div className="absolute inset-0 bg-black/40" />
           <motion.div
             className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.22),transparent_38%),radial-gradient(circle_at_80%_18%,rgba(59,130,246,0.18),transparent_34%),linear-gradient(180deg,rgba(15,23,42,0.04)_0%,rgba(15,23,42,0.34)_100%)]"
             animate={{ opacity: [0.8, 1, 0.82], scale: [1, 1.03, 1] }}
             transition={{ duration: 10, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
           />
           <div className="absolute inset-x-0 bottom-0 p-12 text-white">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/35 px-4 py-2 backdrop-blur-md">
-              <Sparkles className="h-4 w-4 text-blue-200" />
-              <span className="text-sm font-medium">Premium Fitness Experience</span>
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-900/10 bg-gradient-to-br from-white/98 via-blue-50/95 to-blue-100/92 px-4 py-2 backdrop-blur-md shadow-sm">
+              <Sparkles className="h-4 w-4 text-blue-900" />
+              <span className="text-sm font-medium text-blue-950">Premium Fitness Experience</span>
             </div>
             <h1 className="mb-4 max-w-md bg-gradient-to-r from-white to-blue-100 bg-clip-text text-5xl font-bold text-transparent xl:text-6xl">
               Transform Your Body
@@ -1173,9 +1173,9 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
               ) : (
               <div className="rounded-[28px] border border-slate-200/80 bg-white/80 p-5 shadow-[0_48px_140px_rgba(15,23,42,0.18)] ring-1 ring-slate-200/50 backdrop-blur-xl sm:p-6 lg:p-8">
               <div className="mb-8">
-                <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-900/30 bg-gradient-to-r from-blue-900/20 to-slate-300/30 px-4 py-2 backdrop-blur-sm">
+                <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-900/10 bg-gradient-to-br from-white/98 via-blue-50/95 to-blue-100/92 px-4 py-2 backdrop-blur-sm shadow-sm">
                   <Sparkles className="h-4 w-4 text-blue-900" />
-                  <span className="text-sm font-semibold text-blue-900">Book Your First Class</span>
+                  <span className="text-sm font-semibold text-blue-950">Book Your First Class</span>
                 </div>
                 <h2 className="mb-2 text-3xl font-bold text-foreground">Get Started</h2>
                 <p className="text-muted-foreground">Sign up for your first class at Physique 57.</p>
@@ -1183,8 +1183,8 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
 
               <form onSubmit={handleSubmit} className="space-y-8">
               <div className="relative space-y-6 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-8 shadow-sm sm:p-6 sm:pt-9">
-                <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
-                  <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">1. Personal details</span>
+                <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/10 bg-gradient-to-br from-white/98 via-blue-50/95 to-blue-100/92 px-4 py-1.5 shadow-sm backdrop-blur-md">
+                  <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-950">1. Personal details</span>
                   <span className="text-destructive">*</span>
                 </div>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -1270,8 +1270,8 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
               </div>
 
               <div className="relative space-y-5 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-8 shadow-sm sm:p-6 sm:pt-9">
-                <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
-                  <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">2. Studio & format</span>
+                <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/10 bg-gradient-to-br from-white/98 via-blue-50/95 to-blue-100/92 px-4 py-1.5 shadow-sm backdrop-blur-md">
+                  <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-950">2. Studio & format</span>
                   <span className="text-destructive">*</span>
                 </div>
                 <div className="space-y-6 pt-0">
@@ -1324,7 +1324,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                           className={cn(
                             "relative cursor-pointer rounded-xl border-2 p-3.5 transition-all backdrop-blur-sm sm:p-4",
                             formData.format === format.id
-                              ? "border-blue-900 bg-gradient-to-br from-blue-900/10 to-slate-200/30 shadow-lg shadow-blue-900/10"
+                              ? "border-blue-900/30 bg-gradient-to-br from-white/98 via-blue-50/95 to-blue-100/92 shadow-lg shadow-blue-900/5"
                               : "border-border/50 bg-white/60 hover:border-blue-900/30 hover:shadow-md"
                           )}
                         >
@@ -1372,7 +1372,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                                 Know more
                               </Button>
                               {formData.format === format.id ? (
-                                <div className="flex items-center gap-1 rounded-full border border-blue-900/15 bg-blue-50 px-2 py-1 text-[11px] font-semibold text-blue-900 shadow-sm">
+                                <div className="flex items-center gap-1 rounded-full border border-blue-900/10 bg-gradient-to-br from-white/98 via-blue-50/95 to-blue-100/92 px-2 py-1 text-[11px] font-semibold text-blue-950 shadow-sm">
                                   <CheckCircle2 className="h-3.5 w-3.5" />
                                   <span>Selected</span>
                                 </div>
@@ -1388,9 +1388,9 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
               </div>
 
               <div className="relative space-y-4 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-8 shadow-sm sm:p-6 sm:pt-9">
-                <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
-                  <CreditCard className="h-3.5 w-3.5 text-blue-900" />
-                  <span className="mb-0 text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">3. Membership included</span>
+                <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/10 bg-gradient-to-br from-white/98 via-blue-50/95 to-blue-100/92 px-4 py-1.5 shadow-sm backdrop-blur-md">
+                  <CreditCard className="h-3.5 w-3.5 text-blue-950" />
+                  <span className="mb-0 text-[11px] font-bold uppercase tracking-[0.18em] text-blue-950">3. Membership included</span>
                 </div>
                 <p className="text-sm leading-relaxed text-slate-600">Almost there. Complete your order to claim both sessions</p>
                 <div className="overflow-hidden rounded-[28px] border border-slate-200 bg-[linear-gradient(145deg,rgba(255,255,255,0.98),rgba(239,246,255,0.92))] text-slate-950 shadow-[0_20px_55px_rgba(15,23,42,0.10)] ring-1 ring-slate-200/70">

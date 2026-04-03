@@ -686,9 +686,9 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
               />
             </motion.div>
           </AnimatePresence>
-          <div className="absolute inset-0 bg-black/20" />
+          <div className="absolute inset-0 bg-black/40" />
           <div className="absolute inset-x-0 bottom-0 p-12 text-white">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/35 px-4 py-2 backdrop-blur-md">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-900/10 bg-gradient-to-br from-white/98 via-blue-50/95 to-blue-100/92 px-4 py-2 backdrop-blur-md shadow-sm">
               <Sparkles className="h-4 w-4 text-blue-200" />
               <span className="text-sm font-medium">Barre 57 Trial</span>
             </div>
