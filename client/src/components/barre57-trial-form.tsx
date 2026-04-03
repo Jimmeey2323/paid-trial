@@ -99,6 +99,11 @@ const benefitIcons: Record<string, LucideIcon> = {
 }
 
 const colorClasses = {
+  blue: {
+    border: "border-l-blue-500",
+    iconBg: "from-blue-400 to-blue-600",
+    hoverText: "group-hover:text-blue-600",
+  },
   rose: {
     border: "border-l-rose-500",
     iconBg: "from-rose-400 to-rose-600",
@@ -118,6 +123,16 @@ const colorClasses = {
     border: "border-l-violet-500",
     iconBg: "from-violet-400 to-violet-600",
     hoverText: "group-hover:text-violet-600",
+  },
+  cyan: {
+    border: "border-l-cyan-500",
+    iconBg: "from-cyan-400 to-cyan-600",
+    hoverText: "group-hover:text-cyan-600",
+  },
+  orange: {
+    border: "border-l-orange-500",
+    iconBg: "from-orange-400 to-orange-600",
+    hoverText: "group-hover:text-orange-600",
   },
 } as const
 
