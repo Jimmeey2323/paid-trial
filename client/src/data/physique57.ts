@@ -320,14 +320,22 @@ export const journeySteps: JourneyStep[] = [
 ]
 
 export const clientReviews: Review[] = [
-  { name: "Priyashi Mehta Kothari", class: "Studio SWEAT in 30", review: "The 30-minute format is perfect for my busy schedule.", date: "Nov 21, 2023" },
-  { name: "Sheetal Chauhan", class: "Studio Cardio Barre", review: "Wonderful session and awesome energy!", date: "Mar 14, 2024" },
-  { name: "Smita Modi", class: "powerCycle", review: "Wonderful class in every respect—Kauveri is too good!", date: "Feb 9, 2026" },
-  { name: "Aashna Godha", class: "powerCycle", review: "Amazing playlist. Amazing workout.", date: "Aug 8, 2025" },
-  { name: "Chitra Balachandran", class: "Studio FIT", review: "We need a sixth star for this one. Incredible!", date: "Apr 4, 2025" },
-  { name: "Amruta Patil", class: "Studio Mat 57", review: "Very nice experience. There was a lovely flow throughout the class.", date: "May 19, 2025" },
-  { name: "Sunita Singhania", class: "Studio Barre 57", review: "Very good. Time just flew.", date: "Aug 7, 2025" },
-  { name: "Roopali Misra", class: "Studio Barre 57", review: "Tough class but it feels so good to do.", date: "Feb 9, 2026" },
+  { name: "Priyashi Mehta Kothari", class: "Studio SWEAT in 30", review: "The 30-minute format is perfect for my busy schedule. I've seen visible toning in just 4 weeks!", date: "Nov 21, 2023" },
+  { name: "Sheetal Chauhan", class: "Studio Cardio Barre", review: "Wonderful session and awesome energy! The instructors push you in the best way possible.", date: "Mar 14, 2024" },
+  { name: "Smita Modi", class: "powerCycle", review: "Wonderful class in every respect—Kauveri is too good! Leaves me energized for the entire day.", date: "Feb 9, 2026" },
+  { name: "Aashna Godha", class: "powerCycle", review: "Amazing playlist. Amazing workout. I'm already stronger and my legs are more defined.", date: "Aug 8, 2025" },
+  { name: "Chitra Balachandran", class: "Studio FIT", review: "We need a sixth star for this one. Incredible! My entire body has transformed.", date: "Apr 4, 2025" },
+  { name: "Amruta Patil", class: "Studio Mat 57", review: "Very nice experience. There was a lovely flow throughout the class. So rejuvenating!", date: "May 19, 2025" },
+  { name: "Sunita Singhania", class: "Studio Barre 57", review: "Very good. Time just flew. I'm hooked—this is my favorite way to work out now.", date: "Aug 7, 2025" },
+  { name: "Roopali Misra", class: "Studio Barre 57", review: "Tough class but it feels so good to do. I'm more confident and strong.", date: "Feb 9, 2026" },
+  { name: "Divya Kapoor", class: "Studio Strength Lab", review: "Best investment in myself! The strength gains are real and visible. I feel powerful.", date: "Jan 15, 2026" },
+  { name: "Neha Sharma", class: "Cardio Barre Plus", review: "The combination of cardio and barre is genius. Already down 2 kg and feeling amazing!", date: "Dec 28, 2025" },
+  { name: "Ritika Verma", class: "Studio SWEAT in 30", review: "Perfect for post-work sessions. Low impact but such high results. Highly recommend!", date: "Jan 22, 2026" },
+  { name: "Pooja Desai", class: "powerCycle", review: "I love tracking my progress with the metrics. The motivation is unreal. Best 30 mins ever!", date: "Feb 1, 2026" },
+  { name: "Ankita Nair", class: "Back Body Blaze", review: "My posture has never been better. I'm standing taller and feeling stronger every day.", date: "Dec 10, 2025" },
+  { name: "Kavya Reddy", class: "Studio Foundations", review: "Started as a complete beginner but the instructors made me feel so supported and confident!", date: "Nov 30, 2025" },
+  { name: "Sakshi Iyer", class: "FIT + Strength Lab", review: "Mix of both formats is perfection. My body composition has completely changed in 6 weeks!", date: "Jan 8, 2026" },
+  { name: "Zara Khan", class: "Mat 57", review: "So much deeper strength than I expected. My core is fire and I feel so grounded.", date: "Feb 3, 2026" },
 ]
 
 export const faqs: FaqItem[] = [

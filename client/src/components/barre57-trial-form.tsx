@@ -57,9 +57,9 @@ interface Barre57TrialFormProps {
 
 // Barre 57 specific hero images
 const BARRE_HERO_IMAGES = [
-  "https://i.postimg.cc/CKKVdJSK/images_(10).jpg",
+  "https://i.postimg.cc/BbPhr4br/hp-Img-1770172966.png",
   "https://i.postimg.cc/PqqkNKTC/10210_Physique_57_by_Atelier_Birjis_3.webp",
-  "https://i.postimg.cc/FKKQ1GN0/40d320_4ed6cb4eb34a4fd29ba8bd26aa62cb5a_mv2.jpg",
+  "https://i.postimg.cc/XvxDFstP/hp_Img_1767781454.png",
   "https://i.postimg.cc/255f3TrB/9.jpg",
   "https://i.postimg.cc/VvZTF5Sj/hp_Img_1770172692.png",
 ]
@@ -344,6 +344,11 @@ const colorClasses = {
   },
 } as const
 
+const REVIEW_CARD_WIDTH = 352
+const REVIEW_CARD_GAP = 24
+const REVIEW_CARD_STRIDE = REVIEW_CARD_WIDTH + REVIEW_CARD_GAP
+const REVIEW_CARD_CENTER_OFFSET = REVIEW_CARD_WIDTH / 2
+
 export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -369,7 +374,7 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
   const [openFaq, setOpenFaq] = useState<number | null>(0)
   const [selectedWorkoutSection, setSelectedWorkoutSection] = useState<number>(0)
   const [selectedExercise, setSelectedExercise] = useState<number>(0)
-  const [currentReview, setCurrentReview] = useState<number>(0)
+  const [currentReview, setCurrentReview] = useState<number>(Math.floor(clientReviews.length / 2))
 
   const selectedStudio = studios.find((studio) => studio.name === formData.studio)
 
@@ -1164,111 +1169,153 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
                 </section>
 
                 {/* MEMBER REVIEWS SECTION */}
-                <section className="mt-20 space-y-12 pb-2">
+                <section className="relative mt-20 space-y-12 pb-2 overflow-hidden">
+                  {/* Animated background gradient */}
+                  <div className="absolute inset-0 -z-10 h-96 bg-gradient-to-b from-rose-50/80 via-transparent to-transparent blur-3xl" />
+                  
                   <div className="mx-auto max-w-5xl">
-                    <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-rose-600/20 bg-gradient-to-r from-rose-600/10 to-rose-200/50 px-4 py-2 backdrop-blur-sm">
-                      <Heart className="h-4 w-4 text-rose-700" />
+                    <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-rose-600/30 bg-gradient-to-r from-rose-600/15 to-rose-200/60 px-4 py-2 backdrop-blur-md shadow-sm">
+                      <Heart className="h-4 w-4 text-rose-700 animate-pulse" />
                       <span className="text-sm font-semibold text-rose-900">Member Stories</span>
                     </div>
                     <h2 className="mb-4 text-4xl font-bold text-foreground md:text-5xl">What Our Members Say</h2>
-                    <p className="max-w-3xl text-lg leading-relaxed text-muted-foreground">Real transformations, real results, real people.</p>
+                    <p className="max-w-3xl text-lg leading-relaxed text-muted-foreground">Real transformations, real results, real people just like you.</p>
                   </div>
 
-                  <div className="relative mt-12 overflow-hidden px-4 md:px-0">
+                  <div className="relative mt-12 overflow-hidden px-2 md:px-0">
                     <div className="mx-auto max-w-7xl">
-                      {/* Sliding carousel container */}
+                      {/* Sliding carousel - translate container based on current review index */}
                       <motion.div
-                        animate={{ x: currentReview * -360 }}
-                        transition={{ duration: 0.7, ease: "easeInOut" }}
-                        className="flex gap-6 md:gap-8"
+                        animate={{ x: `calc(50% - ${currentReview * REVIEW_CARD_STRIDE + REVIEW_CARD_CENTER_OFFSET}px)` }}
+                        transition={{ duration: 0.8, ease: "easeInOut" }}
+                        className="flex gap-6"
                       >
-                        {/* Map through all reviews twice for continuous loop effect */}
-                        {[...Array(2)].map((_, loopIndex) =>
-                          clientReviews.map((review, reviewIndex) => {
-                            const index = loopIndex * clientReviews.length + reviewIndex
-                            const position = ((index - currentReview) % clientReviews.length + clientReviews.length) % clientReviews.length
-                            
-                            // Determine scale and opacity based on position
-                            const isCenter = position === 0
-                            const isAdjacent = position === clientReviews.length - 1 || position === 1
-                            
-                            return (
-                              <motion.div
-                                key={`${loopIndex}-${reviewIndex}`}
-                                className={cn(
-                                  "flex-shrink-0 transition-all duration-500",
-                                  isCenter ? "w-full max-w-md" : "w-72"
-                                )}
-                              >
-                                <motion.div
-                                  animate={{
-                                    scale: isCenter ? 1 : 0.85,
-                                    opacity: isCenter ? 1 : (isAdjacent ? 0.4 : 0),
-                                  }}
-                                  transition={{ duration: 0.5 }}
-                                  className={cn(
-                                    "rounded-2xl p-6 shadow-lg backdrop-blur-sm h-64 flex flex-col justify-between pointer-events-none",
-                                    isCenter
-                                      ? "border-2 border-rose-200 bg-gradient-to-br from-white/95 via-rose-50/30 to-white/90 p-8 h-80"
-                                      : "border border-slate-200 bg-white/60"
-                                  )}
-                                >
-                                  {isCenter ? (
-                                    <>
-                                      <div>
-                                        <div className="mb-4 flex items-center gap-3">
-                                          <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-rose-400 to-rose-600 text-lg font-bold text-white shadow-lg">
-                                            {review.name.charAt(0)}
-                                          </div>
-                                          <div className="flex gap-0.5">
-                                            {Array.from({ length: 5 }).map((_, i) => (
-                                              <Heart key={i} className="h-4 w-4 fill-rose-500 text-rose-500" />
-                                            ))}
-                                          </div>
-                                        </div>
-                                        <p className="mb-3 text-base italic leading-relaxed text-foreground">"{review.review}"</p>
+                        {clientReviews.map((review, index) => (
+                          <motion.div
+                            key={`review-${index}`}
+                            className="w-[22rem] flex-shrink-0"
+                          >
+                            {/* Card that will slide across positions */}
+                            <motion.div
+                              animate={{
+                                scale: index === currentReview ? 1 : 0.88,
+                                opacity: Math.abs(index - currentReview) <= 1 ? (index === currentReview ? 1 : 0.5) : 0.25,
+                                y: index === currentReview ? 0 : 16,
+                              }}
+                              transition={{ duration: 0.6 }}
+                              className={cn(
+                                "rounded-3xl h-96 flex flex-col justify-between transition-all duration-500",
+                                index === currentReview
+                                  ? "border-2 border-rose-200/80 bg-gradient-to-br from-white via-rose-50/40 to-rose-100/20 p-8 shadow-2xl"
+                                  : "border border-slate-200/60 bg-gradient-to-br from-white/70 to-white/50 p-6 shadow-md hover:shadow-lg"
+                              )}
+                            >
+                              {index === currentReview ? (
+                                <>
+                                  {/* Quote Icon */}
+                                  <div className="mb-2">
+                                    <svg className="h-8 w-8 text-rose-300/60" fill="currentColor" viewBox="0 0 32 32">
+                                      <path d="M8 12l2.266-5.333h4.934l-3.6 8h-3.6v9.333h8v-8.933l3.867-4C20.8 8.133 20.4 4.667 22 2h-4.267C18 6 12 12 8 21v-9z" />
+                                    </svg>
+                                  </div>
+                                  
+                                  <div className="flex-1">
+                                    {/* Review Text */}
+                                    <p className="mb-6 text-lg font-medium leading-relaxed text-foreground">"{review.review}"</p>
+                                  </div>
+
+                                  {/* Star Rating */}
+                                  <div className="mb-4 flex gap-1">
+                                    {Array.from({ length: 5 }).map((_, i) => (
+                                      <motion.div
+                                        key={i}
+                                        initial={{ opacity: 0, scale: 0 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        transition={{ delay: i * 0.1 }}
+                                      >
+                                        <span className="text-lg">⭐</span>
+                                      </motion.div>
+                                    ))}
+                                  </div>
+
+                                  {/* User Info */}
+                                  <div className="space-y-1 border-t border-rose-200/40 pt-4">
+                                    <div className="flex items-center gap-3">
+                                      <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-rose-400 to-rose-600 text-lg font-bold text-white shadow-lg">
+                                        {review.name.charAt(0)}
                                       </div>
-                                      <div>
-                                        <p className="text-base font-bold text-foreground">{review.name}</p>
-                                        <p className="text-sm font-semibold text-rose-600">{review.class}</p>
-                                        <p className="text-xs text-muted-foreground">{review.date}</p>
-                                      </div>
-                                    </>
-                                  ) : (
-                                    <>
-                                      <div>
-                                        <p className="mb-3 text-sm italic leading-relaxed text-muted-foreground line-clamp-4">
-                                          "{review.review}"
-                                        </p>
-                                      </div>
-                                      <div className="space-y-1">
+                                      <div className="flex-1">
                                         <p className="text-sm font-bold text-foreground">{review.name}</p>
+                                        <p className="text-xs font-semibold text-rose-600">{review.class}</p>
+                                        <p className="text-xs text-muted-foreground/70">{review.date}</p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </>
+                              ) : (
+                                <>
+                                  {/* Subtle Quote Icon */}
+                                  <div className="mb-2">
+                                    <svg className="h-6 w-6 text-rose-200/40" fill="currentColor" viewBox="0 0 32 32">
+                                      <path d="M8 12l2.266-5.333h4.934l-3.6 8h-3.6v9.333h8v-8.933l3.867-4C20.8 8.133 20.4 4.667 22 2h-4.267C18 6 12 12 8 21v-9z" />
+                                    </svg>
+                                  </div>
+
+                                  <div>
+                                    <p className="mb-4 text-sm leading-relaxed text-muted-foreground line-clamp-5">
+                                      "{review.review}"
+                                    </p>
+                                  </div>
+
+                                  {/* Hidden star rating in dimmed */}
+                                  <div className="mb-3 flex gap-0.5 opacity-30">
+                                    {Array.from({ length: 5 }).map((_, i) => (
+                                      <span key={i} className="text-sm">⭐</span>
+                                    ))}
+                                  </div>
+
+                                  <div className="space-y-1 border-t border-slate-200/30 pt-3">
+                                    <div className="flex items-center gap-2">
+                                      <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-rose-300 to-rose-500 text-xs font-bold text-white">
+                                        {review.name.charAt(0)}
+                                      </div>
+                                      <div>
+                                        <p className="text-xs font-bold text-foreground">{review.name}</p>
                                         <p className="text-xs text-muted-foreground">{review.class}</p>
                                       </div>
-                                    </>
-                                  )}
-                                </motion.div>
-                              </motion.div>
-                            )
-                          })
-                        )}
+                                    </div>
+                                  </div>
+                                </>
+                              )}
+                            </motion.div>
+                          </motion.div>
+                        ))}
                       </motion.div>
 
-                      {/* Navigation Dots */}
-                      <div className="mt-12 flex flex-wrap justify-center gap-2">
+                      {/* Navigation Dots - Enhanced */}
+                      <div className="mt-12 flex flex-wrap justify-center gap-3">
                         {clientReviews.map((_, index) => (
-                          <button
+                          <motion.button
                             key={index}
                             onClick={() => setCurrentReview(index)}
+                            whileHover={{ scale: 1.2 }}
+                            whileTap={{ scale: 0.95 }}
                             className={cn(
-                              "transition-all duration-300",
+                              "transition-all duration-300 rounded-full",
                               currentReview === index
-                                ? "h-2 w-8 rounded-full bg-gradient-to-r from-rose-500 to-rose-600"
-                                : "h-2 w-2 rounded-full bg-slate-300 hover:bg-slate-400"
+                                ? "h-3 w-10 rounded-full bg-gradient-to-r from-rose-500 to-rose-600 shadow-lg shadow-rose-200"
+                                : "h-3 w-3 rounded-full bg-slate-300 hover:bg-rose-300 hover:shadow-md"
                             )}
                             aria-label={`View review ${index + 1}`}
                           />
                         ))}
+                      </div>
+
+                      {/* Review counter */}
+                      <div className="mt-6 text-center">
+                        <p className="text-sm font-medium text-muted-foreground">
+                          <span className="font-bold text-rose-600">{currentReview + 1}</span> of <span className="font-bold text-rose-600">{clientReviews.length}</span>
+                        </p>
                       </div>
                     </div>
                   </div>
