@@ -3,17 +3,20 @@ import { Physique57SignUpForm } from "@/components/physique57-sign-up-form"
 import { Barre57TrialForm } from "@/components/barre57-trial-form"
 
 const BRAND_LOGO_URL = "https://i.postimg.cc/6Qt8YppB/Photoroom_20251014_101748.png"
+const BRAND_SITE_URL = "https://www.physique57.in"
 
 const routeMeta = {
   default: {
     title: "Physique57 — Start Your Trial",
     description:
       "Book your Physique 57 India trial class and explore premium boutique fitness experiences across Barre, Strength Lab, and powerCycle.",
+    name: "Physique 57 Trial Form",
   },
   barre: {
     title: "Barre 57 — Book Your Free Trial",
     description:
       "Book your complimentary Barre 57 trial and discover Physique 57 India's signature boutique fitness experience.",
+    name: "Barre 57 Trial Form",
   },
 } as const
 
@@ -61,6 +64,19 @@ function upsertLink(selector: string, attributes: Record<string, string>) {
   })
 }
 
+function upsertJsonLdScript(scriptId: string, payload: Record<string, unknown>) {
+  let element = document.head.querySelector(`script[data-schema-id='${scriptId}']`) as HTMLScriptElement | null
+
+  if (!element) {
+    element = document.createElement("script")
+    element.type = "application/ld+json"
+    element.setAttribute("data-schema-id", scriptId)
+    document.head.appendChild(element)
+  }
+
+  element.textContent = JSON.stringify(payload)
+}
+
 export default function App() {
   const [currentPath, setCurrentPath] = useState(window.location.pathname)
 
@@ -77,6 +93,7 @@ export default function App() {
     const meta = currentPath === "/barre" || currentPath.startsWith("/barre/")
       ? routeMeta.barre
       : routeMeta.default
+    const pageUrl = typeof window !== "undefined" ? window.location.href : BRAND_SITE_URL
 
     document.title = meta.title
 
@@ -92,6 +109,32 @@ export default function App() {
     upsertLink("link[rel='icon']", { rel: "icon", type: "image/png", href: BRAND_LOGO_URL })
     upsertLink("link[rel='shortcut icon']", { rel: "shortcut icon", href: BRAND_LOGO_URL })
     upsertLink("link[rel='apple-touch-icon']", { rel: "apple-touch-icon", href: BRAND_LOGO_URL })
+    upsertJsonLdScript("route-webpage", {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      name: meta.name,
+      headline: meta.title,
+      description: meta.description,
+      url: pageUrl,
+      isPartOf: {
+        "@type": "WebSite",
+        name: "Physique 57 India",
+        url: BRAND_SITE_URL,
+      },
+      about: {
+        "@type": "Organization",
+        name: "Physique 57 India",
+        url: BRAND_SITE_URL,
+        logo: {
+          "@type": "ImageObject",
+          url: BRAND_LOGO_URL,
+        },
+      },
+      primaryImageOfPage: {
+        "@type": "ImageObject",
+        url: BRAND_LOGO_URL,
+      },
+    })
   }, [currentPath])
 
   // Check if the path is /barre
