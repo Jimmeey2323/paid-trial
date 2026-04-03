@@ -1982,8 +1982,8 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
         {activeFormat ? (
           <>
             <div className="grid max-h-[85vh] min-h-[640px] lg:grid-cols-[42%_58%]">
-              <div className="relative min-h-[260px] overflow-hidden bg-slate-100 lg:min-h-full">
-                <img src={activeFormat.image} alt={activeFormat.imageAlt} className="absolute inset-0 h-full w-full object-cover" />
+              <div className="relative flex min-h-[260px] items-center justify-center overflow-hidden bg-slate-100 lg:min-h-full">
+                <img src={activeFormat.image} alt={activeFormat.imageAlt} className="h-full w-full object-contain object-center p-4 sm:p-6" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10" />
                 <div className="absolute inset-x-0 bottom-0 p-6 text-white sm:p-8">
                   <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-blue-100/90">Class formats</p>
@@ -2004,6 +2004,12 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                 </div>
 
                 <div className="flex-1 overflow-y-auto px-6 py-6 sm:px-8">
+                  {activeFormat.warningBadge ? (
+                    <div className="mb-5 inline-flex items-center rounded-full border border-amber-300 bg-amber-50 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-amber-900 shadow-sm">
+                      {activeFormat.warningBadge}
+                    </div>
+                  ) : null}
+
                   <div className="grid gap-3 sm:grid-cols-2">
                     <div className="rounded-2xl border border-slate-200 bg-white/90 p-4">
                       <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Intensity</p>
