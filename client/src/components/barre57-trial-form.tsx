@@ -20,6 +20,10 @@ import {
   Users,
   Dumbbell,
   ChevronDown,
+  Plus,
+  Minus,
+  Info,
+  Building2,
   type LucideIcon,
 } from "lucide-react"
 
@@ -43,6 +47,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
 interface Barre57TrialFormProps {
   onSubmit?: (data: any) => void
@@ -55,38 +60,6 @@ const BARRE_HERO_IMAGES = [
   "https://i.postimg.cc/FKKQ1GN0/40d320_4ed6cb4eb34a4fd29ba8bd26aa62cb5a_mv2.jpg",
   "https://i.postimg.cc/255f3TrB/9.jpg",
   "https://i.postimg.cc/VvZTF5Sj/hp_Img_1770172692.png",
-]
-
-// Barre 57 specific USPs
-const BARRE_BENEFITS = [
-  {
-    icon: "sparkles" as const,
-    color: "rose" as const,
-    title: "Low Impact, High Intensity",
-    description: "Barre combines ballet, yoga, and pilates for a full-body workout that's easy on joints",
-    tooltip: "Perfect for building lean muscle without impact"
-  },
-  {
-    icon: "trophy" as const,
-    color: "amber" as const,
-    title: "Posture & Flexibility",
-    description: "Strengthen your core and improve flexibility through controlled, ballet-inspired movements",
-    tooltip: "Achieve elegant posture and graceful movement"
-  },
-  {
-    icon: "heart" as const,
-    color: "rose" as const,
-    title: "Confidence Building",
-    description: "Feel empowered as you build strength and achieve visible results in a supportive environment",
-    tooltip: "Join a community of empowered women"
-  },
-  {
-    icon: "zap" as const,
-    color: "violet" as const,
-    title: "Effective & Efficient",
-    description: "See results in just 3-4 weeks with consistent practice",
-    tooltip: "Efficient workouts that deliver real results"
-  },
 ]
 
 // Barre 57 specific FAQs
@@ -112,21 +85,41 @@ const BARRE_FAQS = [
       "Our instructors will help you find your range of motion and work safely within it."
     ]
   },
-  {
-    question: "Can I do Barre if I'm pregnant or have an injury?",
-    answer: [
-      "Please consult with your doctor first. Many pregnant women find Barre gentle and effective, and we can provide modifications.",
-      "If you have an injury, let your instructor know so they can suggest alternatives or lighter versions of movements."
-    ]
-  },
-  {
-    question: "How quickly will I see results?",
-    answer: [
-      "Many people notice improved posture and feel stronger within 2-3 weeks of regular classes.",
-      "Visible toning and muscle definition typically appear within 4-6 weeks of consistent practice."
-    ]
-  },
 ]
+
+const benefitIcons: Record<string, LucideIcon> = {
+  sparkles: Sparkles,
+  trophy: Trophy,
+  shield: Shield,
+  heart: Heart,
+  award: Award,
+  users: Users,
+  target: Target,
+  zap: Zap,
+}
+
+const colorClasses = {
+  rose: {
+    border: "border-l-rose-500",
+    iconBg: "from-rose-400 to-rose-600",
+    hoverText: "group-hover:text-rose-600",
+  },
+  amber: {
+    border: "border-l-amber-500",
+    iconBg: "from-amber-400 to-amber-600",
+    hoverText: "group-hover:text-amber-600",
+  },
+  emerald: {
+    border: "border-l-emerald-500",
+    iconBg: "from-emerald-400 to-emerald-600",
+    hoverText: "group-hover:text-emerald-600",
+  },
+  violet: {
+    border: "border-l-violet-500",
+    iconBg: "from-violet-400 to-violet-600",
+    hoverText: "group-hover:text-violet-600",
+  },
+} as const
 
 export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
   const [formData, setFormData] = useState({
@@ -151,6 +144,8 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
   const [publicConfig, setPublicConfig] = useState<PublicClientConfig | null>(null)
   const [showAllFaqsModal, setShowAllFaqsModal] = useState(false)
   const [openFaq, setOpenFaq] = useState<number | null>(0)
+
+  const selectedStudio = studios.find((studio) => studio.name === formData.studio)
 
   useEffect(() => {
     const imageNodes = BARRE_HERO_IMAGES.map((src, index) => {
@@ -231,8 +226,6 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
       confettiInstanceRef.current = null
     }
   }, [])
-
-  const selectedStudio = studios.find((studio) => studio.name === formData.studio)
 
   const handleInputChange = (field: string, value: any) => {
     setFormData((prev) => ({
@@ -485,324 +478,409 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
                 </div>
               </div>
             ) : (
-              <div className="rounded-[28px] border border-slate-200/80 bg-white/80 p-5 shadow-[0_48px_140px_rgba(15,23,42,0.18)] ring-1 ring-slate-200/50 backdrop-blur-xl sm:p-6 lg:p-8">
-                <div className="mb-8">
-                  <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-900/30 bg-gradient-to-r from-blue-900/20 to-slate-300/30 px-4 py-2 backdrop-blur-sm">
-                    <Sparkles className="h-4 w-4 text-blue-900" />
-                    <span className="text-sm font-semibold text-blue-900">Book Your Barre Trial</span>
-                  </div>
-                  <h2 className="mb-2 text-3xl font-bold text-foreground">Claim Your Free Trial</h2>
-                  <p className="text-muted-foreground">Sign up for your complimentary Barre 57 class.</p>
-                </div>
-
-                <form onSubmit={handleSubmit} className="space-y-8">
-                  <div className="relative space-y-6 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-8 shadow-sm sm:p-6 sm:pt-9">
-                    <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
-                      <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">1. Your details</span>
-                      <span className="text-destructive">*</span>
+              <>
+                <div className="rounded-[28px] border border-slate-200/80 bg-white/80 p-5 shadow-[0_48px_140px_rgba(15,23,42,0.18)] ring-1 ring-slate-200/50 backdrop-blur-xl sm:p-6 lg:p-8">
+                  <div className="mb-8">
+                    <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-900/30 bg-gradient-to-r from-blue-900/20 to-slate-300/30 px-4 py-2 backdrop-blur-sm">
+                      <Sparkles className="h-4 w-4 text-blue-900" />
+                      <span className="text-sm font-semibold text-blue-900">Book Your Barre Trial</span>
                     </div>
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 mt-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="firstName" className="font-semibold">
-                          First name <span className="text-destructive">*</span>
-                        </Label>
-                        <Input
-                          id="firstName"
-                          value={formData.firstName}
-                          onChange={(event) => handleInputChange("firstName", event.target.value)}
-                          className={cn(
-                            "h-12 border-slate-300/95 bg-white/70 backdrop-blur-sm focus:border-slate-800 focus:ring-slate-800/15",
-                            errors.firstName && "border-destructive"
-                          )}
-                        />
-                        {errors.firstName && <p className="text-sm text-destructive">{errors.firstName}</p>}
-                      </div>
+                    <h2 className="mb-2 text-3xl font-bold text-foreground">Claim Your Free Trial</h2>
+                    <p className="text-muted-foreground">Sign up for your complimentary Barre 57 class.</p>
+                  </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="lastName" className="font-semibold">
-                          Last name <span className="text-destructive">*</span>
-                        </Label>
-                        <Input
-                          id="lastName"
-                          value={formData.lastName}
-                          onChange={(event) => handleInputChange("lastName", event.target.value)}
-                          className={cn(
-                            "h-12 border-slate-300/95 bg-white/70 backdrop-blur-sm focus:border-slate-800 focus:ring-slate-800/15",
-                            errors.lastName && "border-destructive"
-                          )}
-                        />
-                        {errors.lastName && <p className="text-sm text-destructive">{errors.lastName}</p>}
+                  <form onSubmit={handleSubmit} className="space-y-8">
+                    <div className="relative space-y-6 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-8 shadow-sm sm:p-6 sm:pt-9">
+                      <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
+                        <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">1. Your details</span>
+                        <span className="text-destructive">*</span>
                       </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="email" className="font-semibold">
-                          Email <span className="text-destructive">*</span>
-                        </Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          value={formData.email}
-                          onChange={(event) => handleInputChange("email", event.target.value)}
-                          className={cn(
-                            "h-12 border-slate-300/95 bg-white/70 backdrop-blur-sm focus:border-slate-800 focus:ring-slate-800/15",
-                            errors.email && "border-destructive"
-                          )}
-                        />
-                        {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="phone" className="font-semibold">
-                          Phone number <span className="text-destructive">*</span>
-                        </Label>
-                        <div className="grid grid-cols-[56px_minmax(0,1fr)] items-stretch gap-2">
-                          <Select value={formData.countryCode} onValueChange={(value) => handleInputChange("countryCode", value)}>
-                            <SelectTrigger size="lg" className="h-12 w-[56px] min-w-[56px] shrink-0 justify-center border-slate-300/95 bg-white/70 px-2 backdrop-blur-sm">
-                              <SelectValue placeholder="Code">
-                                <span className="text-base leading-none">{getCountryOption(formData.countryCode)?.flag}</span>
-                              </SelectValue>
-                            </SelectTrigger>
-                            <SelectContent className="border-slate-300 bg-white/95">
-                              {countryCodes.map((item, index) => (
-                                <SelectItem key={`${item.code}-${item.country}-${index}`} value={item.country}>
-                                  <div className="flex items-center gap-2">
-                                    <span>{item.flag}</span>
-                                    <span className="font-medium">{item.code}</span>
-                                    <span className="text-xs text-muted-foreground">{item.name}</span>
-                                  </div>
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 mt-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="firstName" className="font-semibold">
+                            First name <span className="text-destructive">*</span>
+                          </Label>
                           <Input
-                            id="phone"
-                            placeholder="98765 43210"
-                            value={formData.phone}
-                            onChange={(event) => handleInputChange("phone", event.target.value)}
+                            id="firstName"
+                            value={formData.firstName}
+                            onChange={(event) => handleInputChange("firstName", event.target.value)}
                             className={cn(
-                              "h-12 flex-1 border-slate-300/95 bg-white/70 backdrop-blur-sm focus:border-slate-800 focus:ring-slate-800/15",
-                              errors.phone && "border-destructive"
+                              "h-12 border-slate-300/95 bg-white/70 backdrop-blur-sm focus:border-slate-800 focus:ring-slate-800/15",
+                              errors.firstName && "border-destructive"
                             )}
                           />
+                          {errors.firstName && <p className="text-sm text-destructive">{errors.firstName}</p>}
                         </div>
-                        {errors.phone && <p className="text-sm text-destructive">{errors.phone}</p>}
+
+                        <div className="space-y-2">
+                          <Label htmlFor="lastName" className="font-semibold">
+                            Last name <span className="text-destructive">*</span>
+                          </Label>
+                          <Input
+                            id="lastName"
+                            value={formData.lastName}
+                            onChange={(event) => handleInputChange("lastName", event.target.value)}
+                            className={cn(
+                              "h-12 border-slate-300/95 bg-white/70 backdrop-blur-sm focus:border-slate-800 focus:ring-slate-800/15",
+                              errors.lastName && "border-destructive"
+                            )}
+                          />
+                          {errors.lastName && <p className="text-sm text-destructive">{errors.lastName}</p>}
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="email" className="font-semibold">
+                            Email <span className="text-destructive">*</span>
+                          </Label>
+                          <Input
+                            id="email"
+                            type="email"
+                            value={formData.email}
+                            onChange={(event) => handleInputChange("email", event.target.value)}
+                            className={cn(
+                              "h-12 border-slate-300/95 bg-white/70 backdrop-blur-sm focus:border-slate-800 focus:ring-slate-800/15",
+                              errors.email && "border-destructive"
+                            )}
+                          />
+                          {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="phone" className="font-semibold">
+                            Phone number <span className="text-destructive">*</span>
+                          </Label>
+                          <div className="grid grid-cols-[56px_minmax(0,1fr)] items-stretch gap-2">
+                            <Select value={formData.countryCode} onValueChange={(value) => handleInputChange("countryCode", value)}>
+                              <SelectTrigger size="lg" className="h-12 w-[56px] min-w-[56px] shrink-0 justify-center border-slate-300/95 bg-white/70 px-2 backdrop-blur-sm">
+                                <SelectValue placeholder="Code">
+                                  <span className="text-base leading-none">{getCountryOption(formData.countryCode)?.flag}</span>
+                                </SelectValue>
+                              </SelectTrigger>
+                              <SelectContent className="border-slate-300 bg-white/95">
+                                {countryCodes.map((item, index) => (
+                                  <SelectItem key={`${item.code}-${item.country}-${index}`} value={item.country}>
+                                    <div className="flex items-center gap-2">
+                                      <span>{item.flag}</span>
+                                      <span className="font-medium">{item.code}</span>
+                                      <span className="text-xs text-muted-foreground">{item.name}</span>
+                                    </div>
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <Input
+                              id="phone"
+                              placeholder="98765 43210"
+                              value={formData.phone}
+                              onChange={(event) => handleInputChange("phone", event.target.value)}
+                              className={cn(
+                                "h-12 flex-1 border-slate-300/95 bg-white/70 backdrop-blur-sm focus:border-slate-800 focus:ring-slate-800/15",
+                                errors.phone && "border-destructive"
+                              )}
+                            />
+                          </div>
+                          {errors.phone && <p className="text-sm text-destructive">{errors.phone}</p>}
+                        </div>
                       </div>
                     </div>
+
+                    <div className="relative space-y-5 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-8 shadow-sm sm:p-6 sm:pt-9">
+                      <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
+                        <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">2. Studio choice</span>
+                        <span className="text-destructive">*</span>
+                      </div>
+                      <div className="space-y-2 mt-4">
+                        <Label htmlFor="studio" className="font-semibold">
+                          Preferred studio <span className="text-destructive">*</span>
+                        </Label>
+                        <Select value={formData.studio} onValueChange={(value) => handleInputChange("studio", value)}>
+                          <SelectTrigger
+                            size="lg"
+                            className={cn(
+                              "w-full border-slate-300/95 bg-white/70 backdrop-blur-sm focus:border-slate-800 focus:ring-slate-800/15",
+                              errors.studio && "border-destructive"
+                            )}
+                          >
+                            <SelectValue placeholder="Select a studio" />
+                          </SelectTrigger>
+                          <SelectContent className="border-slate-300 bg-white/95">
+                            {studios.map((studio) => (
+                              <SelectItem key={studio.name} value={studio.name}>
+                                <div>
+                                  <div className="font-medium">{studio.name}</div>
+                                  <div className="text-xs text-muted-foreground">{studio.location}</div>
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        {errors.studio && <p className="text-sm text-destructive">{errors.studio}</p>}
+                      </div>
+                    </div>
+
+                    <div className="relative space-y-3 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-9 shadow-sm sm:p-6 sm:pt-10">
+                      <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
+                        <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">3. Confirmation</span>
+                      </div>
+                      <div className="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/70 px-4 py-3 sm:items-center sm:gap-4">
+                        <Checkbox
+                          id="terms"
+                          checked={formData.acceptedTerms}
+                          onCheckedChange={(checked) => handleInputChange("acceptedTerms", Boolean(checked))}
+                          className={cn("mt-0.5 h-5 w-5 rounded-md border-slate-400 data-[state=checked]:border-blue-900 data-[state=checked]:bg-blue-900 sm:mt-0", errors.acceptedTerms && "border-destructive")}
+                        />
+                        <div className="flex-1">
+                          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                            <label htmlFor="terms" className="cursor-pointer text-sm font-semibold leading-relaxed text-slate-900 sm:flex-1">
+                              I have read and accept the waiver. <span className="text-destructive">*</span>
+                            </label>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              className="h-9 rounded-full border-slate-300 bg-white px-4 text-xs font-semibold tracking-[0.08em] text-slate-800 hover:border-slate-900 hover:bg-slate-900 hover:text-white sm:self-auto"
+                              onClick={() => setShowWaiverModal(true)}
+                            >
+                              View waiver
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                      {errors.acceptedTerms && <p className="text-sm text-destructive">{errors.acceptedTerms}</p>}
+                    </div>
+
+                    {statusMessage && (
+                      <div
+                        className={cn(
+                          "rounded-xl border px-4 py-3 text-sm",
+                          statusMessage.tone === "error"
+                            ? "border-red-300 bg-red-50 text-red-800"
+                            : "border-emerald-300 bg-emerald-50 text-emerald-800"
+                        )}
+                      >
+                        {statusMessage.text}
+                      </div>
+                    )}
+
+                    <Button
+                      type="submit"
+                      size="lg"
+                      className="h-14 w-full bg-gradient-to-r from-blue-950 to-blue-900 text-lg shadow-lg transition-all duration-300 hover:from-slate-950 hover:to-blue-950 hover:shadow-xl"
+                      disabled={isSubmitting || !isFormValid}
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                          Booking your trial...
+                        </>
+                      ) : (
+                        "Book Your Free Trial"
+                      )}
+                    </Button>
+                  </form>
+                </div>
+
+                {/* KEY BENEFITS SECTION */}
+                <section className="mt-20 space-y-12">
+                  <div className="mx-auto max-w-5xl">
+                    <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/10 to-slate-200/50 px-4 py-2 backdrop-blur-sm">
+                      <Award className="h-4 w-4 text-blue-900" />
+                      <span className="text-sm font-semibold text-blue-900">What Sets Us Apart</span>
+                    </div>
+                    <h2 className="mb-4 text-4xl font-bold text-foreground md:text-5xl">Key Benefits</h2>
+                    <p className="max-w-3xl text-lg leading-relaxed text-muted-foreground">
+                      Discover the proven advantages that make Barre 57 India the preferred choice for fast, visible results and sustainable transformation.
+                    </p>
                   </div>
 
-                  <div className="relative space-y-5 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-8 shadow-sm sm:p-6 sm:pt-9">
-                    <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
-                      <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">2. Studio choice</span>
-                      <span className="text-destructive">*</span>
-                    </div>
-                    <div className="space-y-2 mt-4">
-                      <Label htmlFor="studio" className="font-semibold">
-                        Preferred studio <span className="text-destructive">*</span>
-                      </Label>
-                      <Select value={formData.studio} onValueChange={(value) => handleInputChange("studio", value)}>
-                        <SelectTrigger
-                          size="lg"
+                  <div className="mx-auto mt-12 grid max-w-6xl gap-5 md:grid-cols-2">
+                    {keyBenefits.map((benefit, index) => {
+                      const Icon = benefitIcons[benefit.icon]
+                      const colors = colorClasses[benefit.color as keyof typeof colorClasses]
+
+                      return (
+                        <motion.div
+                          key={benefit.title}
+                          initial={{ opacity: 0, y: 26 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true, margin: "-100px" }}
+                          transition={{ duration: 0.5, delay: index * 0.06 }}
                           className={cn(
-                            "w-full border-slate-300/95 bg-white/70 backdrop-blur-sm focus:border-slate-800 focus:ring-slate-800/15",
-                            errors.studio && "border-destructive"
+                            "group relative h-full rounded-2xl border-r-2 border-y-2 border-r-slate-200 border-y-slate-200 bg-gradient-to-br from-white/95 to-slate-50/60 p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl",
+                            colors.border
                           )}
                         >
-                          <SelectValue placeholder="Select a studio" />
-                        </SelectTrigger>
-                        <SelectContent className="border-slate-300 bg-white/95">
-                          {studios.map((studio) => (
-                            <SelectItem key={studio.name} value={studio.name}>
-                              <div>
-                                <div className="font-medium">{studio.name}</div>
-                                <div className="text-xs text-muted-foreground">{studio.location}</div>
-                              </div>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      {errors.studio && <p className="text-sm text-destructive">{errors.studio}</p>}
+                          <div className="flex items-start gap-6">
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div className={cn("flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br text-white shadow-lg transition-all duration-300 group-hover:-rotate-6 group-hover:scale-110", `from-${colors.iconBg.split(' ')[1].split('-')[0]}-400 to-${colors.iconBg.split(' ')[1].split('-')[0]}-600`)}>
+                                  <Icon className="h-7 w-7" />
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="border-slate-700 bg-slate-900 text-white">
+                                <p className="font-medium">{benefit.tooltip}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                            <div className="flex-1">
+                              <h3 className={cn("mb-3 text-xl font-bold text-foreground transition-colors", colors.hoverText)}>
+                                {benefit.title}
+                              </h3>
+                              <p className="text-sm leading-relaxed text-muted-foreground">{benefit.description}</p>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )
+                    })}
+                  </div>
+                </section>
+
+                {/* LOCATIONS SECTION */}
+                <section className="mt-20 space-y-12">
+                  <div className="mx-auto max-w-4xl">
+                    <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-gradient-to-r from-amber-500/10 to-amber-200/50 px-4 py-2 backdrop-blur-sm">
+                      <MapPin className="h-4 w-4 text-amber-700" />
+                      <span className="text-sm font-semibold text-amber-900">Studio Locations</span>
                     </div>
+                    <h2 className="mb-4 text-4xl font-bold text-foreground md:text-5xl">Choose Your Studio</h2>
+                    <p className="max-w-3xl text-lg leading-relaxed text-muted-foreground">
+                      Each location carries the Barre 57 method, with its own neighborhood energy and format offerings.
+                    </p>
                   </div>
 
-                  <div className="relative space-y-3 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-9 shadow-sm sm:p-6 sm:pt-10">
-                    <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
-                      <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">3. Confirmation</span>
-                    </div>
-                    <div className="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/70 px-4 py-3 sm:items-center sm:gap-4">
-                      <Checkbox
-                        id="terms"
-                        checked={formData.acceptedTerms}
-                        onCheckedChange={(checked) => handleInputChange("acceptedTerms", Boolean(checked))}
-                        className={cn("mt-0.5 h-5 w-5 rounded-md border-slate-400 data-[state=checked]:border-blue-900 data-[state=checked]:bg-blue-900 sm:mt-0", errors.acceptedTerms && "border-destructive")}
-                      />
-                      <div className="flex-1">
-                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                          <label htmlFor="terms" className="cursor-pointer text-sm font-semibold leading-relaxed text-slate-900 sm:flex-1">
-                            I have read and accept the waiver. <span className="text-destructive">*</span>
-                          </label>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            className="h-9 rounded-full border-slate-300 bg-white px-4 text-xs font-semibold tracking-[0.08em] text-slate-800 hover:border-slate-900 hover:bg-slate-900 hover:text-white sm:self-auto"
-                            onClick={() => setShowWaiverModal(true)}
+                  <div className="mt-12 grid gap-8 md:grid-cols-2">
+                    {studios.map((studio, index) => (
+                      <motion.div
+                        key={studio.name}
+                        initial={{ opacity: 0, y: 24 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-100px" }}
+                        transition={{ duration: 0.5, delay: index * 0.12 }}
+                        className="group overflow-hidden rounded-2xl border-2 border-slate-200 bg-gradient-to-br from-white/95 to-slate-50/60 shadow-sm transition-all duration-300 hover:shadow-2xl"
+                      >
+                        <div className="space-y-6 p-8">
+                          <div className="flex items-start gap-6">
+                            <div className="relative flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 shadow-xl transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6">
+                              <Building2 className="relative z-10 h-8 w-8 text-white" />
+                              <div className="absolute inset-0 rounded-2xl bg-white/20" />
+                            </div>
+                            <div className="flex-1">
+                              <h3 className="mb-2 text-2xl font-bold text-foreground transition-colors group-hover:text-blue-900">{studio.name}</h3>
+                              <p className="text-sm leading-relaxed text-muted-foreground">{studio.description}</p>
+                            </div>
+                          </div>
+
+                          <div className="space-y-3 rounded-2xl border-2 border-slate-200 bg-white/80 p-6 text-sm shadow-sm backdrop-blur-sm">
+                            {[
+                              { icon: MapPin, title: "Location", value: studio.neighborhood },
+                              { icon: Phone, title: "Phone", value: studio.phone },
+                              { icon: Clock, title: "Hours", value: studio.hours },
+                              { icon: Building2, title: "Address", value: studio.address },
+                            ].map((item) => {
+                              const ItemIcon = item.icon
+                              return (
+                                <div key={item.title} className="flex items-start gap-3">
+                                  <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-100 to-blue-200 shadow-sm">
+                                    <ItemIcon className="h-5 w-5 text-blue-900" />
+                                  </div>
+                                  <div className="flex-1">
+                                    <p className="mb-1 font-bold text-blue-900">{item.title}</p>
+                                    <p className="leading-snug text-muted-foreground">{item.value}</p>
+                                  </div>
+                                </div>
+                              )
+                            })}
+                          </div>
+
+                          <a
+                            href={`https://www.google.com/maps/search/?api=1&query=${studio.lat},${studio.lng}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-900 to-blue-700 px-6 py-3 font-semibold text-white shadow-lg transition-all duration-300 hover:shadow-xl"
                           >
-                            View waiver
-                          </Button>
+                            <MapPin className="h-4 w-4" />
+                            Get Directions
+                          </a>
                         </div>
-                      </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </section>
+
+                {/* FAQs SECTION */}
+                <section className="mt-20 space-y-12 pb-2">
+                  <div className="mx-auto max-w-5xl">
+                    <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/10 to-slate-200/50 px-4 py-2 backdrop-blur-sm">
+                      <Info className="h-4 w-4 text-blue-900" />
+                      <span className="text-sm font-semibold text-blue-900">Questions</span>
                     </div>
-                    {errors.acceptedTerms && <p className="text-sm text-destructive">{errors.acceptedTerms}</p>}
+                    <h2 className="mb-4 text-4xl font-bold text-foreground md:text-5xl">Helpful Answers Before You Book</h2>
+                    <p className="max-w-3xl text-lg leading-relaxed text-muted-foreground">
+                      Everything you need before your first class.
+                    </p>
                   </div>
 
-                  {statusMessage && (
-                    <div
-                      className={cn(
-                        "rounded-xl border px-4 py-3 text-sm",
-                        statusMessage.tone === "error"
-                          ? "border-red-300 bg-red-50 text-red-800"
-                          : "border-emerald-300 bg-emerald-50 text-emerald-800"
-                      )}
-                    >
-                      {statusMessage.text}
-                    </div>
-                  )}
+                  <div className="mt-12 space-y-4">
+                    {BARRE_FAQS.map((faq, index) => (
+                      <motion.div
+                        key={faq.question}
+                        initial={{ opacity: 0, y: 18 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-50px" }}
+                        transition={{ duration: 0.35, delay: index * 0.04 }}
+                        className="overflow-hidden rounded-2xl border border-slate-900/15 bg-card shadow-sm transition-all duration-300 hover:border-slate-900/30 hover:shadow-xl"
+                      >
+                        <button
+                          onClick={() => setOpenFaq(openFaq === index ? null : index)}
+                          className={cn(
+                            "group flex w-full items-center justify-between px-8 py-6 text-left transition-colors",
+                            openFaq === index
+                              ? "bg-gradient-to-r from-slate-950 via-slate-900 to-slate-800"
+                              : "bg-gradient-to-r from-slate-900 via-slate-800 to-slate-700 hover:from-slate-950 hover:to-slate-900"
+                          )}
+                        >
+                          <span className="pr-4 text-lg font-bold text-white transition-colors group-hover:text-slate-100">{faq.question}</span>
+                          <motion.div
+                            animate={{ rotate: openFaq === index ? 180 : 0 }}
+                            transition={{ duration: 0.25 }}
+                          >
+                            <div className={cn("flex h-10 w-10 items-center justify-center rounded-full border transition-all duration-300", openFaq === index ? "border-white/25 bg-white/10" : "border-white/15 bg-white/5 group-hover:bg-white/10")}>
+                              {openFaq === index ? <Minus className="h-5 w-5 text-white" /> : <Plus className="h-5 w-5 text-white" />}
+                            </div>
+                          </motion.div>
+                        </button>
+                        <AnimatePresence>
+                          {openFaq === index ? (
+                            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }}>
+                              <div className="border-t border-slate-900/10 bg-gradient-to-br from-zinc-50 via-white to-stone-50 px-8 pb-6 pt-6">
+                                <div className="space-y-3 border-l-4 border-slate-900/80 pl-5 text-[15px] leading-7 text-slate-700">
+                                  {faq.answer.map((paragraph, paragraphIndex) => (
+                                    <p key={`${faq.question}-${paragraphIndex}`}>{paragraph}</p>
+                                  ))}
+                                </div>
+                              </div>
+                            </motion.div>
+                          ) : null}
+                        </AnimatePresence>
+                      </motion.div>
+                    ))}
+                  </div>
 
-                  <Button
-                    type="submit"
-                    size="lg"
-                    className="h-14 w-full bg-gradient-to-r from-blue-950 to-blue-900 text-lg shadow-lg transition-all duration-300 hover:from-slate-950 hover:to-blue-950 hover:shadow-xl"
-                    disabled={isSubmitting || !isFormValid}
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                        Booking your trial...
-                      </>
-                    ) : (
-                      "Book Your Free Trial"
-                    )}
-                  </Button>
-                </form>
-              </div>
+                  <div className="mt-12 rounded-2xl border border-blue-900/20 bg-gradient-to-br from-blue-900/10 to-slate-200/30 p-8">
+                    <div className="space-y-4 text-center">
+                      <h3 className="text-2xl font-bold text-blue-900">Need More Information?</h3>
+                      <p className="text-blue-900/80">Explore the full FAQ guide or read the complete waiver for more details.</p>
+                      <div className="mt-6 flex flex-wrap justify-center gap-4">
+                        <Button variant="outline" size="lg" className="border-blue-900 text-blue-900 hover:bg-blue-900 hover:text-white" onClick={() => setShowAllFaqsModal(true)}>
+                          View all FAQs
+                        </Button>
+                        <Button variant="outline" size="lg" className="border-blue-900 text-blue-900 hover:bg-blue-900 hover:text-white" onClick={() => setShowWaiverModal(true)}>
+                          Read fullwaiver
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+              </>
             )}
-
-            {/* Benefits Section */}
-            <div className="mt-16 space-y-6">
-              <div>
-                <h2 className="mb-2 text-3xl font-bold text-foreground">Why Choose Barre 57?</h2>
-                <p className="text-muted-foreground">Discover what makes Barre an effective full-body workout</p>
-              </div>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                {BARRE_BENEFITS.map((benefit, index) => {
-                  const Icon = {
-                    sparkles: Sparkles,
-                    trophy: Trophy,
-                    shield: Shield,
-                    heart: Heart,
-                    award: Award,
-                    zap: Zap,
-                    target: Target,
-                    users: Users,
-                  }[benefit.icon]
-
-                  return (
-                    <div
-                      key={index}
-                      className="group rounded-2xl border border-slate-200/80 bg-white/60 p-5 shadow-sm transition-all duration-300 hover:border-slate-300/80 hover:bg-white/80 hover:shadow-md"
-                    >
-                      <div className={cn(
-                        "mb-3 inline-flex h-12 w-12 items-center justify-center rounded-full",
-                        {
-                          "bg-gradient-to-br from-rose-400 to-rose-600": benefit.color === "rose",
-                          "bg-gradient-to-br from-amber-400 to-amber-600": benefit.color === "amber",
-                          "bg-gradient-to-br from-violet-400 to-violet-600": benefit.color === "violet",
-                        }
-                      )}>
-                        <Icon className="h-6 w-6 text-white" />
-                      </div>
-                      <h3 className="mb-2 font-semibold text-foreground group-hover:text-slate-900">{benefit.title}</h3>
-                      <p className="text-sm text-muted-foreground">{benefit.description}</p>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-
-            {/* Locations Section */}
-            <div className="mt-16 space-y-6">
-              <div>
-                <h2 className="mb-2 text-3xl font-bold text-foreground">Our Locations</h2>
-                <p className="text-muted-foreground">Visit us at one of our premium studios</p>
-              </div>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                {studios.map((studio) => (
-                  <div key={studio.name} className="rounded-2xl border border-slate-200/80 bg-white/60 p-5 shadow-sm transition-all duration-300 hover:border-slate-300/80 hover:bg-white/80 hover:shadow-md">
-                    <div className="mb-3 flex items-start gap-3">
-                      <MapPin className="h-5 w-5 flex-shrink-0 text-blue-900 mt-0.5" />
-                      <div className="min-w-0 flex-1">
-                        <h3 className="font-semibold text-foreground">{studio.name}</h3>
-                        <p className="text-sm text-muted-foreground line-clamp-2">{studio.address}</p>
-                      </div>
-                    </div>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <Phone className="h-4 w-4" />
-                        <span>{studio.phone}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <Clock className="h-4 w-4" />
-                        <span>{studio.hours}</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* FAQs Section */}
-            <div className="mt-16 mb-16 space-y-6">
-              <div>
-                <h2 className="mb-2 text-3xl font-bold text-foreground">Frequently Asked Questions</h2>
-                <p className="text-muted-foreground">Everything you need to know about Barre 57</p>
-              </div>
-              <div className="space-y-3">
-                {BARRE_FAQS.map((faq, index) => (
-                  <div
-                    key={index}
-                    className="rounded-2xl border border-slate-200/80 bg-white/60 overflow-hidden transition-all duration-300 hover:border-slate-300/80"
-                  >
-                    <button
-                      onClick={() => setOpenFaq(openFaq === index ? null : index)}
-                      className="flex w-full items-center justify-between p-5 text-left hover:bg-white/40"
-                    >
-                      <h3 className="font-semibold text-foreground pr-4">{faq.question}</h3>
-                      <ChevronDown
-                        className={cn(
-                          "h-5 w-5 flex-shrink-0 transition-transform duration-300 text-muted-foreground",
-                          openFaq === index && "rotate-180"
-                        )}
-                      />
-                    </button>
-                    {openFaq === index && (
-                      <div className="border-t border-slate-200/50 px-5 py-4 space-y-3">
-                        {faq.answer.map((answer, ansIndex) => (
-                          <p key={ansIndex} className="text-sm text-muted-foreground leading-relaxed">
-                            {answer}
-                          </p>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-              <Button
-                variant="outline"
-                className="w-full border-blue-900 text-blue-900 hover:bg-blue-900 hover:text-white"
-                onClick={() => setShowAllFaqsModal(true)}
-              >
-                View More FAQs
-              </Button>
-            </div>
           </div>
         </div>
       </div>
