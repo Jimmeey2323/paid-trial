@@ -24,6 +24,7 @@ import {
   Minus,
   Info,
   Building2,
+  Star,
   type LucideIcon,
 } from "lucide-react"
 
@@ -33,6 +34,7 @@ import {
   keyBenefits,
   studios,
   waiverSections,
+  clientReviews,
 } from "@/data/physique57"
 import { cn } from "@/lib/utils"
 import {
@@ -62,8 +64,8 @@ const BARRE_HERO_IMAGES = [
   "https://i.postimg.cc/VvZTF5Sj/hp_Img_1770172692.png",
 ]
 
-// Barre 57 specific FAQs
-const BARRE_FAQS = [
+// All FAQs for Barre - combines Barre-specific with general Physique 57 FAQs
+const ALL_FAQS = [
   {
     question: "Is Barre 57 suitable for beginners?",
     answer: [
@@ -85,6 +87,7 @@ const BARRE_FAQS = [
       "Our instructors will help you find your range of motion and work safely within it."
     ]
   },
+  ...faqs,
 ]
 
 const benefitIcons: Record<string, LucideIcon> = {
@@ -825,6 +828,45 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
                   </div>
                 </section>
 
+                {/* MEMBER REVIEWS SECTION */}
+                <section className="mt-20 space-y-12 pb-2">
+                  <div className="mx-auto max-w-5xl">
+                    <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-rose-900/20 bg-gradient-to-r from-rose-900/10 to-slate-200/50 px-4 py-2 backdrop-blur-sm">
+                      <Heart className="h-4 w-4 text-rose-900" />
+                      <span className="text-sm font-semibold text-rose-900">Reviews</span>
+                    </div>
+                    <h2 className="mb-4 text-4xl font-bold text-foreground md:text-5xl">Member Stories</h2>
+                    <p className="max-w-3xl text-lg leading-relaxed text-muted-foreground">
+                      Join thousands of members who've transformed their fitness journey with Barre 57.
+                    </p>
+                  </div>
+
+                  <div className="mx-auto grid max-w-6xl gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    {clientReviews.map((review, index) => (
+                      <motion.div
+                        key={`${review.name}-${index}`}
+                        initial={{ opacity: 0, y: 26 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-100px" }}
+                        transition={{ duration: 0.5, delay: index * 0.08 }}
+                        className="group rounded-2xl border border-slate-200 bg-gradient-to-br from-white/95 to-slate-50/60 p-6 shadow-sm transition-all duration-300 hover:border-rose-200/50 hover:shadow-xl"
+                      >
+                        <div className="mb-4 flex gap-1">
+                          {[...Array(5)].map((_, i) => (
+                            <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />
+                          ))}
+                        </div>
+                        <p className="mb-4 text-sm leading-relaxed text-muted-foreground italic">\"{review.review}\"</p>
+                        <div className="space-y-1">
+                          <p className="text-sm font-bold text-foreground">{review.name}</p>
+                          <p className="text-xs text-muted-foreground">{review.class}</p>
+                          <p className="text-xs text-muted-foreground/60">{review.date}</p>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </section>
+
                 {/* FAQs SECTION */}
                 <section className="mt-20 space-y-12 pb-2">
                   <div className="mx-auto max-w-5xl">
@@ -839,7 +881,7 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
                   </div>
 
                   <div className="mt-12 space-y-4">
-                    {BARRE_FAQS.map((faq, index) => (
+                    {ALL_FAQS.map((faq, index) => (
                       <motion.div
                         key={faq.question}
                         initial={{ opacity: 0, y: 18 }}
@@ -914,7 +956,7 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
           </button>
         </div>
         <div className="space-y-3">
-          {[...BARRE_FAQS, ...faqs].map((faq, index) => (
+          {ALL_FAQS.map((faq, index) => (
             <div key={index} className="rounded-xl border border-slate-200/50 bg-white/40 overflow-hidden">
               <button
                 onClick={() => setOpenFaq(openFaq === index ? null : index)}
