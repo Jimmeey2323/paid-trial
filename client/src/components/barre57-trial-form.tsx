@@ -698,7 +698,7 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
         </div>
 
         <div className="relative min-h-screen bg-background/95 backdrop-blur-sm lg:h-screen lg:overflow-y-auto">
-          <div className="mx-auto w-full max-w-[1120px] px-4 pt-4 pb-6 sm:px-6 sm:pt-5 lg:px-10 lg:pt-6 xl:px-14 xl:pt-8">
+          <div className="mx-auto w-full max-w-[1120px] px-4 pt-0 pb-6 sm:px-6 sm:pt-0 lg:px-10 lg:pt-0 xl:px-14 xl:pt-0">
             {showSuccessModal ? (
               <div className="flex min-h-[78vh] items-center justify-center">
                 <div className="w-full max-w-2xl rounded-[32px] border border-slate-200/80 bg-white/85 px-8 py-16 text-center shadow-[0_24px_80px_rgba(15,23,42,0.10)] backdrop-blur-xl sm:px-12">

@@ -1152,7 +1152,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
         </div>
 
         <div className="relative min-h-screen bg-background/95 backdrop-blur-sm lg:h-screen lg:overflow-y-auto">
-          <div className="mx-auto w-full max-w-[1120px] px-4 pt-4 pb-6 sm:px-6 sm:pt-5 lg:px-10 lg:pt-6 xl:px-14 xl:pt-8">
+          <div className="mx-auto w-full max-w-[1120px] px-4 pt-0 pb-6 sm:px-6 sm:pt-0 lg:px-10 lg:pt-0 xl:px-14 xl:pt-0">
               {shouldHideFormForProcessing ? (
                 <div className="flex min-h-[78vh] items-center justify-center">
                   <div className="w-full max-w-2xl rounded-[32px] border border-slate-200/80 bg-white/85 px-8 py-16 text-center shadow-[0_24px_80px_rgba(15,23,42,0.10)] backdrop-blur-xl sm:px-12">
@@ -1978,11 +1978,11 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
         </Button>
       </ModalShell>
 
-      <ModalShell open={Boolean(showFormatInfo)} onClose={() => setShowFormatInfo(null)} className="max-h-[92vh] max-w-5xl overflow-hidden p-0">
+      <ModalShell open={Boolean(showFormatInfo)} onClose={() => setShowFormatInfo(null)} className="h-[92vh] max-h-[92vh] max-w-5xl overflow-hidden p-0 sm:h-[90vh] sm:max-h-[90vh]">
         {activeFormat ? (
           <>
-            <div className="grid h-full min-h-0 lg:grid-cols-[42%_58%]">
-              <div className="relative flex min-h-[220px] items-center justify-center overflow-hidden bg-gradient-to-br from-slate-100 via-white to-slate-100 lg:min-h-0 lg:h-full">
+            <div className="grid h-full min-h-0 grid-rows-[260px_minmax(0,1fr)] lg:grid-cols-[42%_58%] lg:grid-rows-1">
+              <div className="relative flex min-h-0 items-center justify-center overflow-hidden bg-gradient-to-br from-slate-100 via-white to-slate-100 lg:h-full">
                 <img
                   src={activeFormat.image}
                   alt={activeFormat.imageAlt}
@@ -1990,7 +1990,9 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                     "h-full w-full object-center",
                     activeFormat.id === "powercycle"
                       ? "object-cover"
-                      : "object-contain p-5 sm:p-6 lg:p-8"
+                      : activeFormat.id === "strength-lab"
+                        ? "object-cover object-[center_22%]"
+                        : "object-contain p-5 sm:p-6 lg:p-8"
                   )}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10" />
@@ -2001,7 +2003,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                 </div>
               </div>
 
-              <div className="flex min-h-0 flex-col overflow-hidden bg-white">
+              <div className="flex min-h-0 flex-col overflow-hidden bg-white lg:h-full">
                 <div className="flex items-start justify-between gap-4 border-b border-slate-200 bg-white px-6 py-5 sm:px-8">
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-900/70">Format details</p>
