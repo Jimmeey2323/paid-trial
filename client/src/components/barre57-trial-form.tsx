@@ -90,6 +90,206 @@ const ALL_FAQS = [
   ...faqs,
 ]
 
+// Barre 57 Workout Structure with exercises
+const BARRE_WORKOUT_SECTIONS = [
+  {
+    title: "Warm Up",
+    exercises: [
+      {
+        name: "Bicep Curls in Wide Second",
+        gif: "https://physique57.com/wp-content/uploads/2022/07/bicep-curls-wide-second.gif",
+        steps: [
+          "Step your feet wide, slightly turned out.",
+          "Bend knees deeply and lower your hips.",
+          "Lift heavy weights up towards your shoulders and down towards the thighs"
+        ],
+        tips: "Try to keep hips around knee level. Keep elbows tight to ribcage and shoulders down to target the biceps and work with proper posture.",
+        targets: ["Thighs", "Biceps"]
+      },
+      {
+        name: "Tricep Kickbacks",
+        gif: "https://physique57.com/wp-content/uploads/2022/07/tricep-kickbacks.gif",
+        steps: [
+          "Hinge forward at the hips with a slight bend in your knees.",
+          "Keep weights at shoulder level and extend arms back.",
+          "Return to starting position in a controlled manner."
+        ],
+        tips: "Keep your core engaged and avoid arching your back. Focus on the tricep contraction.",
+        targets: ["Triceps", "Core"]
+      },
+      {
+        name: "Push-ups",
+        gif: "https://physique57.com/wp-content/uploads/2022/07/pushups.gif",
+        steps: [
+          "Start in a plank position with hands shoulder-width apart.",
+          "Lower your body by bending elbows until chest nearly touches the ground.",
+          "Push back up to starting position."
+        ],
+        tips: "Modify on knees if needed. Keep core tight and body in a straight line.",
+        targets: ["Chest", "Triceps", "Core"]
+      },
+      {
+        name: "Rows",
+        gif: "https://physique57.com/wp-content/uploads/2022/07/rows.gif",
+        steps: [
+          "Hinge forward with a slight knee bend, weights in hand.",
+          "Pull weights up to hip level, squeezing shoulder blades together.",
+          "Lower weights back down with control."
+        ],
+        tips: "Keep your back straight and engage your lats. Avoid letting shoulders shrug.",
+        targets: ["Back", "Biceps"]
+      }
+    ]
+  },
+  {
+    title: "Thighs",
+    exercises: [
+      {
+        name: "Curtsy",
+        gif: "https://physique57.com/wp-content/uploads/2022/07/curtsy.gif",
+        steps: [
+          "Stand with feet hip-width apart at the barre.",
+          "Step right leg back and across your body, bending both knees.",
+          "Return to center and repeat."
+        ],
+        tips: "Keep your upper body upright and engage your core. Focus on the inner and outer thigh.",
+        targets: ["Inner Thighs", "Outer Thighs"]
+      },
+      {
+        name: "Upright V",
+        gif: "https://physique57.com/wp-content/uploads/2022/07/upright-v.gif",
+        steps: [
+          "Stand at the barre with feet in a V position, heels together.",
+          "Pulse up and down, keeping legs engaged.",
+          "Complete high-intensity pulses for maximum burn."
+        ],
+        tips: "Turn out from the hips, not the knees. Squeeze your glutes and thighs throughout.",
+        targets: ["Thighs", "Glutes"]
+      },
+      {
+        name: "Wide Incline",
+        gif: "https://physique57.com/wp-content/uploads/2022/07/wide-incline.gif",
+        steps: [
+          "Stand with feet very wide, toes slightly turned out.",
+          "Bend knees and lower into a wide squat position.",
+          "Pulse up and down, staying low."
+        ],
+        tips: "Keep knees behind your toes. Engage your entire lower body.",
+        targets: ["Thighs", "Inner Thighs", "Glutes"]
+      },
+      {
+        name: "Thigh Dance",
+        gif: "https://physique57.com/wp-content/uploads/2022/07/thigh-dance.gif",
+        steps: [
+          "Stand at the barre with a small bend in your knees.",
+          "Pulse the working leg up and down in quick rhythmic motions.",
+          "Maintain turn-out and control throughout."
+        ],
+        tips: "Keep your hips level and core engaged. This targets deep thigh muscles.",
+        targets: ["Thighs"]
+      }
+    ]
+  },
+  {
+    title: "Glutes",
+    exercises: [
+      {
+        name: "Pretzel",
+        gif: "https://physique57.com/wp-content/uploads/2022/07/pretzel.gif",
+        steps: [
+          "Lie on your side with legs bent, top leg crossed over.",
+          "Lift top leg up, squeezing your glute.",
+          "Lower with control and repeat."
+        ],
+        tips: "Keep your core engaged and avoid rolling backward. Focus on glute activation.",
+        targets: ["Glutes", "Hips"]
+      },
+      {
+        name: "Mermaid",
+        gif: "https://physique57.com/wp-content/uploads/2022/07/mermaid.gif",
+        steps: [
+          "Lie on your side with both legs bent together.",
+          "Press top hip forward and lift top leg slightly.",
+          "Pulse leg up and down in small, controlled movements."
+        ],
+        tips: "This exercise deeply targets the glute and hip area. Keep movements small and controlled.",
+        targets: ["Glutes", "Hip Flexors"]
+      },
+      {
+        name: "Side Forearm Glutes",
+        gif: "https://physique57.com/wp-content/uploads/2022/07/standing-hairpin.gif",
+        steps: [
+          "Stand at the barre, holding it with one hand.",
+          "Lift working leg straight behind you and pulse.",
+          "Keep torso upright and core engaged."
+        ],
+        tips: "Squeeze your glute at the top of each pulse. Avoid arching your back.",
+        targets: ["Glutes"]
+      },
+      {
+        name: "Fold Over",
+        gif: "https://physique57.com/wp-content/uploads/2022/07/fold-over.gif",
+        steps: [
+          "Bend forward and hold the barre, creating a 90-degree angle.",
+          "Pulse one leg up and down behind you.",
+          "Alternate legs and maintain posture."
+        ],
+        tips: "This intense position maximizes glute engagement. Breathe steadily throughout.",
+        targets: ["Glutes", "Lower Back"]
+      }
+    ]
+  },
+  {
+    title: "Abs",
+    exercises: [
+      {
+        name: "Scissors",
+        gif: "https://physique57.com/wp-content/uploads/2022/07/scissors.gif",
+        steps: [
+          "Lie on your back with legs extended upward.",
+          "Cross legs in a scissor motion while keeping lower back planted.",
+          "Continuous crossing motion for high-intensity core work."
+        ],
+        tips: "Keep your lower back flat on the ground. Use controlled movements.",
+        targets: ["Abs", "Core"]
+      },
+      {
+        name: "Roundback Abs on Forearms",
+        gif: "https://physique57.com/wp-content/uploads/2022/07/roundback.gif",
+        steps: [
+          "Sit on your forearms with legs extended.",
+          "Round your back and crunch forward, engaging your core.",
+          "Release and repeat with control."
+        ],
+        tips: "Focus on deep core engagement. This targets lower abdominal muscles.",
+        targets: ["Abs", "Core"]
+      },
+      {
+        name: "Curl on the Ball",
+        gif: "https://physique57.com/wp-content/uploads/2022/07/curl-ball.gif",
+        steps: [
+          "Lie back on a stability ball with knees bent.",
+          "Crunch up, lifting shoulders off the ball.",
+          "Lower back down with control."
+        ],
+        tips: "The ball allows for greater range of motion. Keep movements controlled.",
+        targets: ["Upper Abs", "Core"]
+      },
+      {
+        name: "Forearm Plank",
+        gif: "https://physique57.com/wp-content/uploads/2022/07/forearm-plank.gif",
+        steps: [
+          "Start in a forearm plank position with elbows under shoulders.",
+          "Hold position, engaging core, glutes, and legs.",
+          "Breathe steadily and maintain alignment."
+        ],
+        tips: "Keep your body in a straight line from head to heels. This builds core endurance.",
+        targets: ["Core", "Abs", "Shoulders"]
+      }
+    ]
+  }
+]
+
 const benefitIcons: Record<string, LucideIcon> = {
   sparkles: Sparkles,
   trophy: Trophy,
@@ -167,6 +367,8 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
   const [publicConfig, setPublicConfig] = useState<PublicClientConfig | null>(null)
   const [showAllFaqsModal, setShowAllFaqsModal] = useState(false)
   const [openFaq, setOpenFaq] = useState<number | null>(0)
+  const [selectedWorkoutSection, setSelectedWorkoutSection] = useState<number>(0)
+  const [selectedExercise, setSelectedExercise] = useState<number>(0)
 
   const selectedStudio = studios.find((studio) => studio.name === formData.studio)
 
@@ -825,6 +1027,128 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
                         </div>
                       </motion.div>
                     ))}
+                  </div>
+                </section>
+
+                {/* BARRE WORKOUT SECTION */}
+                <section className="mt-20 space-y-12 pb-2">
+                  <div className="mx-auto max-w-5xl">
+                    <h2 className="mb-8 text-4xl font-bold text-foreground md:text-5xl">Our Barre Workout</h2>
+                  </div>
+
+                  <div className="mx-auto max-w-6xl">
+                    {/* Workout Section Tabs */}
+                    <div className="mb-8 flex flex-wrap gap-3 border-b border-slate-200">
+                      {BARRE_WORKOUT_SECTIONS.map((section, sectionIndex) => (
+                        <button
+                          key={section.title}
+                          onClick={() => {
+                            setSelectedWorkoutSection(sectionIndex)
+                            setSelectedExercise(0)
+                          }}
+                          className={cn(
+                            "px-6 py-3 text-lg font-semibold transition-all duration-300",
+                            selectedWorkoutSection === sectionIndex
+                              ? "border-b-2 border-rose-500 text-rose-600"
+                              : "text-muted-foreground hover:text-foreground"
+                          )}
+                        >
+                          {section.title}
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Exercises Accordion and Display */}
+                    <div className="grid gap-8 md:grid-cols-3">
+                      {/* Exercises Accordion */}
+                      <div className="md:col-span-1 space-y-2">
+                        {BARRE_WORKOUT_SECTIONS[selectedWorkoutSection].exercises.map((exercise, exerciseIndex) => (
+                          <button
+                            key={exercise.name}
+                            onClick={() => setSelectedExercise(exerciseIndex)}
+                            className={cn(
+                              "w-full rounded-xl border-2 p-4 text-left transition-all duration-300",
+                              selectedExercise === exerciseIndex
+                                ? "border-rose-400 bg-gradient-to-r from-rose-50 to-slate-50"
+                                : "border-slate-200 bg-white hover:border-slate-300"
+                            )}
+                          >
+                            <p className={cn(
+                              "font-semibold",
+                              selectedExercise === exerciseIndex ? "text-rose-600" : "text-slate-900"
+                            )}>
+                              {exercise.name}
+                            </p>
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Exercise Details */}
+                      <div className="md:col-span-2">
+                        {(() => {
+                          const exercise = BARRE_WORKOUT_SECTIONS[selectedWorkoutSection].exercises[selectedExercise]
+                          return (
+                            <motion.div
+                              key={exercise.name}
+                              initial={{ opacity: 0, y: 12 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ duration: 0.3 }}
+                              className="space-y-6 rounded-2xl border border-slate-200 bg-gradient-to-br from-white/95 to-slate-50/60 p-6 shadow-sm"
+                            >
+                              {/* Exercise GIF */}
+                              <div className="overflow-hidden rounded-xl bg-slate-900">
+                                <img
+                                  src={exercise.gif}
+                                  alt={exercise.name}
+                                  className="w-full"
+                                  onError={(e) => {
+                                    e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Crect fill='%23e2e8f0' width='400' height='400'/%3E%3C/svg%3E"
+                                  }}
+                                />
+                              </div>
+
+                              {/* Exercise Title */}
+                              <div>
+                                <h3 className="text-2xl font-bold text-foreground">{exercise.name}</h3>
+                              </div>
+
+                              {/* Steps */}
+                              <div>
+                                <h4 className="mb-3 font-semibold text-foreground">Steps:</h4>
+                                <ol className="space-y-2 text-sm leading-relaxed text-muted-foreground">
+                                  {exercise.steps.map((step, stepIndex) => (
+                                    <li key={stepIndex} className="ml-5 list-decimal">
+                                      {step}
+                                    </li>
+                                  ))}
+                                </ol>
+                              </div>
+
+                              {/* Barre Tips */}
+                              <div className="rounded-lg border border-rose-200 bg-rose-50/50 p-4">
+                                <p className="text-sm font-semibold text-rose-900 mb-1">Barre Tips:</p>
+                                <p className="text-sm text-rose-800">{exercise.tips}</p>
+                              </div>
+
+                              {/* Targets */}
+                              <div>
+                                <p className="mb-2 text-sm font-semibold text-foreground">Targets:</p>
+                                <div className="flex flex-wrap gap-2">
+                                  {exercise.targets.map((target) => (
+                                    <span
+                                      key={target}
+                                      className="rounded-full bg-rose-100 px-3 py-1 text-xs font-medium text-rose-700"
+                                    >
+                                      {target}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            </motion.div>
+                          )
+                        })()}
+                      </div>
+                    </div>
                   </div>
                 </section>
 
