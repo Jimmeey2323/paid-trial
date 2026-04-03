@@ -1393,50 +1393,52 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                   <span className="mb-0 text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">3. Membership included</span>
                 </div>
                 <p className="text-sm leading-relaxed text-slate-600">Almost there. Complete your order to claim both sessions</p>
-                <div className="overflow-hidden rounded-[28px] border-2 border-blue-900/20 bg-gradient-to-br from-blue-50/60 via-white/80 to-slate-50/40 text-slate-950 shadow-lg">
-                  <div className="relative border-b-2 border-blue-900/15 px-5 py-6 sm:px-6">
-                    <div className="flex flex-col gap-4 sm:items-start">
-                      <div className="max-w-2xl pt-2">
-                        <p className="text-[10px] font-bold uppercase tracking-[0.26em] text-blue-900/60">Premium membership</p>
-                        <h3 className="mt-3 text-2xl font-bold text-slate-950 sm:text-[1.5rem]">{membershipOffer.name}</h3>
-                        <p className="mt-2.5 max-w-2xl text-sm leading-relaxed text-slate-600">
+                <div className="overflow-hidden rounded-[28px] border border-slate-200 bg-[linear-gradient(145deg,rgba(255,255,255,0.98),rgba(239,246,255,0.92))] text-slate-950 shadow-[0_20px_55px_rgba(15,23,42,0.10)] ring-1 ring-slate-200/70">
+                  <div className="px-5 py-6 sm:px-6 sm:py-7">
+                    <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+                      <div className="max-w-2xl">
+                        <div className="inline-flex items-center rounded-full border border-blue-900/10 bg-blue-950 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.22em] text-white shadow-sm">
+                          Premium membership
+                        </div>
+                        <h3 className="mt-4 text-[1.85rem] font-bold tracking-[-0.02em] text-slate-950 sm:text-[2rem]">{membershipOffer.name}</h3>
+                        <p className="mt-2 max-w-xl text-sm leading-7 text-slate-600 sm:text-[15px]">
                           New here? We'll meet you where you are — twice, for the price of once.
                         </p>
                       </div>
-                    </div>
-                  </div>
 
-                  <div className="grid gap-4 px-5 py-6 sm:grid-cols-4 sm:px-6">
-                    <div className="rounded-2xl border-2 border-blue-900/15 bg-gradient-to-br from-white to-blue-50/40 px-5 py-4 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow">
-                      <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-blue-900/70">Package price</p>
-                      <p className="mt-3 text-lg font-bold text-slate-950">{membershipOffer.price}</p>
+                      <div className="rounded-2xl border border-blue-900/10 bg-white/85 px-5 py-4 shadow-sm lg:min-w-[200px]">
+                        <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-blue-900/70">Today&apos;s total</p>
+                        <p className="mt-2 text-3xl font-bold tracking-[-0.03em] text-slate-950">{membershipOffer.price}</p>
+                        <p className="mt-1 text-xs text-slate-500">Includes both introductory sessions</p>
+                      </div>
                     </div>
-                    <div className="rounded-2xl border-2 border-blue-900/15 bg-gradient-to-br from-white to-blue-50/40 px-5 py-4 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow">
-                      <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-blue-900/70">Sessions included</p>
-                      <p className="mt-3 text-lg font-bold text-slate-950">{membershipOffer.sessions}</p>
-                    </div>
-                    <div className="rounded-2xl border-2 border-blue-900/15 bg-gradient-to-br from-white to-blue-50/40 px-5 py-4 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow">
-                      <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-blue-900/70">Validity period</p>
-                      <p className="mt-3 text-lg font-bold text-slate-950">{membershipOffer.validFor}</p>
-                    </div>
-                    <div className="rounded-2xl border-2 border-blue-900/15 bg-gradient-to-br from-white to-blue-50/40 px-5 py-4 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow">
-                      <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-blue-900/70">What's included</p>
-                      <p className="mt-3 text-lg font-bold text-slate-950">Full access</p>
-                    </div>
-                  </div>
 
-                  <div className="flex flex-col gap-4 border-t-2 border-blue-900/10 px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-                    <p className="text-sm font-medium leading-relaxed text-slate-700">
-                      Includes guided onboarding, secure checkout, and dedicated studio follow-up to complete your booking.
-                    </p>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="border-2 border-blue-900/25 bg-white/80 text-slate-950 font-semibold hover:border-blue-900/40 hover:bg-blue-50/60 hover:text-slate-950 transition-all shadow-sm"
-                      onClick={() => setShowMembershipModal(true)}
-                    >
-                      Learn more
-                    </Button>
+                    <div className="mt-6 grid gap-3 border-t border-slate-200/80 pt-5 sm:grid-cols-3">
+                      {[
+                        { label: "Sessions", value: membershipOffer.sessions },
+                        { label: "Valid for", value: membershipOffer.validFor },
+                        { label: "Access", value: "Full access" },
+                      ].map((item) => (
+                        <div key={item.label} className="rounded-2xl bg-white/70 px-4 py-4 ring-1 ring-slate-200/80">
+                          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">{item.label}</p>
+                          <p className="mt-2 text-base font-semibold text-slate-950">{item.value}</p>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="mt-5 flex flex-col gap-4 border-t border-slate-200/80 pt-5 sm:flex-row sm:items-center sm:justify-between">
+                      <p className="max-w-2xl text-sm leading-relaxed text-slate-600">
+                        Includes guided onboarding, secure checkout, and dedicated studio follow-up to complete your booking.
+                      </p>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="rounded-full border-slate-300 bg-white px-5 text-slate-900 font-semibold hover:border-slate-900 hover:bg-slate-900 hover:text-white transition-all shadow-sm"
+                        onClick={() => setShowMembershipModal(true)}
+                      >
+                        Learn more
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
