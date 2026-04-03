@@ -7,13 +7,13 @@ const BRAND_SITE_URL = "https://www.physique57.in"
 
 const routeMeta = {
   default: {
-    title: "Physique57 — Start Your Trial",
+    title: "Physique 57 India | Book Your Trial Class Today",
     description:
       "Book your Physique 57 India trial class and explore premium boutique fitness experiences across Barre, Strength Lab, and powerCycle.",
     name: "Physique 57 Trial Form",
   },
   barre: {
-    title: "Barre 57 — Book Your Free Trial",
+    title: "Barre 57 — Book Your Complimentary Trial",
     description:
       "Book your complimentary Barre 57 trial and discover Physique 57 India's signature boutique fitness experience.",
     name: "Barre 57 Trial Form",
