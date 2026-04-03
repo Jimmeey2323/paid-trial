@@ -118,7 +118,7 @@ export const countryCodes: CountryCode[] = [
 ]
 
 export const heroImages = [
-  "https://i.postimg.cc/hGqdH7S1/IMG-7825.png",
+  "https://i.postimg.cc/VvZTF5Sj/hp-Img-1770172692.png",
   "https://i.postimg.cc/1XWy5H3w/main2.png",
   "https://i.postimg.cc/MKszBhcV/PHYSIQUE_57_(12_07_24)5881.jpg",
   "https://i.postimg.cc/526bSnvX/2L2A8104.jpg",
@@ -167,7 +167,7 @@ export const formats: FormatOption[] = [
     description: "Meaningful resistance, music, and measurable progress.",
     fullDescription:
       "PowerCycle is the signature indoor cycling experience that combines rhythm-based choreography with inspiring music. Expect a full-body workout that challenges cardiovascular endurance while building lean muscle.",
-    image: "https://i.postimg.cc/x8y7G5xT/hp_Img_1774213205.png",
+    image: "https://i.postimg.cc/GtJNPK7P/hp-Img-1774213193.png",
     imageAlt: "powerCycle indoor cycling class at Physique 57 India",
     intensity: "Moderate to high",
     bestFor: "Cardio conditioning, toned legs, endorphin boost",
@@ -188,7 +188,7 @@ export const formats: FormatOption[] = [
     description: "Intermediate-level full-body strength with heavy lifts, core work, power, and mobility.",
     fullDescription:
       "INTERMEDIATE LEVEL - 57 minutes of full-body strength. This class blends heavy strength, core, power & mobility work for complete training. Using dumbbells, kettlebells, plyo boxes, resistance bands & a pull up bar, you'll move through circuits that hit every major muscle group. Built on progressive overload, Strength Lab helps you build lean muscle, boost metabolism, and improve overall performance — while reducing injury risk. Pair it with Barre for the ultimate balanced routine.",
-    image: "https://i.postimg.cc/hP3mSzyT/hp-Img-1774412214.png",
+    image: "https://i.postimg.cc/wM5fY8Nd/rohithsarcar_1773751081_3854824688552314286_7737080293_7.jpg",
     imageAlt: "Strength Lab class format at Physique 57 India",
     intensity: "High",
     bestFor: "Functional strength, muscular power, conditioning",
