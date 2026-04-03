@@ -69,6 +69,7 @@ export interface Physique57FormData {
 
 interface Physique57SignUpFormProps {
   onSubmit?: (data: Physique57FormData) => Promise<void> | void
+  testMode?: boolean
 }
 
 type FormErrorKey = keyof Physique57FormData | "payment" | "form"
@@ -293,7 +294,7 @@ function ModalShell({
   )
 }
 
-export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
+export function Physique57SignUpForm({ onSubmit, testMode = false }: Physique57SignUpFormProps) {
   const scheduleHostRef = useRef<HTMLDivElement | null>(null)
   const confettiCanvasRef = useRef<HTMLCanvasElement | null>(null)
   const confettiInstanceRef = useRef<ReturnType<typeof confetti.create> | null>(null)
@@ -341,6 +342,8 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
   const [currentReview, setCurrentReview] = useState(Math.floor(clientReviews.length / 2))
   const [publicConfig, setPublicConfig] = useState<PublicClientConfig | null>(null)
 
+  const paymentBypassEnabled = testMode
+
   const selectedStudio = useMemo(
     () => studios.find((studio) => studio.name === formData.studio),
     [formData.studio]
@@ -354,12 +357,22 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
   const activeFormat = showFormatInfo ? formats.find((item) => item.id === showFormatInfo) ?? null : null
 
   const availableFormats = useMemo(() => {
+    const allowedFormatIds = paymentBypassEnabled
+      ? new Set(["powercycle", "strength-lab"])
+      : null
+
     if (!selectedStudio) {
-      return formats
+      return allowedFormatIds ? formats.filter((format) => allowedFormatIds.has(format.id)) : formats
     }
 
-    return formats.filter((format) => selectedStudio.formats.includes(format.id))
-  }, [selectedStudio])
+    return formats.filter((format) => {
+      if (!selectedStudio.formats.includes(format.id)) {
+        return false
+      }
+
+      return allowedFormatIds ? allowedFormatIds.has(format.id) : true
+    })
+  }, [paymentBypassEnabled, selectedStudio])
 
   const isFormValid =
     formData.firstName.trim() !== "" &&
@@ -372,11 +385,13 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
 
   const activePaymentStage = publicConfig?.defaultPaymentStage ?? "production"
 
-  const primaryButtonLabel = paymentVerified && paymentSessionId
+  const primaryButtonLabel = paymentBypassEnabled
+    ? "Submit test booking"
+    : paymentVerified && paymentSessionId
     ? "Complete booking"
     : publicConfig?.paymentButtonLabel || "Pay ₹1,838.00"
 
-  const shouldHideFormForProcessing = isPostPaymentProcessing && !showSuccessModal
+  const shouldHideFormForProcessing = !paymentBypassEnabled && isPostPaymentProcessing && !showSuccessModal
   const redirectUrl = publicConfig?.redirectUrl || DEFAULT_REDIRECT_URL
 
   function redirectToMomence() {
@@ -418,6 +433,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
       time: "Flexible / Needs Recommendation",
       type: selectedFormat?.backendValue ?? formData.format,
       waiverAccepted: formData.acceptedTerms ? "accepted" : "",
+      bypassPayment: paymentBypassEnabled ? "true" : "",
       ...trackingPayload,
     }
   }
@@ -555,7 +571,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
         }
       }
 
-      if (storedSessionId) {
+      if (storedSessionId && !paymentBypassEnabled) {
         setPaymentSessionId(storedSessionId)
       }
 
@@ -567,7 +583,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
     } finally {
       hasRestoredStateRef.current = true
     }
-  }, [])
+  }, [paymentBypassEnabled])
 
   useEffect(() => {
     if (typeof window === "undefined" || !hasRestoredStateRef.current) {
@@ -581,7 +597,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
       )
       window.sessionStorage.setItem(STORAGE_KEYS.draftId, draftIdRef.current)
 
-      if (paymentSessionId) {
+      if (paymentSessionId && !paymentBypassEnabled) {
         window.sessionStorage.setItem(STORAGE_KEYS.paymentSession, paymentSessionId)
       } else {
         window.sessionStorage.removeItem(STORAGE_KEYS.paymentSession)
@@ -589,7 +605,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
     } catch {
       // Ignore persistence failures.
     }
-  }, [formData, paymentSessionId])
+  }, [formData, paymentBypassEnabled, paymentSessionId])
 
   useEffect(() => {
     if (typeof window === "undefined" || !hasRestoredStateRef.current || showSuccessModal) {
@@ -646,7 +662,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
         window.clearTimeout(partialSaveTimeoutRef.current)
       }
     }
-  }, [formData, paymentSessionId, paymentVerified, selectedFormat, selectedStudio, showSuccessModal])
+  }, [formData, paymentBypassEnabled, paymentSessionId, paymentVerified, selectedFormat, selectedStudio, showSuccessModal])
 
   useEffect(() => {
     if (!confettiCanvasRef.current) {
@@ -703,7 +719,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
   }, [availableFormats, formData.format])
 
   useEffect(() => {
-    if (typeof window === "undefined" || !hasRestoredStateRef.current || hasProcessedCheckoutReturnRef.current) {
+    if (paymentBypassEnabled || typeof window === "undefined" || !hasRestoredStateRef.current || hasProcessedCheckoutReturnRef.current) {
       return
     }
 
@@ -806,7 +822,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
         }
       }
     })()
-  }, [paymentSessionId])
+  }, [paymentBypassEnabled, paymentSessionId])
 
   function handleInputChange<K extends keyof Physique57FormData>(field: K, value: Physique57FormData[K]) {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -854,6 +870,8 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
       waiverAccepted: "accepted",
       stage: activePaymentStage,
       event_id: eventIdRef.current,
+      bypassPayment: paymentBypassEnabled,
+      source_form: paymentBypassEnabled ? "physique57-test-bypass" : "paid-trial-form",
       ...trackingPayload,
     }
   }
@@ -900,7 +918,9 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
 
           setStatusMessage({
             tone: "success",
-            text: result.error || "Your payment was verified and your details were saved. Our team will complete the booking follow-up shortly.",
+            text: result.error || (paymentBypassEnabled
+              ? "Your test submission was saved. Our team can now review the booking flow output."
+              : "Your payment was verified and your details were saved. Our team will complete the booking follow-up shortly."),
           })
           setShowSuccessModal(true)
           setIsPostPaymentProcessing(false)
@@ -948,7 +968,10 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
         await onSubmit(formData)
       }
 
-      setStatusMessage({ tone: "success", text: "Payment verified and booking completed successfully." })
+      setStatusMessage({
+        tone: "success",
+        text: paymentBypassEnabled ? "Test booking completed successfully." : "Payment verified and booking completed successfully.",
+      })
       setShowSuccessModal(true)
       setIsPostPaymentProcessing(false)
       scheduleRedirectToMomence()
@@ -962,6 +985,11 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
   }
 
   async function createCheckoutSession(payload: Record<string, unknown>) {
+    if (paymentBypassEnabled) {
+      await submitLeadToApi(payload)
+      return
+    }
+
     setIsCreatingCheckout(true)
     setStatusMessage({ tone: "success", text: "Starting secure checkout..." })
 
@@ -1061,6 +1089,11 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
     }
 
     const payload = buildLeadPayload()
+
+    if (paymentBypassEnabled) {
+      await submitLeadToApi(payload)
+      return
+    }
 
     if (!paymentVerified || !paymentSessionId) {
       await createCheckoutSession(payload)
@@ -1172,6 +1205,28 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                 </div>
               ) : (
               <div className="min-w-0 overflow-hidden rounded-[28px] border border-slate-200/80 bg-white/80 p-4 shadow-[0_48px_140px_rgba(15,23,42,0.18)] ring-1 ring-slate-200/50 backdrop-blur-xl sm:p-6 lg:p-8">
+              {paymentBypassEnabled ? (
+                <div className="mb-6 rounded-2xl border border-amber-300/80 bg-gradient-to-br from-amber-50 via-white to-orange-50 px-4 py-4 text-sm text-amber-950 shadow-sm sm:px-5">
+                  <div className="flex items-start gap-3">
+                    <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-700 ring-1 ring-amber-200">
+                      <Info className="h-4 w-4" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="inline-flex items-center rounded-full border border-amber-300 bg-amber-100 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-amber-800">
+                          Internal test mode
+                        </span>
+                        <span className="text-xs font-semibold uppercase tracking-[0.14em] text-amber-700/90">
+                          Payment bypass enabled
+                        </span>
+                      </div>
+                      <p className="mt-2 leading-relaxed text-amber-900/90">
+                        This route submits the <span className="font-semibold">powerCycle</span> and <span className="font-semibold">Strength Lab</span> flow normally while skipping checkout. Use it only for internal testing at <span className="font-semibold">trial.physique57india.com/test</span>.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
               <div className="mb-8">
                 <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-900/10 bg-gradient-to-br from-white/98 via-blue-50/95 to-blue-100/92 px-4 py-2 backdrop-blur-sm shadow-sm">
                   <Sparkles className="h-4 w-4 text-blue-900" />

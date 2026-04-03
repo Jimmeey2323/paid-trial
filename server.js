@@ -1221,6 +1221,13 @@ app.get(['/barre', '/barre/*'], (req, res) => {
   return res.sendFile(CLIENT_APP_INDEX_PATH);
 });
 
+app.get(['/test', '/test/*'], (req, res) => {
+  if (!fs.existsSync(CLIENT_APP_INDEX_PATH)) {
+    return res.status(404).send('App not found');
+  }
+  return res.sendFile(CLIENT_APP_INDEX_PATH);
+});
+
 app.get(['/', '/index.html'], (req, res, next) => {
   if (!fs.existsSync(CLIENT_APP_INDEX_PATH)) {
     return next();
@@ -1293,6 +1300,7 @@ app.get('/api/schedule/sessions', async (req, res) => {
 app.post('/api/submit-lead', applySubmissionRateLimit, async (req, res) => {
   try {
     const validation = validateLeadPayload(req.body);
+    const bypassPayment = parseBoolean(req.body?.bypassPayment || req.body?.bypass_payment, false);
 
     if (validation.isBot) {
       return res.status(202).json({
@@ -1310,7 +1318,7 @@ app.post('/api/submit-lead', applySubmissionRateLimit, async (req, res) => {
       });
     }
 
-    if (!validation.data.payment_session_id) {
+    if (!bypassPayment && !validation.data.payment_session_id) {
       return res.status(400).json({
         success: false,
         error: 'Payment is required before submitting.',
@@ -1320,19 +1328,25 @@ app.post('/api/submit-lead', applySubmissionRateLimit, async (req, res) => {
       });
     }
 
-    try {
-      await retrievePaidSession(validation.data.payment_session_id);
-    } catch (paymentError) {
-      return res.status(400).json({
-        success: false,
-        error: paymentError.message || 'Payment could not be verified.',
-        fieldErrors: {
-          payment: paymentError.message || 'Payment could not be verified.'
-        }
-      });
+    if (!bypassPayment) {
+      try {
+        await retrievePaidSession(validation.data.payment_session_id);
+      } catch (paymentError) {
+        return res.status(400).json({
+          success: false,
+          error: paymentError.message || 'Payment could not be verified.',
+          fieldErrors: {
+            payment: paymentError.message || 'Payment could not be verified.'
+          }
+        });
+      }
     }
 
-    const leadData = buildLeadRecord(validation.data);
+    const leadData = buildLeadRecord({
+      ...validation.data,
+      source_form: bypassPayment ? 'physique57-test-bypass' : 'paid-trial-form',
+      payment_bypass: bypassPayment ? 'true' : ''
+    });
     let momenceSyncResult = { success: true, error: '' };
     await storeLeadData(leadData, {
       ip_address: getClientIp(req),

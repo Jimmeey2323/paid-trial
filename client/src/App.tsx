@@ -12,6 +12,12 @@ const routeMeta = {
       "Book your Physique 57 India trial class and explore premium boutique fitness experiences across Barre, Strength Lab, and powerCycle.",
     name: "Physique 57 Trial Form",
   },
+  test: {
+    title: "Physique 57 India | Test Trial Submission",
+    description:
+      "Internal testing route for Physique 57 India trial submissions with payment bypass for powerCycle and Strength Lab.",
+    name: "Physique 57 Trial Test Form",
+  },
   barre: {
     title: "Barre 57 — Book Your Complimentary Trial",
     description:
@@ -79,6 +85,8 @@ function upsertJsonLdScript(scriptId: string, payload: Record<string, unknown>) 
 
 export default function App() {
   const [currentPath, setCurrentPath] = useState(window.location.pathname)
+  const isBarreRoute = currentPath === "/barre" || currentPath.startsWith("/barre/")
+  const isTestRoute = currentPath === "/test" || currentPath.startsWith("/test/")
 
   useEffect(() => {
     const handlePopState = () => {
@@ -90,9 +98,11 @@ export default function App() {
   }, [])
 
   useEffect(() => {
-    const meta = currentPath === "/barre" || currentPath.startsWith("/barre/")
+    const meta = isBarreRoute
       ? routeMeta.barre
-      : routeMeta.default
+      : isTestRoute
+        ? routeMeta.test
+        : routeMeta.default
     const pageUrl = typeof window !== "undefined" ? window.location.href : BRAND_SITE_URL
 
     document.title = meta.title
@@ -135,11 +145,14 @@ export default function App() {
         url: BRAND_LOGO_URL,
       },
     })
-  }, [currentPath])
+  }, [currentPath, isBarreRoute, isTestRoute])
 
-  // Check if the path is /barre
-  if (currentPath === "/barre" || currentPath.startsWith("/barre/")) {
+  if (isBarreRoute) {
     return <Barre57TrialForm />
+  }
+
+  if (isTestRoute) {
+    return <Physique57SignUpForm testMode />
   }
 
   return <Physique57SignUpForm />
