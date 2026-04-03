@@ -134,6 +134,11 @@ const colorClasses = {
     iconBg: "from-orange-400 to-orange-600",
     hoverText: "group-hover:text-orange-600",
   },
+  indigo: {
+    border: "border-l-indigo-500",
+    iconBg: "from-indigo-400 to-indigo-600",
+    hoverText: "group-hover:text-indigo-600",
+  },
 } as const
 
 export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
