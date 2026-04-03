@@ -376,15 +376,15 @@ export const faqs: FaqItem[] = [
   {
     question: "What types of classes are offered by Physique 57?",
     answer: [
-      "We're pleased to offer a diverse range of class formats, such as Back Body Blaze, Barre 57, Cardio Barre, FIT, Foundations, SWEAT in 30, Trainer's Choice, Mat 57, Cardio Barre Plus, and Amped Up.",
+      "We offer a range of classes, showcasing methods from our Signature Barre to Mat Pilates, Indoor Cycling, Functional Strength training & more.",
       "These classes are designed to cater to different fitness levels and goals. You can choose from workouts that focus on toning and strengthening specific muscle groups or opt for full-body sessions that incorporate cardio and strength training.",
-      "Whether you're seeking high-intensity options like Amped Up or shorter, time-efficient workouts like SWEAT in 30, our classes provide various benefits, including improved posture, flexibility, endurance, and overall body strength. No two workouts are ever the same. You’ll never plateau.",
+      "Whether you're seeking high-intensity options like Amped Up or shorter, time-efficient workouts like powerCycle(Express), our classes provide various benefits, including improved posture, flexibility, endurance, and overall body strength. No two workouts are ever the same. You’ll never plateau.",
     ],
   },
   {
     question: "How soon can I see results with Physique 57?",
     answer: [
-      "Many of our clients start noticing positive changes in their bodies, posture, sleep, and overall mood after completing just eight classes. Consistency and regular practice are key to achieving and maintaining your desired results with Physique 57.",
+      "Many of our clients start noticing positive changes in their bodies, posture, sleep, and overall mood after completing just eight classes in 2 weeks. Consistency and regular practice are key to achieving and maintaining your desired results with Physique 57.",
     ],
   },
   {
@@ -396,7 +396,7 @@ export const faqs: FaqItem[] = [
   {
     question: "Can I join Physique 57 if I have never done barre before?",
     answer: [
-      "Absolutely! Physique is a great fit for individuals who are new to barre workouts or fitness in general. Our instructors provide clear guidance and offer modifications for beginners, ensuring that they feel comfortable and confident in the classes.",
+      "Absolutely! Physique 57 is a great fit for individuals who are new to barre workouts or fitness in general. Our instructors provide clear guidance and offer modifications for beginners, ensuring that they feel comfortable and confident in the classes.",
     ],
   },
   {
