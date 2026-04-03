@@ -3,7 +3,7 @@
   "buildCommand": "npm run build",
   "functions": {
     "server.js": {
-      "includeFiles": "public/**"
+      "includeFiles": "dist/**"
     }
   },
   "routes": [

@@ -9,3 +9,5 @@ yarn-error.log*
 *.log
 package-lock.json
 CREDENTIALS_PRIVATE.md
+dist/
+*.tsbuildinfo

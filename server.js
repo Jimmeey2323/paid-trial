@@ -20,7 +20,7 @@ const app = express();
 app.disable('x-powered-by');
 
 const PORT = process.env.PORT || 3000;
-const CLIENT_APP_DIRECTORY = path.join(__dirname, 'public');
+const CLIENT_APP_DIRECTORY = path.join(__dirname, 'dist');
 const CLIENT_APP_INDEX_PATH = path.join(CLIENT_APP_DIRECTORY, 'index.html');
 const googleSheets = new GoogleSheetsService();
 const supabaseLeadStore = new SupabaseLeadStore();
