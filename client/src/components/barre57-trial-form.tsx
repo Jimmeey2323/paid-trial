@@ -1174,87 +1174,85 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
                     <p className="max-w-3xl text-lg leading-relaxed text-muted-foreground">Real transformations, real results, real people.</p>
                   </div>
 
-                  <div className="relative mt-12 overflow-hidden">
-                    <div className="mx-auto max-w-7xl px-4">
-                      <div className="relative h-96 md:h-80">
-                        {/* Fixed position for left card */}
-                        <motion.div
-                          layoutId={`review-left`}
-                          key={`left-${(currentReview - 1 + clientReviews.length) % clientReviews.length}`}
-                          initial={{ opacity: 0, x: 100 }}
-                          animate={{ opacity: 0.4, x: 0, scale: 0.85 }}
-                          exit={{ opacity: 0, x: -100 }}
-                          transition={{ duration: 0.7, ease: "easeInOut" }}
-                          className="absolute left-0 top-1/2 -translate-y-1/2 hidden lg:block w-72"
-                        >
-                          <div className="rounded-2xl border border-slate-200 bg-white/60 p-6 shadow-lg backdrop-blur-sm h-64 flex flex-col justify-between pointer-events-none">
-                            <div>
-                              <p className="mb-3 text-sm italic leading-relaxed text-muted-foreground line-clamp-4">
-                                "{clientReviews[(currentReview - 1 + clientReviews.length) % clientReviews.length]?.review}"
-                              </p>
-                            </div>
-                            <div className="space-y-1">
-                              <p className="text-sm font-bold text-foreground">{clientReviews[(currentReview - 1 + clientReviews.length) % clientReviews.length]?.name}</p>
-                              <p className="text-xs text-muted-foreground">{clientReviews[(currentReview - 1 + clientReviews.length) % clientReviews.length]?.class}</p>
-                            </div>
-                          </div>
-                        </motion.div>
-
-                        {/* Fixed position for center card (highlighted) */}
-                        <motion.div
-                          layoutId={`review-center`}
-                          key={`center-${currentReview}`}
-                          initial={{ opacity: 0, x: 100, scale: 0.9 }}
-                          animate={{ opacity: 1, x: 0, scale: 1 }}
-                          exit={{ opacity: 0, x: -100, scale: 0.9 }}
-                          transition={{ duration: 0.7, ease: "easeInOut" }}
-                          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 w-full max-w-md"
-                        >
-                          <div className="rounded-3xl border-2 border-rose-200 bg-gradient-to-br from-white/95 via-rose-50/30 to-white/90 p-8 shadow-2xl backdrop-blur-md h-80 flex flex-col justify-between">
-                            <div>
-                              <div className="mb-4 flex items-center gap-3">
-                                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-rose-400 to-rose-600 text-lg font-bold text-white shadow-lg">
-                                  {clientReviews[currentReview]?.name.charAt(0)}
-                                </div>
-                                <div className="flex gap-0.5">
-                                  {Array.from({ length: 5 }).map((_, index) => (
-                                    <Heart key={index} className="h-4 w-4 fill-rose-500 text-rose-500" />
-                                  ))}
-                                </div>
-                              </div>
-                              <p className="mb-3 text-base italic leading-relaxed text-foreground">"{clientReviews[currentReview]?.review}"</p>
-                            </div>
-                            <div>
-                              <p className="text-base font-bold text-foreground">{clientReviews[currentReview]?.name}</p>
-                              <p className="text-sm font-semibold text-rose-600">{clientReviews[currentReview]?.class}</p>
-                              <p className="text-xs text-muted-foreground">{clientReviews[currentReview]?.date}</p>
-                            </div>
-                          </div>
-                        </motion.div>
-
-                        {/* Fixed position for right card */}
-                        <motion.div
-                          layoutId={`review-right`}
-                          key={`right-${(currentReview + 1) % clientReviews.length}`}
-                          initial={{ opacity: 0, x: 100 }}
-                          animate={{ opacity: 0.4, x: 0, scale: 0.85 }}
-                          exit={{ opacity: 0, x: -100 }}
-                          transition={{ duration: 0.7, ease: "easeInOut" }}
-                          className="absolute right-0 top-1/2 -translate-y-1/2 hidden lg:block w-72"
-                        >
-                          <div className="rounded-2xl border border-slate-200 bg-white/60 p-6 shadow-lg backdrop-blur-sm h-64 flex flex-col justify-between pointer-events-none">
-                            <div>
-                              <p className="mb-3 text-sm italic leading-relaxed text-muted-foreground line-clamp-4">
-                                "{clientReviews[(currentReview + 1) % clientReviews.length]?.review}"
-                              </p>
-                            </div>
-                            <div className="space-y-1">
-                              <p className="text-sm font-bold text-foreground">{clientReviews[(currentReview + 1) % clientReviews.length]?.name}</p>
-                              <p className="text-xs text-muted-foreground">{clientReviews[(currentReview + 1) % clientReviews.length]?.class}</p>
-                            </div>
-                          </div>
-                        </motion.div>
-                      </div>
+                  <div className="relative mt-12 overflow-hidden px-4 md:px-0">
+                    <div className="mx-auto max-w-7xl">
+                      {/* Sliding carousel container */}
+                      <motion.div
+                        animate={{ x: currentReview * -360 }}
+                        transition={{ duration: 0.7, ease: "easeInOut" }}
+                        className="flex gap-6 md:gap-8"
+                      >
+                        {/* Map through all reviews twice for continuous loop effect */}
+                        {[...Array(2)].map((_, loopIndex) =>
+                          clientReviews.map((review, reviewIndex) => {
+                            const index = loopIndex * clientReviews.length + reviewIndex
+                            const position = ((index - currentReview) % clientReviews.length + clientReviews.length) % clientReviews.length
+                            
+                            // Determine scale and opacity based on position
+                            const isCenter = position === 0
+                            const isAdjacent = position === clientReviews.length - 1 || position === 1
+                            
+                            return (
+                              <motion.div
+                                key={`${loopIndex}-${reviewIndex}`}
+                                className={cn(
+                                  "flex-shrink-0 transition-all duration-500",
+                                  isCenter ? "w-full max-w-md" : "w-72"
+                                )}
+                              >
+                                <motion.div
+                                  animate={{
+                                    scale: isCenter ? 1 : 0.85,
+                                    opacity: isCenter ? 1 : (isAdjacent ? 0.4 : 0),
+                                  }}
+                                  transition={{ duration: 0.5 }}
+                                  className={cn(
+                                    "rounded-2xl p-6 shadow-lg backdrop-blur-sm h-64 flex flex-col justify-between pointer-events-none",
+                                    isCenter
+                                      ? "border-2 border-rose-200 bg-gradient-to-br from-white/95 via-rose-50/30 to-white/90 p-8 h-80"
+                                      : "border border-slate-200 bg-white/60"
+                                  )}
+                                >
+                                  {isCenter ? (
+                                    <>
+                                      <div>
+                                        <div className="mb-4 flex items-center gap-3">
+                                          <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-rose-400 to-rose-600 text-lg font-bold text-white shadow-lg">
+                                            {review.name.charAt(0)}
+                                          </div>
+                                          <div className="flex gap-0.5">
+                                            {Array.from({ length: 5 }).map((_, i) => (
+                                              <Heart key={i} className="h-4 w-4 fill-rose-500 text-rose-500" />
+                                            ))}
+                                          </div>
+                                        </div>
+                                        <p className="mb-3 text-base italic leading-relaxed text-foreground">"{review.review}"</p>
+                                      </div>
+                                      <div>
+                                        <p className="text-base font-bold text-foreground">{review.name}</p>
+                                        <p className="text-sm font-semibold text-rose-600">{review.class}</p>
+                                        <p className="text-xs text-muted-foreground">{review.date}</p>
+                                      </div>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <div>
+                                        <p className="mb-3 text-sm italic leading-relaxed text-muted-foreground line-clamp-4">
+                                          "{review.review}"
+                                        </p>
+                                      </div>
+                                      <div className="space-y-1">
+                                        <p className="text-sm font-bold text-foreground">{review.name}</p>
+                                        <p className="text-xs text-muted-foreground">{review.class}</p>
+                                      </div>
+                                    </>
+                                  )}
+                                </motion.div>
+                              </motion.div>
+                            )
+                          })
+                        )}
+                      </motion.div>
 
                       {/* Navigation Dots */}
                       <div className="mt-12 flex flex-wrap justify-center gap-2">
