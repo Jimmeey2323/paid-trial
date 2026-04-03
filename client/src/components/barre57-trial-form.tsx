@@ -57,7 +57,7 @@ interface Barre57TrialFormProps {
 
 // Barre 57 specific hero images
 const BARRE_HERO_IMAGES = [
-  "https://i.postimg.cc/tCyvtJ0H/rohithsarcar_1773751081_3854824681145206949_7737080293_3.jpg",
+  "https://i.postimg.cc/BbPhr4br/hp-Img-1770172966.png",
   "https://i.postimg.cc/PqqkNKTC/10210_Physique_57_by_Atelier_Birjis_3.webp",
   "https://i.postimg.cc/XvxDFstP/hp_Img_1767781454.png",
   "https://i.postimg.cc/255f3TrB/9.jpg",
@@ -698,7 +698,7 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
         </div>
 
         <div className="relative min-h-screen bg-background/95 backdrop-blur-sm lg:h-screen lg:overflow-y-auto">
-          <div className="mx-auto w-full max-w-[1120px] px-3 pt-4 pb-6 sm:px-4 sm:pt-5 lg:px-6 lg:pt-6 xl:px-8 xl:pt-8">
+          <div className="mx-auto w-full max-w-[1120px] px-4 pt-4 pb-6 sm:px-6 sm:pt-5 lg:px-10 lg:pt-6 xl:px-14 xl:pt-8">
             {showSuccessModal ? (
               <div className="flex min-h-[78vh] items-center justify-center">
                 <div className="w-full max-w-2xl rounded-[32px] border border-slate-200/80 bg-white/85 px-8 py-16 text-center shadow-[0_24px_80px_rgba(15,23,42,0.10)] backdrop-blur-xl sm:px-12">
@@ -720,7 +720,7 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
               </div>
             ) : (
               <>
-                <div className="rounded-[28px] border border-slate-200/80 bg-white/80 p-4 shadow-[0_48px_140px_rgba(15,23,42,0.18)] ring-1 ring-slate-200/50 backdrop-blur-xl sm:p-5 lg:p-6">
+                <div className="rounded-[28px] border border-slate-200/80 bg-white/80 p-5 shadow-[0_48px_140px_rgba(15,23,42,0.18)] ring-1 ring-slate-200/50 backdrop-blur-xl sm:p-6 lg:p-8">
                   <div className="mb-8">
                     <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-900/30 bg-gradient-to-r from-blue-900/20 to-slate-300/30 px-4 py-2 backdrop-blur-sm">
                       <Sparkles className="h-4 w-4 text-blue-900" />

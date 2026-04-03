@@ -120,7 +120,7 @@ export const countryCodes: CountryCode[] = [
 export const heroImages = [
   "https://i.postimg.cc/VvZTF5Sj/hp-Img-1770172692.png",
   "https://i.postimg.cc/1XWy5H3w/main2.png",
-  "https://i.postimg.cc/MKszBhcV/PHYSIQUE_57_(12_07_24)5881.jpg",
+  "https://i.postimg.cc/vZ8VzFH8/654600560-18105657745867483-8944120182227400336-n.jpg",
   "https://i.postimg.cc/526bSnvX/2L2A8104.jpg",
   "https://i.postimg.cc/Rh4nWjWY/Whats-App-Image-2025-04-03-at-11-03-13-AM-(1).jpg",
   "https://i.postimg.cc/fyhp0pvf/hp_Img_1774215204.png",
@@ -166,7 +166,7 @@ export const formats: FormatOption[] = [
     subtitle: "powerCycle",
     description: "Meaningful resistance, music, and measurable progress.",
     fullDescription:
-      "PowerCycle is the signature indoor cycling experience that combines rhythm-based choreography with inspiring music. Expect a full-body workout that challenges cardiovascular endurance while building lean muscle.",
+      "PowerCycle is our signature indoor cycling experience that combines rhythm-based choreography with inspiring music. Expect a full-body workout that challenges cardiovascular endurance while building lean muscle.",
     image: "https://i.postimg.cc/GtJNPK7P/hp-Img-1774213193.png",
     imageAlt: "powerCycle indoor cycling class at Physique 57 India",
     intensity: "Moderate to high",
@@ -175,7 +175,7 @@ export const formats: FormatOption[] = [
     trainingStyle: "Indoor cycling + resistance intervals",
     highlights: [
       "Excellent cross-training option for guests who also love barre",
-      "Lets you track progress through real riding metrics and distance covered",
+      "Lets you track progress through real riding metrics",
       "Best if you want sweat, stamina, and rhythm-driven motivation",
     ],
   },
@@ -187,8 +187,8 @@ export const formats: FormatOption[] = [
     subtitle: "Strength Lab",
     description: "Intermediate-level full-body strength with heavy lifts, core work, power, and mobility.",
     fullDescription:
-      "INTERMEDIATE LEVEL - 57 minutes of full-body strength. This class blends heavy strength, core, power & mobility work for complete training. Using dumbbells, kettlebells, plyo boxes, resistance bands & a pull up bar, you'll move through circuits that hit every major muscle group. Built on progressive overload, Strength Lab helps you build lean muscle, boost metabolism, and improve overall performance — while reducing injury risk. Pair it with Barre for the ultimate balanced routine.",
-    image: "https://i.postimg.cc/wM5fY8Nd/rohithsarcar_1773751081_3854824688552314286_7737080293_7.jpg",
+      "INTERMEDIATE LEVEL - 57 minutes of full-body strength. This class blends heavy strength, core, power lifts & mobility work for complete training. Using dumbbells, kettlebells, plyo boxes, resistance bands & a pull up bar, you'll move through circuits that hit every major muscle group. Built on progressive overload, Strength Lab helps you build lean muscle, boost metabolism, and improve overall performance — while reducing injury risk. Pair it with Barre & Powercycle for the ultimate balanced routine.",
+    image: "https://i.postimg.cc/tJdSGQ6Q/rohithsarcar_1773751081_3854824693015084266_7737080293_8.jpg",
     imageAlt: "Strength Lab class format at Physique 57 India",
     intensity: "High",
     bestFor: "Functional strength, muscular power, conditioning",
@@ -210,7 +210,7 @@ export const membershipOffer: MembershipOffer = {
   validFor: "14 Days",
   description: [
     "Whether you're a fitness enthusiast or just starting out, Physique 57's Newcomers 2 For 1 is the perfect way to experience the method with expert guidance and a premium studio experience.",
-    "Your payment secures a two-session introductory package designed to help you begin with confidence, consistency, and the right first-class support.",
+    "Your two sessions come with expert guidance, a curated intro to the method, and a studio experience that'll make you want to come back for more.",
   ],
   highlights: [
     "2 introductory sessions included",
@@ -228,7 +228,7 @@ export const keyBenefits: Benefit[] = [
     title: "Proven, Visible Results in Weeks",
     description:
       "Physique 57 is known for delivering fast, visible transformation—leaner arms, lifted glutes, stronger core, and improved posture—within just a few weeks.",
-    tooltip: "See results in 2–3 weeks with consistent practice",
+    tooltip: "See results in 2–3 weeks with 3-4 classes per week",
   },
   {
     icon: "trophy",
@@ -267,7 +267,7 @@ export const keyBenefits: Benefit[] = [
     color: "cyan",
     title: "Expert-Led, Hands-On Coaching",
     description:
-      "Highly trained instructors actively correct form, guide alignment, and ensure every movement is effective and safe.",
+      "Highly trained & certified instructors actively correct form, guide alignment, and ensure every movement is effective and safe.",
     tooltip: "Instructors complete extensive method training",
   },
   {

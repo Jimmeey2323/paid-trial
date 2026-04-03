@@ -1152,7 +1152,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
         </div>
 
         <div className="relative min-h-screen bg-background/95 backdrop-blur-sm lg:h-screen lg:overflow-y-auto">
-          <div className="mx-auto w-full max-w-[1120px] px-3 pt-4 pb-6 sm:px-4 sm:pt-5 lg:px-6 lg:pt-6 xl:px-8 xl:pt-8">
+          <div className="mx-auto w-full max-w-[1120px] px-4 pt-4 pb-6 sm:px-6 sm:pt-5 lg:px-10 lg:pt-6 xl:px-14 xl:pt-8">
               {shouldHideFormForProcessing ? (
                 <div className="flex min-h-[78vh] items-center justify-center">
                   <div className="w-full max-w-2xl rounded-[32px] border border-slate-200/80 bg-white/85 px-8 py-16 text-center shadow-[0_24px_80px_rgba(15,23,42,0.10)] backdrop-blur-xl sm:px-12">
@@ -1171,7 +1171,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                   </div>
                 </div>
               ) : (
-              <div className="rounded-[28px] border border-slate-200/80 bg-white/80 p-4 shadow-[0_48px_140px_rgba(15,23,42,0.18)] ring-1 ring-slate-200/50 backdrop-blur-xl sm:p-5 lg:p-6">
+              <div className="rounded-[28px] border border-slate-200/80 bg-white/80 p-5 shadow-[0_48px_140px_rgba(15,23,42,0.18)] ring-1 ring-slate-200/50 backdrop-blur-xl sm:p-6 lg:p-8">
               <div className="mb-8">
                 <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-900/30 bg-gradient-to-r from-blue-900/20 to-slate-300/30 px-4 py-2 backdrop-blur-sm">
                   <Sparkles className="h-4 w-4 text-blue-900" />
@@ -1269,29 +1269,20 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                 </div>
               </div>
 
-              <div className="relative space-y-5 rounded-3xl border border-slate-200 bg-white/75 p-5 pt-8 shadow-sm sm:p-6 sm:pt-9">
+              <div className="relative space-y-5 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-8 shadow-sm sm:p-6 sm:pt-9">
                 <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
                   <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">2. Studio & format</span>
                   <span className="text-destructive">*</span>
                 </div>
-                <div className="space-y-6 pt-1">
-                  <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4 sm:p-5">
-                    <div className="mb-3 flex items-start justify-between gap-3">
-                      <div>
-                        <Label htmlFor="studio" className="font-semibold text-slate-950">Preferred studio <span className="text-destructive">*</span></Label>
-                        <p className="mt-1 text-sm text-slate-600">Choose the location that works best for you, then explore the formats available there.</p>
-                      </div>
-                      <div className="hidden rounded-full bg-blue-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-blue-900 sm:inline-flex">
-                        Step 1
-                      </div>
-                    </div>
-
+                <div className="space-y-6 pt-0">
+                  <div className="space-y-2">
+                    <Label htmlFor="studio" className="font-semibold">Preferred studio <span className="text-destructive">*</span></Label>
                     <div className="flex flex-col gap-3 sm:flex-row">
                       <Select value={formData.studio} onValueChange={(value) => handleInputChange("studio", value)}>
                         <SelectTrigger
                           size="lg"
                           className={cn(
-                            "h-12 w-full border-slate-300 bg-white shadow-sm focus:border-blue-900 focus:ring-blue-900/15",
+                            "w-full border-slate-300/95 bg-white/70 backdrop-blur-sm focus:border-slate-800 focus:ring-slate-800/15",
                             errors.studio && "border-destructive"
                           )}
                         >
@@ -1311,7 +1302,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                       <Button
                         type="button"
                         variant="outline"
-                        className="h-12 w-full border-slate-300 bg-white text-slate-800 shadow-sm hover:border-slate-900 hover:bg-slate-100 sm:w-auto sm:min-w-[170px]"
+                        className="h-12 w-full border-slate-300 text-slate-800 hover:border-slate-800 hover:bg-slate-100 sm:w-auto sm:min-w-[170px]"
                         onClick={() => setShowSchedule(true)}
                       >
                         <Calendar className="mr-2 h-4 w-4" />
@@ -1323,35 +1314,28 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
 
                   <div className="space-y-3 pt-1">
                     <div className="space-y-2">
-                      <div className="flex items-center justify-between gap-3">
-                        <div>
-                          <Label className="font-semibold text-slate-950">Select a preferred format <span className="text-destructive">*</span></Label>
-                          <p className="mt-1 text-sm text-slate-600">Choose the class experience that best matches your goal for day one.</p>
-                        </div>
-                        <div className="hidden rounded-full bg-slate-100 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-700 sm:inline-flex">
-                          Step 2
-                        </div>
-                      </div>
+                      <Label className="font-semibold">Select a preferred format <span className="text-destructive">*</span></Label>
+                      <p className="text-sm text-muted-foreground">Choose the format that feels right for your first visit.</p>
                     </div>
-                    <div role="radiogroup" aria-label="Choose your first format" className="grid gap-3 sm:grid-cols-2">
+                    <div role="radiogroup" aria-label="Choose your first format" className="space-y-2.5">
                       {availableFormats.map((format) => (
                         <div
                           key={format.id}
                           className={cn(
-                            "relative flex h-full cursor-pointer flex-col rounded-2xl border p-4 transition-all",
+                            "relative cursor-pointer rounded-xl border-2 p-3.5 transition-all backdrop-blur-sm sm:p-4",
                             formData.format === format.id
-                              ? "border-blue-900 bg-blue-50/70 shadow-md shadow-blue-900/10 ring-1 ring-blue-900/10"
-                              : "border-slate-200 bg-white hover:border-blue-900/25 hover:shadow-sm"
+                              ? "border-blue-900 bg-gradient-to-br from-blue-900/10 to-slate-200/30 shadow-lg shadow-blue-900/10"
+                              : "border-border/50 bg-white/60 hover:border-blue-900/30 hover:shadow-md"
                           )}
                         >
-                          <div className="flex h-full items-start gap-3">
+                          <div className="flex items-start gap-3">
                             <button
                               type="button"
                               role="radio"
                               aria-checked={formData.format === format.id}
                               aria-label={`Select ${format.subtitle}`}
                               onClick={() => handleInputChange("format", format.id)}
-                              className="mt-1 flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full border border-slate-400 text-blue-900 outline-none transition-[color,box-shadow,border-color] focus-visible:border-blue-900 focus-visible:ring-2 focus-visible:ring-blue-900/20"
+                              className="mt-0.5 flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full border border-slate-400 text-blue-900 outline-none transition-[color,box-shadow,border-color] focus-visible:border-blue-900 focus-visible:ring-2 focus-visible:ring-blue-900/20"
                             >
                               <span
                                 className={cn(
@@ -1366,38 +1350,34 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                               className="flex flex-1 items-start gap-2.5 text-left"
                             >
                               <div className="flex items-start gap-2.5">
-                                <span className="mt-0.5 text-2xl leading-none sm:text-[1.65rem]">{format.icon}</span>
+                                <span className="text-2xl leading-none sm:text-[1.65rem]">{format.icon}</span>
                                 <div className="flex-1">
                                   <div className="text-[15px] font-semibold leading-snug text-slate-950">{format.title}</div>
-                                  <div className="mt-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-blue-900">{format.subtitle}</div>
-                                  <p className="mt-2 text-xs leading-relaxed text-slate-600 sm:text-[13px]">{format.description}</p>
+                                  <div className="text-xs font-semibold uppercase tracking-[0.14em] text-blue-900">{format.subtitle}</div>
+                                  <p className="mt-1 text-xs leading-relaxed text-muted-foreground sm:text-[13px]">{format.description}</p>
                                 </div>
                               </div>
                             </button>
-                          </div>
-
-                          <div className="mt-4 flex items-center justify-between gap-3 border-t border-slate-200 pt-3">
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 rounded-full px-3 text-[11px] font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-950"
-                              onClick={(event) => {
-                                event.stopPropagation()
-                                setShowFormatInfo(format.id)
-                              }}
-                            >
-                              Know more
-                            </Button>
-
-                            {formData.format === format.id ? (
-                              <div className="flex items-center gap-1.5 rounded-full border border-blue-900/15 bg-blue-50 px-3 py-1 text-[11px] font-semibold text-blue-900 shadow-sm">
-                                <CheckCircle2 className="h-3.5 w-3.5" />
-                                <span>Selected</span>
-                              </div>
-                            ) : (
-                              <span className="text-[11px] font-medium text-slate-500">Tap to select</span>
-                            )}
+                            <div className="flex shrink-0 flex-col items-end gap-2 self-start pl-2">
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="h-7 rounded-full px-2.5 text-[11px] font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-950 sm:h-8 sm:px-3"
+                                onClick={(event) => {
+                                  event.stopPropagation()
+                                  setShowFormatInfo(format.id)
+                                }}
+                              >
+                                Know more
+                              </Button>
+                              {formData.format === format.id ? (
+                                <div className="flex items-center gap-1 rounded-full border border-blue-900/15 bg-blue-50 px-2 py-1 text-[11px] font-semibold text-blue-900 shadow-sm">
+                                  <CheckCircle2 className="h-3.5 w-3.5" />
+                                  <span>Selected</span>
+                                </div>
+                              ) : null}
+                            </div>
                           </div>
                         </div>
                       ))}
@@ -1407,54 +1387,52 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                 </div>
               </div>
 
-              <div className="relative space-y-4 rounded-3xl border border-slate-200 bg-white/75 p-5 pt-8 shadow-sm sm:p-6 sm:pt-9">
+              <div className="relative space-y-4 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-8 shadow-sm sm:p-6 sm:pt-9">
                 <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
                   <CreditCard className="h-3.5 w-3.5 text-blue-900" />
                   <span className="mb-0 text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">3. Membership included</span>
                 </div>
-                <p className="text-sm leading-relaxed text-slate-600">Your checkout secures the introductory package tied to this first-class experience.</p>
-                <div className="overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm">
-                  <div className="border-b border-slate-200 bg-gradient-to-r from-slate-50 to-blue-50/60 px-5 py-5 sm:px-6">
-                    <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-                      <div className="max-w-2xl">
-                        <p className="inline-flex rounded-full bg-blue-100 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.22em] text-blue-900">Premium membership</p>
-                        <h3 className="mt-3 text-2xl font-bold text-slate-950 sm:text-[1.6rem]">{membershipOffer.name}</h3>
-                        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600">
-                          A premium introductory package curated to guide your first Physique 57 sessions with structure, value, and flexibility.
+                <p className="text-sm leading-relaxed text-slate-600">Almost there. Complete your order to claim both sessions</p>
+                <div className="overflow-hidden rounded-[28px] border-2 border-blue-900/20 bg-gradient-to-br from-blue-50/60 via-white/80 to-slate-50/40 text-slate-950 shadow-lg">
+                  <div className="relative border-b-2 border-blue-900/15 px-5 py-6 sm:px-6">
+                    <div className="flex flex-col gap-4 sm:items-start">
+                      <div className="max-w-2xl pt-2">
+                        <p className="text-[10px] font-bold uppercase tracking-[0.26em] text-blue-900/60">Premium membership</p>
+                        <h3 className="mt-3 text-2xl font-bold text-slate-950 sm:text-[1.5rem]">{membershipOffer.name}</h3>
+                        <p className="mt-2.5 max-w-2xl text-sm leading-relaxed text-slate-600">
+                          New here? We'll meet you where you are — twice, for the price of once.
                         </p>
                       </div>
-
-                      <div className="rounded-2xl border border-blue-200 bg-white px-5 py-4 shadow-sm lg:min-w-[220px]">
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">Package price</p>
-                        <p className="mt-2 text-3xl font-bold tracking-tight text-slate-950">{membershipOffer.price}</p>
-                        <p className="mt-1 text-xs text-slate-500">Secure checkout with studio follow-up included</p>
-                      </div>
                     </div>
                   </div>
 
-                  <div className="grid gap-3 px-5 py-5 sm:grid-cols-3 sm:px-6">
-                    <div className="rounded-2xl border border-slate-200 bg-slate-50/70 px-4 py-4">
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">Sessions included</p>
-                      <p className="mt-2 text-lg font-bold text-slate-950">{membershipOffer.sessions}</p>
+                  <div className="grid gap-4 px-5 py-6 sm:grid-cols-4 sm:px-6">
+                    <div className="rounded-2xl border-2 border-blue-900/15 bg-gradient-to-br from-white to-blue-50/40 px-5 py-4 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-blue-900/70">Package price</p>
+                      <p className="mt-3 text-lg font-bold text-slate-950">{membershipOffer.price}</p>
                     </div>
-                    <div className="rounded-2xl border border-slate-200 bg-slate-50/70 px-4 py-4">
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">Validity period</p>
-                      <p className="mt-2 text-lg font-bold text-slate-950">{membershipOffer.validFor}</p>
+                    <div className="rounded-2xl border-2 border-blue-900/15 bg-gradient-to-br from-white to-blue-50/40 px-5 py-4 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-blue-900/70">Sessions included</p>
+                      <p className="mt-3 text-lg font-bold text-slate-950">{membershipOffer.sessions}</p>
                     </div>
-                    <div className="rounded-2xl border border-slate-200 bg-slate-50/70 px-4 py-4">
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">Access</p>
-                      <p className="mt-2 text-lg font-bold text-slate-950">Full access</p>
+                    <div className="rounded-2xl border-2 border-blue-900/15 bg-gradient-to-br from-white to-blue-50/40 px-5 py-4 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-blue-900/70">Validity period</p>
+                      <p className="mt-3 text-lg font-bold text-slate-950">{membershipOffer.validFor}</p>
+                    </div>
+                    <div className="rounded-2xl border-2 border-blue-900/15 bg-gradient-to-br from-white to-blue-50/40 px-5 py-4 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-blue-900/70">What's included</p>
+                      <p className="mt-3 text-lg font-bold text-slate-950">Full access</p>
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-4 border-t border-slate-200 px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-                    <p className="max-w-2xl text-sm leading-relaxed text-slate-600">
+                  <div className="flex flex-col gap-4 border-t-2 border-blue-900/10 px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+                    <p className="text-sm font-medium leading-relaxed text-slate-700">
                       Includes guided onboarding, secure checkout, and dedicated studio follow-up to complete your booking.
                     </p>
                     <Button
                       type="button"
                       variant="outline"
-                      className="border-slate-300 bg-white text-slate-950 font-semibold shadow-sm transition-all hover:border-blue-900 hover:bg-blue-50 hover:text-slate-950"
+                      className="border-2 border-blue-900/25 bg-white/80 text-slate-950 font-semibold hover:border-blue-900/40 hover:bg-blue-50/60 hover:text-slate-950 transition-all shadow-sm"
                       onClick={() => setShowMembershipModal(true)}
                     >
                       Learn more

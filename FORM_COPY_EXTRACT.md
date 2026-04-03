@@ -119,7 +119,7 @@ Copy is grouped by the section where it appears.
 
 ## Section 3: Membership included
 - 3. Membership included
-- Your checkout secures the introductory package tied to this first-class experience.
+- Almost there. Complete your order to claim both sessions.
 - Premium membership
 - Newcomers 2 For 1
 - A premium introductory package curated to guide your first Physique 57 sessions with structure, value, and flexibility.
