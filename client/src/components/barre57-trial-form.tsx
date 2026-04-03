@@ -1174,40 +1174,93 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
                     <p className="max-w-3xl text-lg leading-relaxed text-muted-foreground">Real transformations, real results, real people.</p>
                   </div>
 
-                  <div className="relative mt-12">
-                    <div className="mx-auto max-w-4xl">
-                      <AnimatePresence mode="wait">
-                        <motion.div
-                          key={currentReview}
-                          initial={{ opacity: 0, scale: 0.96, y: 20 }}
-                          animate={{ opacity: 1, scale: 1, y: 0 }}
-                          exit={{ opacity: 0, scale: 0.96, y: -20 }}
-                          transition={{ duration: 0.45, ease: "easeInOut" }}
-                          className="rounded-3xl border-2 border-rose-200 bg-gradient-to-br from-white/95 via-rose-50/30 to-white/90 p-10 shadow-2xl backdrop-blur-md"
-                        >
-                          <div className="flex items-start gap-6">
-                            <div className="flex-shrink-0">
-                              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-rose-400 to-rose-600 text-2xl font-bold text-white shadow-lg">
-                                {clientReviews[currentReview]?.name.charAt(0)}
-                              </div>
-                            </div>
-                            <div className="flex-1">
-                              <div className="mb-3 flex items-center gap-3">
-                                <h4 className="text-xl font-bold text-foreground">{clientReviews[currentReview]?.name}</h4>
-                                <div className="flex gap-0.5">
-                                  {Array.from({ length: 5 }).map((_, index) => (
-                                    <Heart key={index} className="h-4 w-4 fill-rose-500 text-rose-500" />
-                                  ))}
+                  <div className="relative mt-12 overflow-hidden">
+                    <div className="mx-auto max-w-7xl">
+                      <div className="relative h-96 px-4 md:h-80">
+                        <div className="relative h-full">
+                          {/* Container for 3-card carousel */}
+                          <div className="flex items-center justify-center h-full gap-6">
+                            <AnimatePresence mode="wait">
+                              {/* Previous Card (Left) */}
+                              <motion.div
+                                key={`prev-${(currentReview - 1 + clientReviews.length) % clientReviews.length}`}
+                                initial={{ x: -300, opacity: 0 }}
+                                animate={{ x: 0, opacity: 0.4, scale: 0.85 }}
+                                exit={{ x: 300, opacity: 0 }}
+                                transition={{ duration: 0.6, ease: "easeInOut" }}
+                                className="absolute left-0 hidden lg:block w-64"
+                              >
+                                <div className="rounded-2xl border border-slate-200 bg-white/60 p-6 shadow-lg backdrop-blur-sm h-64 flex flex-col justify-between pointer-events-none">
+                                  <div>
+                                    <p className="mb-3 text-sm italic leading-relaxed text-muted-foreground line-clamp-4">
+                                      "{clientReviews[(currentReview - 1 + clientReviews.length) % clientReviews.length]?.review}"
+                                    </p>
+                                  </div>
+                                  <div className="space-y-1">
+                                    <p className="text-sm font-bold text-foreground">{clientReviews[(currentReview - 1 + clientReviews.length) % clientReviews.length]?.name}</p>
+                                    <p className="text-xs text-muted-foreground">{clientReviews[(currentReview - 1 + clientReviews.length) % clientReviews.length]?.class}</p>
+                                  </div>
                                 </div>
-                              </div>
-                              <p className="mb-3 text-sm font-semibold text-rose-600">{clientReviews[currentReview]?.class}</p>
-                              <p className="mb-4 text-lg italic leading-relaxed text-foreground">"{clientReviews[currentReview]?.review}"</p>
-                              <p className="text-sm text-muted-foreground">{clientReviews[currentReview]?.date}</p>
-                            </div>
-                          </div>
-                        </motion.div>
-                      </AnimatePresence>
+                              </motion.div>
 
+                              {/* Center Card (Highlighted) */}
+                              <motion.div
+                                key={`center-${currentReview}`}
+                                initial={{ y: 20, opacity: 0, scale: 0.95 }}
+                                animate={{ y: 0, opacity: 1, scale: 1 }}
+                                exit={{ y: -20, opacity: 0, scale: 0.95 }}
+                                transition={{ duration: 0.6, ease: "easeInOut" }}
+                                className="relative z-10 w-full max-w-md flex-shrink-0"
+                              >
+                                <div className="rounded-3xl border-2 border-rose-200 bg-gradient-to-br from-white/95 via-rose-50/30 to-white/90 p-8 shadow-2xl backdrop-blur-md h-80 flex flex-col justify-between">
+                                  <div>
+                                    <div className="mb-4 flex items-center gap-3">
+                                      <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-rose-400 to-rose-600 text-lg font-bold text-white shadow-lg">
+                                        {clientReviews[currentReview]?.name.charAt(0)}
+                                      </div>
+                                      <div className="flex gap-0.5">
+                                        {Array.from({ length: 5 }).map((_, index) => (
+                                          <Heart key={index} className="h-4 w-4 fill-rose-500 text-rose-500" />
+                                        ))}
+                                      </div>
+                                    </div>
+                                    <p className="mb-3 text-base italic leading-relaxed text-foreground">"{clientReviews[currentReview]?.review}"</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-base font-bold text-foreground">{clientReviews[currentReview]?.name}</p>
+                                    <p className="text-sm font-semibold text-rose-600">{clientReviews[currentReview]?.class}</p>
+                                    <p className="text-xs text-muted-foreground">{clientReviews[currentReview]?.date}</p>
+                                  </div>
+                                </div>
+                              </motion.div>
+
+                              {/* Next Card (Right) */}
+                              <motion.div
+                                key={`next-${(currentReview + 1) % clientReviews.length}`}
+                                initial={{ x: 300, opacity: 0 }}
+                                animate={{ x: 0, opacity: 0.4, scale: 0.85 }}
+                                exit={{ x: -300, opacity: 0 }}
+                                transition={{ duration: 0.6, ease: "easeInOut" }}
+                                className="absolute right-0 hidden lg:block w-64"
+                              >
+                                <div className="rounded-2xl border border-slate-200 bg-white/60 p-6 shadow-lg backdrop-blur-sm h-64 flex flex-col justify-between pointer-events-none">
+                                  <div>
+                                    <p className="mb-3 text-sm italic leading-relaxed text-muted-foreground line-clamp-4">
+                                      "{clientReviews[(currentReview + 1) % clientReviews.length]?.review}"
+                                    </p>
+                                  </div>
+                                  <div className="space-y-1">
+                                    <p className="text-sm font-bold text-foreground">{clientReviews[(currentReview + 1) % clientReviews.length]?.name}</p>
+                                    <p className="text-xs text-muted-foreground">{clientReviews[(currentReview + 1) % clientReviews.length]?.class}</p>
+                                  </div>
+                                </div>
+                              </motion.div>
+                            </AnimatePresence>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Navigation Dots */}
                       <div className="mt-8 flex flex-wrap justify-center gap-2">
                         {clientReviews.map((_, index) => (
                           <button
