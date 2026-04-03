@@ -1080,7 +1080,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-background">
+    <div className="relative min-h-screen w-full overflow-x-auto bg-background">
       <canvas ref={confettiCanvasRef} className="pointer-events-none fixed inset-0 z-[70] h-full w-full" />
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         {floatingDecor.map(({ top, left, icon: Icon }, index) => (
@@ -1097,7 +1097,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
         ))}
       </div>
 
-        <div className="relative grid min-h-screen lg:grid-cols-[40%_60%]">
+        <div className="relative grid min-h-screen w-full min-w-0 lg:grid-cols-[40%_60%]">
         <div
           className="relative hidden h-screen cursor-pointer overflow-hidden bg-black lg:block"
           onClick={redirectToMomence}
@@ -1151,11 +1151,11 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
           </div>
         </div>
 
-        <div className="relative min-h-screen bg-background/95 backdrop-blur-sm lg:h-screen lg:overflow-y-auto">
-          <div className="mx-auto w-full max-w-[1120px] px-4 pt-0 pb-6 sm:px-6 sm:pt-0 lg:px-10 lg:pt-0 xl:px-14 xl:pt-0">
+        <div className="relative min-h-screen min-w-0 bg-background/95 backdrop-blur-sm lg:h-screen lg:overflow-y-auto">
+          <div className="mx-auto w-full min-w-0 max-w-[1120px] px-3 pt-0 pb-6 sm:px-4 sm:pt-0 md:px-6 lg:px-10 lg:pt-0 xl:px-14 xl:pt-0">
               {shouldHideFormForProcessing ? (
                 <div className="flex min-h-[78vh] items-center justify-center">
-                  <div className="w-full max-w-2xl rounded-[32px] border border-slate-200/80 bg-white/85 px-8 py-16 text-center shadow-[0_24px_80px_rgba(15,23,42,0.10)] backdrop-blur-xl sm:px-12">
+                  <div className="w-full max-w-2xl rounded-[32px] border border-slate-200/80 bg-white/85 px-4 py-12 text-center shadow-[0_24px_80px_rgba(15,23,42,0.10)] backdrop-blur-xl sm:px-12 sm:py-16">
                     <div className="mx-auto flex h-18 w-18 items-center justify-center rounded-full bg-gradient-to-br from-blue-900 to-blue-700 text-white shadow-lg">
                       <Loader2 className="h-8 w-8 animate-spin" />
                     </div>
@@ -1171,19 +1171,19 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                   </div>
                 </div>
               ) : (
-              <div className="rounded-[28px] border border-slate-200/80 bg-white/80 p-5 shadow-[0_48px_140px_rgba(15,23,42,0.18)] ring-1 ring-slate-200/50 backdrop-blur-xl sm:p-6 lg:p-8">
+              <div className="min-w-0 overflow-hidden rounded-[28px] border border-slate-200/80 bg-white/80 p-4 shadow-[0_48px_140px_rgba(15,23,42,0.18)] ring-1 ring-slate-200/50 backdrop-blur-xl sm:p-6 lg:p-8">
               <div className="mb-8">
                 <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-900/10 bg-gradient-to-br from-white/98 via-blue-50/95 to-blue-100/92 px-4 py-2 backdrop-blur-sm shadow-sm">
                   <Sparkles className="h-4 w-4 text-blue-900" />
                   <span className="text-sm font-semibold text-blue-950">Book Your First Class</span>
                 </div>
-                <h2 className="mb-2 text-3xl font-bold text-foreground">Get Started</h2>
+                <h2 className="mb-2 text-2xl font-bold text-foreground sm:text-3xl">Get Started</h2>
                 <p className="text-muted-foreground">Sign up for your first class at Physique 57.</p>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-8">
-              <div className="relative space-y-6 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-8 shadow-sm sm:p-6 sm:pt-9">
-                <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/10 bg-gradient-to-br from-white/98 via-blue-50/95 to-blue-100/92 px-4 py-1.5 shadow-sm backdrop-blur-md">
+              <div className="relative space-y-6 rounded-2xl border border-slate-300/90 bg-white/55 p-4 pt-8 shadow-sm sm:p-6 sm:pt-9">
+                <div className="absolute -top-3 left-4 inline-flex max-w-[calc(100%-2rem)] flex-wrap items-center gap-2 rounded-full border border-blue-900/10 bg-gradient-to-br from-white/98 via-blue-50/95 to-blue-100/92 px-4 py-1.5 shadow-sm backdrop-blur-md">
                   <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-950">1. Personal details</span>
                   <span className="text-destructive">*</span>
                 </div>
@@ -1269,8 +1269,8 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                 </div>
               </div>
 
-              <div className="relative space-y-5 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-8 shadow-sm sm:p-6 sm:pt-9">
-                <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/10 bg-gradient-to-br from-white/98 via-blue-50/95 to-blue-100/92 px-4 py-1.5 shadow-sm backdrop-blur-md">
+              <div className="relative space-y-5 rounded-2xl border border-slate-300/90 bg-white/55 p-4 pt-8 shadow-sm sm:p-6 sm:pt-9">
+                <div className="absolute -top-3 left-4 inline-flex max-w-[calc(100%-2rem)] flex-wrap items-center gap-2 rounded-full border border-blue-900/10 bg-gradient-to-br from-white/98 via-blue-50/95 to-blue-100/92 px-4 py-1.5 shadow-sm backdrop-blur-md">
                   <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-950">2. Studio & format</span>
                   <span className="text-destructive">*</span>
                 </div>
@@ -1328,14 +1328,14 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                               : "border-border/50 bg-white/60 hover:border-blue-900/30 hover:shadow-md"
                           )}
                         >
-                          <div className="flex items-start gap-3">
+                          <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
                             <button
                               type="button"
                               role="radio"
                               aria-checked={formData.format === format.id}
                               aria-label={`Select ${format.subtitle}`}
                               onClick={() => handleInputChange("format", format.id)}
-                              className="mt-0.5 flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full border border-slate-400 text-blue-900 outline-none transition-[color,box-shadow,border-color] focus-visible:border-blue-900 focus-visible:ring-2 focus-visible:ring-blue-900/20"
+                              className="mt-0.5 flex h-4 w-4 flex-shrink-0 items-center justify-center self-start rounded-full border border-slate-400 text-blue-900 outline-none transition-[color,box-shadow,border-color] focus-visible:border-blue-900 focus-visible:ring-2 focus-visible:ring-blue-900/20"
                             >
                               <span
                                 className={cn(
@@ -1347,23 +1347,23 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                             <button
                               type="button"
                               onClick={() => handleInputChange("format", format.id)}
-                              className="flex flex-1 items-start gap-2.5 text-left"
+                              className="flex min-w-0 flex-1 items-start gap-2.5 text-left"
                             >
-                              <div className="flex items-start gap-2.5">
+                              <div className="flex min-w-0 items-start gap-2.5">
                                 <span className="text-2xl leading-none sm:text-[1.65rem]">{format.icon}</span>
-                                <div className="flex-1">
+                                <div className="min-w-0 flex-1">
                                   <div className="text-[15px] font-semibold leading-snug text-slate-950">{format.title}</div>
                                   <div className="text-xs font-semibold uppercase tracking-[0.14em] text-blue-900">{format.subtitle}</div>
-                                  <p className="mt-1 text-xs leading-relaxed text-muted-foreground sm:text-[13px]">{format.description}</p>
+                                  <p className="mt-1 break-words text-xs leading-relaxed text-muted-foreground sm:text-[13px]">{format.description}</p>
                                 </div>
                               </div>
                             </button>
-                            <div className="flex shrink-0 flex-col items-end gap-2 self-start pl-2">
+                            <div className="flex w-full shrink-0 flex-row items-center justify-between gap-2 pl-0 sm:w-auto sm:flex-col sm:items-end sm:self-start sm:pl-2">
                               <Button
                                 type="button"
                                 variant="ghost"
                                 size="sm"
-                                className="h-7 rounded-full px-2.5 text-[11px] font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-950 sm:h-8 sm:px-3"
+                                className="h-7 rounded-full px-2.5 text-[10px] font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-950 sm:h-8 sm:px-3 sm:text-[11px]"
                                 onClick={(event) => {
                                   event.stopPropagation()
                                   setShowFormatInfo(format.id)
@@ -1387,8 +1387,8 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                 </div>
               </div>
 
-              <div className="relative space-y-4 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-8 shadow-sm sm:p-6 sm:pt-9">
-                <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/10 bg-gradient-to-br from-white/98 via-blue-50/95 to-blue-100/92 px-4 py-1.5 shadow-sm backdrop-blur-md">
+              <div className="relative space-y-4 rounded-2xl border border-slate-300/90 bg-white/55 p-4 pt-8 shadow-sm sm:p-6 sm:pt-9">
+                <div className="absolute -top-3 left-4 inline-flex max-w-[calc(100%-2rem)] flex-wrap items-center gap-2 rounded-full border border-blue-900/10 bg-gradient-to-br from-white/98 via-blue-50/95 to-blue-100/92 px-4 py-1.5 shadow-sm backdrop-blur-md">
                   <CreditCard className="h-3.5 w-3.5 text-blue-950" />
                   <span className="mb-0 text-[11px] font-bold uppercase tracking-[0.18em] text-blue-950">3. Membership included</span>
                 </div>
@@ -1400,13 +1400,13 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                         <div className="inline-flex items-center rounded-full border border-blue-900/10 bg-blue-950 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.22em] text-white shadow-sm">
                           Premium membership
                         </div>
-                        <h3 className="mt-4 text-[1.85rem] font-bold tracking-[-0.02em] text-slate-950 sm:text-[2rem]">{membershipOffer.name}</h3>
+                        <h3 className="mt-4 text-[1.5rem] font-bold tracking-[-0.02em] text-slate-950 sm:text-[2rem]">{membershipOffer.name}</h3>
                         <p className="mt-2 max-w-xl text-sm leading-7 text-slate-600 sm:text-[15px]">
                           New here? We'll meet you where you are — twice, for the price of once.
                         </p>
                       </div>
 
-                      <div className="rounded-2xl border border-blue-900/10 bg-white/85 px-5 py-4 shadow-sm lg:min-w-[200px]">
+                      <div className="rounded-2xl border border-blue-900/10 bg-white/85 px-4 py-4 shadow-sm sm:px-5 lg:min-w-[200px]">
                         <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-blue-900/70">Today&apos;s total</p>
                         <p className="mt-2 text-3xl font-bold tracking-[-0.03em] text-slate-950">{membershipOffer.price}</p>
                         <p className="mt-1 text-xs text-slate-500">Includes both introductory sessions</p>
@@ -1444,7 +1444,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
               </div>
 
                 <div className="relative space-y-3 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-9 shadow-sm sm:p-6 sm:pt-10">
-                <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
+                <div className="absolute -top-3 left-4 inline-flex max-w-[calc(100%-2rem)] flex-wrap items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
                   <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">4. Before you confirm</span>
                 </div>
                 <div className="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/70 px-4 py-3 sm:items-center sm:gap-4">

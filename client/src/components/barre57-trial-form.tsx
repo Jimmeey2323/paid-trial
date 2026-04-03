@@ -57,7 +57,7 @@ interface Barre57TrialFormProps {
 
 // Barre 57 specific hero images
 const BARRE_HERO_IMAGES = [
-  "https://i.postimg.cc/BbPhr4br/hp-Img-1770172966.png",
+  "https://i.postimg.cc/BbPhr4br/hp-Img-1770172966.pnghttps://i.postimg.cc/vZ8VzFH8/654600560_18105657745867483_8944120182227400336_n.jpg",
   "https://i.postimg.cc/PqqkNKTC/10210_Physique_57_by_Atelier_Birjis_3.webp",
   "https://i.postimg.cc/XvxDFstP/hp_Img_1767781454.png",
   "https://i.postimg.cc/255f3TrB/9.jpg",
@@ -636,7 +636,7 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
   const isFormValid = formData.firstName.trim() && formData.lastName.trim() && formData.email.trim() && formData.phone.trim() && formData.studio && formData.acceptedTerms
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-background">
+    <div className="relative min-h-screen w-full overflow-x-auto bg-background">
       <canvas ref={confettiCanvasRef} className="pointer-events-none fixed inset-0 z-[70] h-full w-full" />
 
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -658,7 +658,7 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
         ))}
       </div>
 
-      <div className="relative grid min-h-screen lg:grid-cols-[40%_60%]">
+      <div className="relative grid min-h-screen w-full min-w-0 lg:grid-cols-[40%_60%]">
         <div
           className="relative hidden h-screen overflow-hidden bg-black lg:block"
           onClick={() => window.location.href = "https://www.physique57.in"}
@@ -697,11 +697,11 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
           </div>
         </div>
 
-        <div className="relative min-h-screen bg-background/95 backdrop-blur-sm lg:h-screen lg:overflow-y-auto">
-          <div className="mx-auto w-full max-w-[1120px] px-4 pt-0 pb-6 sm:px-6 sm:pt-0 lg:px-10 lg:pt-0 xl:px-14 xl:pt-0">
+        <div className="relative min-h-screen min-w-0 bg-background/95 backdrop-blur-sm lg:h-screen lg:overflow-y-auto">
+          <div className="mx-auto w-full min-w-0 max-w-[1120px] px-3 pt-0 pb-6 sm:px-4 sm:pt-0 md:px-6 lg:px-10 lg:pt-0 xl:px-14 xl:pt-0">
             {showSuccessModal ? (
               <div className="flex min-h-[78vh] items-center justify-center">
-                <div className="w-full max-w-2xl rounded-[32px] border border-slate-200/80 bg-white/85 px-8 py-16 text-center shadow-[0_24px_80px_rgba(15,23,42,0.10)] backdrop-blur-xl sm:px-12">
+                <div className="w-full max-w-2xl rounded-[32px] border border-slate-200/80 bg-white/85 px-4 py-12 text-center shadow-[0_24px_80px_rgba(15,23,42,0.10)] backdrop-blur-xl sm:px-12 sm:py-16">
                   <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-blue-600 shadow-lg">
                     <CheckCircle2 className="h-12 w-12 text-white" />
                   </div>
@@ -720,19 +720,19 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
               </div>
             ) : (
               <>
-                <div className="rounded-[28px] border border-slate-200/80 bg-white/80 p-5 shadow-[0_48px_140px_rgba(15,23,42,0.18)] ring-1 ring-slate-200/50 backdrop-blur-xl sm:p-6 lg:p-8">
+                <div className="min-w-0 overflow-hidden rounded-[28px] border border-slate-200/80 bg-white/80 p-4 shadow-[0_48px_140px_rgba(15,23,42,0.18)] ring-1 ring-slate-200/50 backdrop-blur-xl sm:p-6 lg:p-8">
                   <div className="mb-8">
                     <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-900/30 bg-gradient-to-r from-blue-900/20 to-slate-300/30 px-4 py-2 backdrop-blur-sm">
                       <Sparkles className="h-4 w-4 text-blue-900" />
                       <span className="text-sm font-semibold text-blue-900">Book Your Barre Trial</span>
                     </div>
-                    <h2 className="mb-2 text-3xl font-bold text-foreground">Claim Your Free Trial</h2>
+                    <h2 className="mb-2 text-2xl font-bold text-foreground sm:text-3xl">Claim Your Free Trial</h2>
                     <p className="text-muted-foreground">Sign up for your complimentary Barre 57 class.</p>
                   </div>
 
                   <form onSubmit={handleSubmit} className="space-y-8">
-                    <div className="relative space-y-6 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-8 shadow-sm sm:p-6 sm:pt-9">
-                      <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
+                    <div className="relative space-y-6 rounded-2xl border border-slate-300/90 bg-white/55 p-4 pt-8 shadow-sm sm:p-6 sm:pt-9">
+                      <div className="absolute -top-3 left-4 inline-flex max-w-[calc(100%-2rem)] flex-wrap items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
                         <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">1. Your details</span>
                         <span className="text-destructive">*</span>
                       </div>
@@ -825,8 +825,8 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
                       </div>
                     </div>
 
-                    <div className="relative space-y-5 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-8 shadow-sm sm:p-6 sm:pt-9">
-                      <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
+                    <div className="relative space-y-5 rounded-2xl border border-slate-300/90 bg-white/55 p-4 pt-8 shadow-sm sm:p-6 sm:pt-9">
+                      <div className="absolute -top-3 left-4 inline-flex max-w-[calc(100%-2rem)] flex-wrap items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
                         <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">2. Studio choice</span>
                         <span className="text-destructive">*</span>
                       </div>
@@ -859,8 +859,8 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
                       </div>
                     </div>
 
-                    <div className="relative space-y-3 rounded-2xl border border-slate-300/90 bg-white/55 p-5 pt-9 shadow-sm sm:p-6 sm:pt-10">
-                      <div className="absolute -top-3 left-4 inline-flex items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
+                    <div className="relative space-y-3 rounded-2xl border border-slate-300/90 bg-white/55 p-4 pt-9 shadow-sm sm:p-6 sm:pt-10">
+                      <div className="absolute -top-3 left-4 inline-flex max-w-[calc(100%-2rem)] flex-wrap items-center gap-2 rounded-full border border-blue-900/20 bg-gradient-to-r from-blue-900/15 to-slate-200/70 px-4 py-1.5 shadow-sm backdrop-blur-md">
                         <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">3. Confirmation</span>
                       </div>
                       <div className="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/70 px-4 py-3 sm:items-center sm:gap-4">
