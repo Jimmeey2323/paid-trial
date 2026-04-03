@@ -369,6 +369,7 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
   const [openFaq, setOpenFaq] = useState<number | null>(0)
   const [selectedWorkoutSection, setSelectedWorkoutSection] = useState<number>(0)
   const [selectedExercise, setSelectedExercise] = useState<number>(0)
+  const [currentReview, setCurrentReview] = useState<number>(0)
 
   const selectedStudio = studios.find((studio) => studio.name === formData.studio)
 
@@ -451,6 +452,16 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
       confettiInstanceRef.current = null
     }
   }, [])
+
+  useEffect(() => {
+    const reviewTimeout = window.setTimeout(() => {
+      setCurrentReview((prev) => (prev + 1) % clientReviews.length)
+    }, 3000)
+
+    return () => {
+      window.clearTimeout(reviewTimeout)
+    }
+  }, [currentReview])
 
   const handleInputChange = (field: string, value: any) => {
     setFormData((prev) => ({
@@ -1155,39 +1166,64 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
                 {/* MEMBER REVIEWS SECTION */}
                 <section className="mt-20 space-y-12 pb-2">
                   <div className="mx-auto max-w-5xl">
-                    <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-rose-900/20 bg-gradient-to-r from-rose-900/10 to-slate-200/50 px-4 py-2 backdrop-blur-sm">
-                      <Heart className="h-4 w-4 text-rose-900" />
-                      <span className="text-sm font-semibold text-rose-900">Reviews</span>
+                    <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-rose-600/20 bg-gradient-to-r from-rose-600/10 to-rose-200/50 px-4 py-2 backdrop-blur-sm">
+                      <Heart className="h-4 w-4 text-rose-700" />
+                      <span className="text-sm font-semibold text-rose-900">Member Stories</span>
                     </div>
-                    <h2 className="mb-4 text-4xl font-bold text-foreground md:text-5xl">Member Stories</h2>
-                    <p className="max-w-3xl text-lg leading-relaxed text-muted-foreground">
-                      Join thousands of members who've transformed their fitness journey with Barre 57.
-                    </p>
+                    <h2 className="mb-4 text-4xl font-bold text-foreground md:text-5xl">What Our Members Say</h2>
+                    <p className="max-w-3xl text-lg leading-relaxed text-muted-foreground">Real transformations, real results, real people.</p>
                   </div>
 
-                  <div className="mx-auto grid max-w-6xl gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {clientReviews.map((review, index) => (
-                      <motion.div
-                        key={`${review.name}-${index}`}
-                        initial={{ opacity: 0, y: 26 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, margin: "-100px" }}
-                        transition={{ duration: 0.5, delay: index * 0.08 }}
-                        className="group rounded-2xl border border-slate-200 bg-gradient-to-br from-white/95 to-slate-50/60 p-6 shadow-sm transition-all duration-300 hover:border-rose-200/50 hover:shadow-xl"
-                      >
-                        <div className="mb-4 flex gap-1">
-                          {[...Array(5)].map((_, i) => (
-                            <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />
-                          ))}
-                        </div>
-                        <p className="mb-4 text-sm leading-relaxed text-muted-foreground italic">\"{review.review}\"</p>
-                        <div className="space-y-1">
-                          <p className="text-sm font-bold text-foreground">{review.name}</p>
-                          <p className="text-xs text-muted-foreground">{review.class}</p>
-                          <p className="text-xs text-muted-foreground/60">{review.date}</p>
-                        </div>
-                      </motion.div>
-                    ))}
+                  <div className="relative mt-12">
+                    <div className="mx-auto max-w-4xl">
+                      <AnimatePresence mode="wait">
+                        <motion.div
+                          key={currentReview}
+                          initial={{ opacity: 0, scale: 0.96, y: 20 }}
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                          exit={{ opacity: 0, scale: 0.96, y: -20 }}
+                          transition={{ duration: 0.45, ease: "easeInOut" }}
+                          className="rounded-3xl border-2 border-rose-200 bg-gradient-to-br from-white/95 via-rose-50/30 to-white/90 p-10 shadow-2xl backdrop-blur-md"
+                        >
+                          <div className="flex items-start gap-6">
+                            <div className="flex-shrink-0">
+                              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-rose-400 to-rose-600 text-2xl font-bold text-white shadow-lg">
+                                {clientReviews[currentReview]?.name.charAt(0)}
+                              </div>
+                            </div>
+                            <div className="flex-1">
+                              <div className="mb-3 flex items-center gap-3">
+                                <h4 className="text-xl font-bold text-foreground">{clientReviews[currentReview]?.name}</h4>
+                                <div className="flex gap-0.5">
+                                  {Array.from({ length: 5 }).map((_, index) => (
+                                    <Heart key={index} className="h-4 w-4 fill-rose-500 text-rose-500" />
+                                  ))}
+                                </div>
+                              </div>
+                              <p className="mb-3 text-sm font-semibold text-rose-600">{clientReviews[currentReview]?.class}</p>
+                              <p className="mb-4 text-lg italic leading-relaxed text-foreground">"{clientReviews[currentReview]?.review}"</p>
+                              <p className="text-sm text-muted-foreground">{clientReviews[currentReview]?.date}</p>
+                            </div>
+                          </div>
+                        </motion.div>
+                      </AnimatePresence>
+
+                      <div className="mt-8 flex flex-wrap justify-center gap-2">
+                        {clientReviews.map((_, index) => (
+                          <button
+                            key={index}
+                            onClick={() => setCurrentReview(index)}
+                            className={cn(
+                              "transition-all duration-300",
+                              currentReview === index
+                                ? "h-2 w-8 rounded-full bg-gradient-to-r from-rose-500 to-rose-600"
+                                : "h-2 w-2 rounded-full bg-slate-300 hover:bg-slate-400"
+                            )}
+                            aria-label={`View review ${index + 1}`}
+                          />
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </section>
 
