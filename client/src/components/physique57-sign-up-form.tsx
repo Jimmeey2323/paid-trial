@@ -1274,7 +1274,7 @@ export function Physique57SignUpForm({ onSubmit }: Physique57SignUpFormProps) {
                   <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-900">2. Studio & format</span>
                   <span className="text-destructive">*</span>
                 </div>
-                <div className="space-y-6 pt-2">
+                <div className="space-y-6 pt-0">
                   <div className="space-y-2">
                     <Label htmlFor="studio" className="font-semibold">Preferred studio <span className="text-destructive">*</span></Label>
                     <div className="flex flex-col gap-3 sm:flex-row">
