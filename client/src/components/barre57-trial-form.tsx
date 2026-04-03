@@ -727,7 +727,7 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
                           <div className="flex items-start gap-6">
                             <Tooltip>
                               <TooltipTrigger asChild>
-                                <div className={cn("flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br text-white shadow-lg transition-all duration-300 group-hover:-rotate-6 group-hover:scale-110", `from-${colors.iconBg.split(' ')[1].split('-')[0]}-400 to-${colors.iconBg.split(' ')[1].split('-')[0]}-600`)}>
+                                <div className={cn("flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br text-white shadow-lg transition-all duration-300 group-hover:-rotate-6 group-hover:scale-110", colors.iconBg)}>
                                   <Icon className="h-7 w-7" />
                                 </div>
                               </TooltipTrigger>
