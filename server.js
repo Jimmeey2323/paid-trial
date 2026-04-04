@@ -142,8 +142,41 @@ app.use((req, res, next) => {
 
 app.use(express.json({ limit: JSON_BODY_LIMIT }));
 
-app.use('/static-assets', express.static(path.join(__dirname, 'assets')));
-app.use(express.static(CLIENT_APP_DIRECTORY));
+function setStaticAssetCacheHeaders(res, filePath) {
+  const normalizedPath = String(filePath || '').toLowerCase();
+
+  if (normalizedPath.endsWith('.html')) {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    return;
+  }
+
+  if (/\.[a-f0-9]{8}\.(css|js)$/.test(normalizedPath) || normalizedPath.includes('/assets/')) {
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    return;
+  }
+
+  res.setHeader('Cache-Control', 'public, max-age=3600');
+}
+
+function sendAppIndex(res) {
+  return res.sendFile(CLIENT_APP_INDEX_PATH, {
+    headers: {
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      Pragma: 'no-cache',
+      Expires: '0'
+    }
+  });
+}
+
+app.use('/static-assets', express.static(path.join(__dirname, 'assets'), {
+  setHeaders: setStaticAssetCacheHeaders
+}));
+app.use(express.static(CLIENT_APP_DIRECTORY, {
+  index: false,
+  setHeaders: setStaticAssetCacheHeaders
+}));
 
 // Stripe checkout endpoints (optional - requires STRIPE_SECRET_KEY in environment)
 let stripeClient = null;
@@ -1338,14 +1371,14 @@ app.get(['/barre', '/barre/*'], (req, res) => {
   if (!fs.existsSync(CLIENT_APP_INDEX_PATH)) {
     return res.status(404).send('App not found');
   }
-  return res.sendFile(CLIENT_APP_INDEX_PATH);
+  return sendAppIndex(res);
 });
 
 app.get(['/test', '/test/*'], (req, res) => {
   if (!fs.existsSync(CLIENT_APP_INDEX_PATH)) {
     return res.status(404).send('App not found');
   }
-  return res.sendFile(CLIENT_APP_INDEX_PATH);
+  return sendAppIndex(res);
 });
 
 app.get(['/', '/index.html'], (req, res, next) => {
@@ -1353,7 +1386,7 @@ app.get(['/', '/index.html'], (req, res, next) => {
     return next();
   }
 
-  return res.sendFile(CLIENT_APP_INDEX_PATH);
+  return sendAppIndex(res);
 });
 
 app.post('/api/partial-lead', async (req, res) => {

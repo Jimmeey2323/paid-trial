@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { Analytics } from "@vercel/analytics/react"
 import { Physique57SignUpForm } from "@/components/physique57-sign-up-form"
 import { Barre57TrialForm } from "@/components/barre57-trial-form"
 
@@ -147,14 +148,17 @@ export default function App() {
     })
   }, [currentPath, isBarreRoute, isTestRoute])
 
-  if (isBarreRoute) {
-    return <Barre57TrialForm />
-  }
+  const pageContent = isBarreRoute
+    ? <Barre57TrialForm />
+    : isTestRoute
+      ? <Physique57SignUpForm testMode />
+      : <Physique57SignUpForm />
 
-  if (isTestRoute) {
-    return <Physique57SignUpForm testMode />
-  }
-
-  return <Physique57SignUpForm />
+  return (
+    <>
+      {pageContent}
+      <Analytics />
+    </>
+  )
 }
 
