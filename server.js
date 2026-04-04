@@ -259,6 +259,16 @@ function resolveUrl(value, origin, fallbackPath) {
   }
 }
 
+function normalizeCheckoutReturnPath(value) {
+  const normalized = String(value || '').trim();
+
+  if (normalized === '/test' || normalized.startsWith('/test?')) {
+    return '/test';
+  }
+
+  return '/';
+}
+
 function formatMoney(amountMinor, currency = 'INR') {
   const normalizedCurrency = String(currency || 'INR').toUpperCase();
   return new Intl.NumberFormat('en-IN', {
@@ -294,9 +304,10 @@ function getPaymentStageConfig(stageName) {
   return stages[normalizedStage] || stages[DEFAULT_PAYMENT_STAGE] || DEFAULT_PAYMENT_STAGE_CONFIGS.production;
 }
 
-function getStripeCheckoutConfig(req, stageName = normalizePaymentStage()) {
+function getStripeCheckoutConfig(req, stageName = normalizePaymentStage(), returnPath = '/') {
   const envConfig = parseJson(process.env.STRIPE_CHECKOUT_CONFIG_JSON, {});
   const origin = getRequestOrigin(req);
+  const normalizedReturnPath = normalizeCheckoutReturnPath(returnPath);
   const merged = deepMerge(DEFAULT_STRIPE_CHECKOUT_CONFIG, envConfig);
   const configuredBase = {
     ...merged,
@@ -318,8 +329,16 @@ function getStripeCheckoutConfig(req, stageName = normalizePaymentStage()) {
     consentCollection: parseJson(process.env.STRIPE_CHECKOUT_CONSENT_COLLECTION_JSON, merged.consentCollection),
     metadata: parseJson(process.env.STRIPE_CHECKOUT_METADATA_JSON, merged.metadata || {}),
     buttonLabel: String(process.env.STRIPE_CHECKOUT_BUTTON_LABEL || merged.buttonLabel || '').trim() || `Pay ${formatMoney(parseInteger(process.env.STRIPE_CHECKOUT_AMOUNT, merged.amount), String(process.env.STRIPE_CHECKOUT_CURRENCY || merged.currency || 'inr').trim().toLowerCase())}`,
-    successUrl: resolveUrl(process.env.STRIPE_CHECKOUT_SUCCESS_URL || merged.successUrl, origin, '/?payment=success&session_id={CHECKOUT_SESSION_ID}'),
-    cancelUrl: resolveUrl(process.env.STRIPE_CHECKOUT_CANCEL_URL || merged.cancelUrl, origin, '/?payment=cancelled')
+    successUrl: resolveUrl(
+      process.env.STRIPE_CHECKOUT_SUCCESS_URL || merged.successUrl,
+      origin,
+      `${normalizedReturnPath}?payment=success&session_id={CHECKOUT_SESSION_ID}`
+    ),
+    cancelUrl: resolveUrl(
+      process.env.STRIPE_CHECKOUT_CANCEL_URL || merged.cancelUrl,
+      origin,
+      `${normalizedReturnPath}?payment=cancelled`
+    )
   };
   const stageConfig = getPaymentStageConfig(stageName);
   const stageCheckoutConfig = deepMerge(configuredBase, stageConfig.checkout || {});
@@ -348,8 +367,16 @@ function getStripeCheckoutConfig(req, stageName = normalizePaymentStage()) {
     consentCollection: stageCheckoutConfig.consentCollection || null,
     metadata: isPlainObject(stageCheckoutConfig.metadata) ? stageCheckoutConfig.metadata : {},
     buttonLabel: String(stageCheckoutConfig.buttonLabel || '').trim() || `Pay ${formatMoney(amount, currency)}`,
-    successUrl: resolveUrl(stageCheckoutConfig.successUrl, origin, '/?payment=success&session_id={CHECKOUT_SESSION_ID}'),
-    cancelUrl: resolveUrl(stageCheckoutConfig.cancelUrl, origin, '/?payment=cancelled')
+    successUrl: resolveUrl(
+      stageCheckoutConfig.successUrl,
+      origin,
+      `${normalizedReturnPath}?payment=success&session_id={CHECKOUT_SESSION_ID}`
+    ),
+    cancelUrl: resolveUrl(
+      stageCheckoutConfig.cancelUrl,
+      origin,
+      `${normalizedReturnPath}?payment=cancelled`
+    )
   };
 
   return config;
@@ -1103,7 +1130,8 @@ app.post('/api/create-checkout-session', async (req, res) => {
     }
 
     const paymentStage = normalizePaymentStage(req.body?.stage);
-    const checkoutConfig = getStripeCheckoutConfig(req, paymentStage);
+    const returnPath = normalizeCheckoutReturnPath(req.body?.returnPath || req.body?.return_path);
+    const checkoutConfig = getStripeCheckoutConfig(req, paymentStage, returnPath);
     const metadata = buildStripeMetadata({ ...validation.data, stage: paymentStage }, checkoutConfig);
     const sessionPayload = stripUndefined({
       payment_method_types: checkoutConfig.paymentMethodTypes?.length ? checkoutConfig.paymentMethodTypes : ['card'],

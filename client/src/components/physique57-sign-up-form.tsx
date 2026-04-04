@@ -342,7 +342,7 @@ export function Physique57SignUpForm({ onSubmit, testMode = false }: Physique57S
   const [currentReview, setCurrentReview] = useState(Math.floor(clientReviews.length / 2))
   const [publicConfig, setPublicConfig] = useState<PublicClientConfig | null>(null)
 
-  const paymentBypassEnabled = testMode
+  const isTestRoute = testMode
 
   const selectedStudio = useMemo(
     () => studios.find((studio) => studio.name === formData.studio),
@@ -357,7 +357,7 @@ export function Physique57SignUpForm({ onSubmit, testMode = false }: Physique57S
   const activeFormat = showFormatInfo ? formats.find((item) => item.id === showFormatInfo) ?? null : null
 
   const availableFormats = useMemo(() => {
-    const allowedFormatIds = paymentBypassEnabled
+    const allowedFormatIds = isTestRoute
       ? new Set(["powercycle", "strength-lab"])
       : null
 
@@ -372,7 +372,7 @@ export function Physique57SignUpForm({ onSubmit, testMode = false }: Physique57S
 
       return allowedFormatIds ? allowedFormatIds.has(format.id) : true
     })
-  }, [paymentBypassEnabled, selectedStudio])
+  }, [isTestRoute, selectedStudio])
 
   const isFormValid =
     formData.firstName.trim() !== "" &&
@@ -384,14 +384,19 @@ export function Physique57SignUpForm({ onSubmit, testMode = false }: Physique57S
     formData.acceptedTerms
 
   const activePaymentStage = publicConfig?.defaultPaymentStage ?? "production"
+  const effectivePaymentStage = isTestRoute ? "testing" : activePaymentStage
+  const testStageConfig = publicConfig?.paymentStages?.testing
+  const membershipPriceDisplay = isTestRoute
+    ? testStageConfig?.amountDisplay || "₹1.00"
+    : membershipOffer.price
 
-  const primaryButtonLabel = paymentBypassEnabled
-    ? "Submit test booking"
-    : paymentVerified && paymentSessionId
+  const primaryButtonLabel = paymentVerified && paymentSessionId
     ? "Complete booking"
+    : isTestRoute
+    ? testStageConfig?.buttonLabel || "Pay ₹1"
     : publicConfig?.paymentButtonLabel || "Pay ₹1,838.00"
 
-  const shouldHideFormForProcessing = !paymentBypassEnabled && isPostPaymentProcessing && !showSuccessModal
+  const shouldHideFormForProcessing = isPostPaymentProcessing && !showSuccessModal
   const redirectUrl = publicConfig?.redirectUrl || DEFAULT_REDIRECT_URL
 
   function redirectToMomence() {
@@ -433,7 +438,6 @@ export function Physique57SignUpForm({ onSubmit, testMode = false }: Physique57S
       time: "Flexible / Needs Recommendation",
       type: selectedFormat?.backendValue ?? formData.format,
       waiverAccepted: formData.acceptedTerms ? "accepted" : "",
-      bypassPayment: paymentBypassEnabled ? "true" : "",
       ...trackingPayload,
     }
   }
@@ -571,7 +575,7 @@ export function Physique57SignUpForm({ onSubmit, testMode = false }: Physique57S
         }
       }
 
-      if (storedSessionId && !paymentBypassEnabled) {
+      if (storedSessionId) {
         setPaymentSessionId(storedSessionId)
       }
 
@@ -583,7 +587,7 @@ export function Physique57SignUpForm({ onSubmit, testMode = false }: Physique57S
     } finally {
       hasRestoredStateRef.current = true
     }
-  }, [paymentBypassEnabled])
+  }, [])
 
   useEffect(() => {
     if (typeof window === "undefined" || !hasRestoredStateRef.current) {
@@ -597,7 +601,7 @@ export function Physique57SignUpForm({ onSubmit, testMode = false }: Physique57S
       )
       window.sessionStorage.setItem(STORAGE_KEYS.draftId, draftIdRef.current)
 
-      if (paymentSessionId && !paymentBypassEnabled) {
+      if (paymentSessionId) {
         window.sessionStorage.setItem(STORAGE_KEYS.paymentSession, paymentSessionId)
       } else {
         window.sessionStorage.removeItem(STORAGE_KEYS.paymentSession)
@@ -605,7 +609,7 @@ export function Physique57SignUpForm({ onSubmit, testMode = false }: Physique57S
     } catch {
       // Ignore persistence failures.
     }
-  }, [formData, paymentBypassEnabled, paymentSessionId])
+  }, [formData, paymentSessionId])
 
   useEffect(() => {
     if (typeof window === "undefined" || !hasRestoredStateRef.current || showSuccessModal) {
@@ -662,7 +666,7 @@ export function Physique57SignUpForm({ onSubmit, testMode = false }: Physique57S
         window.clearTimeout(partialSaveTimeoutRef.current)
       }
     }
-  }, [formData, paymentBypassEnabled, paymentSessionId, paymentVerified, selectedFormat, selectedStudio, showSuccessModal])
+  }, [formData, paymentSessionId, paymentVerified, selectedFormat, selectedStudio, showSuccessModal])
 
   useEffect(() => {
     if (!confettiCanvasRef.current) {
@@ -719,7 +723,7 @@ export function Physique57SignUpForm({ onSubmit, testMode = false }: Physique57S
   }, [availableFormats, formData.format])
 
   useEffect(() => {
-    if (paymentBypassEnabled || typeof window === "undefined" || !hasRestoredStateRef.current || hasProcessedCheckoutReturnRef.current) {
+    if (typeof window === "undefined" || !hasRestoredStateRef.current || hasProcessedCheckoutReturnRef.current) {
       return
     }
 
@@ -822,7 +826,7 @@ export function Physique57SignUpForm({ onSubmit, testMode = false }: Physique57S
         }
       }
     })()
-  }, [paymentBypassEnabled, paymentSessionId])
+  }, [paymentSessionId])
 
   function handleInputChange<K extends keyof Physique57FormData>(field: K, value: Physique57FormData[K]) {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -868,10 +872,10 @@ export function Physique57SignUpForm({ onSubmit, testMode = false }: Physique57S
       time: "Flexible / Needs Recommendation",
       type: selectedFormat?.backendValue ?? formData.format,
       waiverAccepted: "accepted",
-      stage: activePaymentStage,
+      stage: effectivePaymentStage,
+      returnPath: isTestRoute ? "/test" : "/",
       event_id: eventIdRef.current,
-      bypassPayment: paymentBypassEnabled,
-      source_form: paymentBypassEnabled ? "physique57-test-bypass" : "paid-trial-form",
+      source_form: isTestRoute ? "physique57-test-route" : "paid-trial-form",
       ...trackingPayload,
     }
   }
@@ -918,9 +922,7 @@ export function Physique57SignUpForm({ onSubmit, testMode = false }: Physique57S
 
           setStatusMessage({
             tone: "success",
-            text: result.error || (paymentBypassEnabled
-              ? "Your test submission was saved. Our team can now review the booking flow output."
-              : "Your payment was verified and your details were saved. Our team will complete the booking follow-up shortly."),
+            text: result.error || "Your payment was verified and your details were saved. Our team will complete the booking follow-up shortly.",
           })
           setShowSuccessModal(true)
           setIsPostPaymentProcessing(false)
@@ -970,7 +972,7 @@ export function Physique57SignUpForm({ onSubmit, testMode = false }: Physique57S
 
       setStatusMessage({
         tone: "success",
-        text: paymentBypassEnabled ? "Test booking completed successfully." : "Payment verified and booking completed successfully.",
+        text: "Payment verified and booking completed successfully.",
       })
       setShowSuccessModal(true)
       setIsPostPaymentProcessing(false)
@@ -985,11 +987,6 @@ export function Physique57SignUpForm({ onSubmit, testMode = false }: Physique57S
   }
 
   async function createCheckoutSession(payload: Record<string, unknown>) {
-    if (paymentBypassEnabled) {
-      await submitLeadToApi(payload)
-      return
-    }
-
     setIsCreatingCheckout(true)
     setStatusMessage({ tone: "success", text: "Starting secure checkout..." })
 
@@ -1089,11 +1086,6 @@ export function Physique57SignUpForm({ onSubmit, testMode = false }: Physique57S
     }
 
     const payload = buildLeadPayload()
-
-    if (paymentBypassEnabled) {
-      await submitLeadToApi(payload)
-      return
-    }
 
     if (!paymentVerified || !paymentSessionId) {
       await createCheckoutSession(payload)
@@ -1205,7 +1197,7 @@ export function Physique57SignUpForm({ onSubmit, testMode = false }: Physique57S
                 </div>
               ) : (
               <div className="min-w-0 overflow-hidden rounded-[28px] border border-slate-200/80 bg-white/80 p-4 shadow-[0_48px_140px_rgba(15,23,42,0.18)] ring-1 ring-slate-200/50 backdrop-blur-xl sm:p-6 lg:p-8">
-              {paymentBypassEnabled ? (
+              {isTestRoute ? (
                 <div className="mb-6 rounded-2xl border border-amber-300/80 bg-gradient-to-br from-amber-50 via-white to-orange-50 px-4 py-4 text-sm text-amber-950 shadow-sm sm:px-5">
                   <div className="flex items-start gap-3">
                     <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-700 ring-1 ring-amber-200">
@@ -1217,11 +1209,11 @@ export function Physique57SignUpForm({ onSubmit, testMode = false }: Physique57S
                           Internal test mode
                         </span>
                         <span className="text-xs font-semibold uppercase tracking-[0.14em] text-amber-700/90">
-                          Payment bypass enabled
+                          ₹1 checkout enabled
                         </span>
                       </div>
                       <p className="mt-2 leading-relaxed text-amber-900/90">
-                        This route submits the <span className="font-semibold">powerCycle</span> and <span className="font-semibold">Strength Lab</span> flow normally while skipping checkout. Use it only for internal testing at <span className="font-semibold">trial.physique57india.com/test</span>.
+                        This route keeps the normal booking and payment flow intact for <span className="font-semibold">powerCycle</span> and <span className="font-semibold">Strength Lab</span>, but charges <span className="font-semibold">₹1</span> for internal testing at <span className="font-semibold">trial.physique57india.com/test</span>.
                       </p>
                     </div>
                   </div>
@@ -1463,7 +1455,7 @@ export function Physique57SignUpForm({ onSubmit, testMode = false }: Physique57S
 
                       <div className="rounded-2xl border border-blue-900/10 bg-white/85 px-4 py-4 shadow-sm sm:px-5 lg:min-w-[200px]">
                         <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-blue-900/70">Today&apos;s total</p>
-                        <p className="mt-2 text-3xl font-bold tracking-[-0.03em] text-slate-950">{membershipOffer.price}</p>
+                        <p className="mt-2 text-3xl font-bold tracking-[-0.03em] text-slate-950">{membershipPriceDisplay}</p>
                         <p className="mt-1 text-xs text-slate-500">Includes both introductory sessions</p>
                       </div>
                     </div>
