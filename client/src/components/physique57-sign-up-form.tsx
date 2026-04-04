@@ -755,7 +755,7 @@ export function Physique57SignUpForm({ onSubmit, testMode = false }: Physique57S
       return
     }
 
-    if (!returnedSessionId || !hasPendingCheckout || paymentStatus !== "success") {
+    if (!returnedSessionId || paymentStatus !== "success") {
       setIsPostPaymentProcessing(false)
       return
     }
@@ -800,13 +800,42 @@ export function Physique57SignUpForm({ onSubmit, testMode = false }: Physique57S
             : "Payment confirmed. Finalising your booking now...",
         })
 
+        if (result.leadSubmission?.success) {
+          try {
+            window.sessionStorage.removeItem(STORAGE_KEYS.formState)
+            window.sessionStorage.removeItem(STORAGE_KEYS.submitPayload)
+            window.sessionStorage.removeItem(STORAGE_KEYS.paymentSession)
+            window.sessionStorage.removeItem(STORAGE_KEYS.checkoutPending)
+            window.sessionStorage.removeItem(STORAGE_KEYS.draftId)
+          } catch {
+            // Ignore storage cleanup failures.
+          }
+
+          eventIdRef.current = createEventId()
+          draftIdRef.current = createEventId()
+          lastPartialPayloadRef.current = ""
+          setPaymentVerified(false)
+          setPaymentSessionId("")
+          trackLeadSubmission(publicConfig, { event_id: result.paymentSessionId || returnedSessionId })
+          await celebrateSuccess()
+          setStatusMessage({
+            tone: "success",
+            text: result.leadSubmission.error || result.leadSubmission.warning || "Payment verified and booking completed successfully.",
+          })
+          setShowSuccessModal(true)
+          setIsPostPaymentProcessing(false)
+          scheduleRedirectToMomence()
+          return
+        }
+
         const cachedPayloadRaw = window.sessionStorage.getItem(STORAGE_KEYS.submitPayload)
         const cachedPayload = cachedPayloadRaw ? JSON.parse(cachedPayloadRaw) : null
+        const fallbackPayload = cachedPayload ?? buildLeadPayload()
 
-        if (cachedPayload && !isAutoSubmittingRef.current) {
+        if ((cachedPayload || hasPendingCheckout || isFormValid) && !isAutoSubmittingRef.current) {
           isAutoSubmittingRef.current = true
           await submitLeadToApi({
-            ...cachedPayload,
+            ...fallbackPayload,
             payment_session_id: result.paymentSessionId || returnedSessionId,
           })
         } else {

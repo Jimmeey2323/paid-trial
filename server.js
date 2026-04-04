@@ -408,6 +408,7 @@ function getMomencePostPaymentConfig(stageName = normalizePaymentStage()) {
 function buildStripeMetadata(leadPayload, checkoutConfig) {
   return {
     source: 'paid-trial-form',
+    source_form: String(leadPayload.source_form || 'paid-trial-form'),
     payment_stage: String(leadPayload.stage || normalizePaymentStage()),
     event_id: String(leadPayload.event_id || ''),
     draft_id: String(leadPayload.draft_id || ''),
@@ -452,7 +453,8 @@ function buildLeadPayloadFromCheckoutSession(session) {
     waiverAccepted: metadata.waiver_accepted || 'accepted',
     event_id: metadata.event_id || '',
     draft_id: metadata.draft_id || '',
-    payment_session_id: session?.id || ''
+    payment_session_id: session?.id || '',
+    source_form: metadata.source_form || metadata.source || 'paid-trial-form'
   };
 }
 
@@ -1093,6 +1095,84 @@ async function storeLeadData(leadData, requestMeta = {}) {
   return leadData;
 }
 
+async function processLeadSubmission(leadData, req) {
+  let momenceSyncResult = { success: true, error: '' };
+
+  await storeLeadData(leadData, {
+    ip_address: getClientIp(req),
+    user_agent: req.get('user-agent') || ''
+  });
+
+  try {
+    const metaResult = await sendMetaLeadEvent(leadData, req);
+    if (metaResult.sent) {
+      console.log(`Meta Conversions API event sent: ${metaResult.eventId}`);
+    } else {
+      console.log(`Meta Conversions API skipped: ${metaResult.reason}`);
+    }
+  } catch (error) {
+    console.error('Meta Conversions API send failed:', error.message);
+  }
+
+  try {
+    await submitToMomence(leadData);
+  } catch (error) {
+    momenceSyncResult = {
+      success: false,
+      error: error.message || 'Unable to submit to Momence.'
+    };
+    console.error('Momence sync failed:', momenceSyncResult.error);
+  }
+
+  if (!momenceSyncResult.success) {
+    return {
+      success: true,
+      stored: true,
+      id: leadData.id,
+      warning: 'Your payment was verified and your lead was stored, but the Momence sync failed. Please contact the studio team to complete the booking.',
+      error: 'Your payment was verified and your lead was stored, but the Momence sync failed. Please contact the studio team to complete the booking.',
+      detail: momenceSyncResult.error,
+      redirectUrl: getPublicClientConfig().redirectUrl
+    };
+  }
+
+  return {
+    success: true,
+    id: leadData.id,
+    redirectUrl: getPublicClientConfig().redirectUrl
+  };
+}
+
+async function finalizeLeadSubmissionFromSession(session, req) {
+  const existingStatus = String(session?.metadata?.lead_submission_status || '').trim().toLowerCase();
+
+  if (existingStatus === 'success') {
+    return {
+      success: true,
+      alreadySubmitted: true,
+      id: session?.metadata?.lead_submission_id || '',
+      redirectUrl: getPublicClientConfig().redirectUrl
+    };
+  }
+
+  const leadPayload = buildLeadPayloadFromCheckoutSession(session);
+  const leadData = buildLeadRecord({
+    ...leadPayload,
+    source_form: leadPayload.source_form || 'paid-trial-form',
+    payment_bypass: ''
+  });
+
+  const submissionResult = await processLeadSubmission(leadData, req);
+
+  await updateCheckoutSessionMetadata(session.id, {
+    lead_submission_status: submissionResult.success ? 'success' : 'failed',
+    lead_submission_id: submissionResult.id || '',
+    lead_submission_error: String(submissionResult.detail || submissionResult.error || '').slice(0, 400)
+  });
+
+  return submissionResult;
+}
+
 function requireAdmin(req, res, next) {
   const adminApiKey = process.env.ADMIN_API_KEY;
 
@@ -1198,12 +1278,23 @@ app.get('/api/verify-payment', async (req, res) => {
     const paymentStage = normalizePaymentStage(session?.metadata?.payment_stage);
     let fulfillment = null;
     let fulfillmentError = '';
+    let leadSubmission = null;
 
     try {
       fulfillment = await fulfillMomencePurchaseFromSession(session);
     } catch (error) {
       fulfillmentError = error.message || 'Unable to complete Momence fulfillment.';
       console.error('verify-payment fulfillment error:', fulfillmentError);
+    }
+
+    try {
+      leadSubmission = await finalizeLeadSubmissionFromSession(session, req);
+    } catch (error) {
+      console.error('verify-payment lead submission error:', error.message || error);
+      leadSubmission = {
+        success: false,
+        error: error.message || 'Unable to finalise the paid submission.'
+      };
     }
 
     return res.json({
@@ -1219,7 +1310,8 @@ app.get('/api/verify-payment', async (req, res) => {
         amount_total: session.amount_total,
         currency: session.currency
       },
-      fulfillment
+      fulfillment,
+      leadSubmission
     });
   } catch (error) {
     console.error('verify-payment error:', error && error.message);
@@ -1375,49 +1467,9 @@ app.post('/api/submit-lead', applySubmissionRateLimit, async (req, res) => {
       source_form: bypassPayment ? 'physique57-test-bypass' : 'paid-trial-form',
       payment_bypass: bypassPayment ? 'true' : ''
     });
-    let momenceSyncResult = { success: true, error: '' };
-    await storeLeadData(leadData, {
-      ip_address: getClientIp(req),
-      user_agent: req.get('user-agent') || ''
-    });
+    const submissionResult = await processLeadSubmission(leadData, req);
 
-    try {
-      const metaResult = await sendMetaLeadEvent(leadData, req);
-      if (metaResult.sent) {
-        console.log(`Meta Conversions API event sent: ${metaResult.eventId}`);
-      } else {
-        console.log(`Meta Conversions API skipped: ${metaResult.reason}`);
-      }
-    } catch (error) {
-      console.error('Meta Conversions API send failed:', error.message);
-    }
-
-    try {
-      await submitToMomence(leadData);
-    } catch (error) {
-      momenceSyncResult = {
-        success: false,
-        error: error.message || 'Unable to submit to Momence.'
-      };
-      console.error('Momence sync failed:', momenceSyncResult.error);
-    }
-
-    if (!momenceSyncResult.success) {
-      return res.status(200).json({
-        success: true,
-        stored: true,
-        warning: 'Your payment was verified and your lead was stored, but the Momence sync failed. Please contact the studio team to complete the booking.',
-        error: 'Your payment was verified and your lead was stored, but the Momence sync failed. Please contact the studio team to complete the booking.',
-        detail: momenceSyncResult.error,
-        redirectUrl: getPublicClientConfig().redirectUrl
-      });
-    }
-
-    return res.json({
-      success: true,
-      id: leadData.id,
-      redirectUrl: getPublicClientConfig().redirectUrl
-    });
+    return res.status(200).json(submissionResult);
   } catch (error) {
     console.error('Error submitting lead:', error);
     return res.status(500).json({
