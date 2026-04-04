@@ -15,7 +15,7 @@ const routeMeta = {
   test: {
     title: "Physique 57 India | Test Trial Submission",
     description:
-      "Internal testing route for Physique 57 India trial submissions with payment bypass for powerCycle and Strength Lab.",
+      "Internal testing route for Physique 57 India trial submissions with ₹1 checkout for powerCycle and Strength Lab.",
     name: "Physique 57 Trial Test Form",
   },
   barre: {
