@@ -1153,17 +1153,7 @@ export function Physique57SignUpForm({ onSubmit, testMode = false }: Physique57S
 
         <div className="relative grid min-h-screen w-full min-w-0 lg:grid-cols-[40%_60%]">
         <div
-          className="relative hidden h-screen cursor-pointer overflow-hidden bg-black lg:block"
-          onClick={redirectToMomence}
-          onKeyDown={(event) => {
-            if (event.key === "Enter" || event.key === " ") {
-              event.preventDefault()
-              redirectToMomence()
-            }
-          }}
-          role="link"
-          tabIndex={0}
-          aria-label="Open Physique 57 schedule page"
+          className="relative hidden h-screen overflow-hidden bg-black lg:block"
         >
           <AnimatePresence mode="sync">
             <motion.div

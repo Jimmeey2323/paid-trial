@@ -51,13 +51,16 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
+const DEFAULT_REDIRECT_URL = "https://momence.com/u/physique-57-india-fffoSp"
+
 interface Barre57TrialFormProps {
   onSubmit?: (data: any) => void
 }
 
 // Barre 57 specific hero images
 const BARRE_HERO_IMAGES = [
-  "https://i.postimg.cc/BbPhr4br/hp-Img-1770172966.pnghttps://i.postimg.cc/vZ8VzFH8/654600560_18105657745867483_8944120182227400336_n.jpg",
+  "https://i.postimg.cc/BbPhr4br/hp-Img-1770172966.png",
+  "https://i.postimg.cc/vZ8VzFH8/654600560_18105657745867483_8944120182227400336_n.jpg",
   "https://i.postimg.cc/PqqkNKTC/10210_Physique_57_by_Atelier_Birjis_3.webp",
   "https://i.postimg.cc/XvxDFstP/hp_Img_1767781454.png",
   "https://i.postimg.cc/255f3TrB/9.jpg",
@@ -377,6 +380,7 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
   const [currentReview, setCurrentReview] = useState<number>(Math.floor(clientReviews.length / 2))
 
   const selectedStudio = studios.find((studio) => studio.name === formData.studio)
+  const redirectUrl = publicConfig?.redirectUrl || DEFAULT_REDIRECT_URL
 
   useEffect(() => {
     const imageNodes = BARRE_HERO_IMAGES.map((src, index) => {
@@ -661,10 +665,6 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
       <div className="relative grid min-h-screen w-full min-w-0 lg:grid-cols-[40%_60%]">
         <div
           className="relative hidden h-screen overflow-hidden bg-black lg:block"
-          onClick={() => window.location.href = "https://www.physique57.in"}
-          role="link"
-          tabIndex={0}
-          aria-label="Open Physique 57 website"
         >
           <AnimatePresence>
             <motion.div
@@ -712,7 +712,7 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
                   </p>
                   <Button
                     className="mt-8 w-full bg-gradient-to-r from-emerald-600 to-blue-600 py-6 text-lg text-white hover:from-emerald-700 hover:to-blue-700"
-                    onClick={() => window.location.href = "https://www.physique57.in"}
+                    onClick={() => window.location.assign(redirectUrl)}
                   >
                     Return to Physique 57
                   </Button>
