@@ -84,6 +84,46 @@ const STORAGE_KEYS = {
 
 const DEFAULT_REDIRECT_URL = "https://momence.com/u/physique-57-india-fffoSp"
 
+function getInitialFormDataFromParams(): Partial<Physique57FormData> {
+  if (typeof window === "undefined") {
+    return {}
+  }
+
+  const params = new URLSearchParams(window.location.search)
+
+  const get = (key: string) => params.get(key)?.trim() || ""
+
+  const prefilled: Partial<Physique57FormData> = {}
+
+  if (get("firstName")) prefilled.firstName = get("firstName")
+  if (get("lastName")) prefilled.lastName = get("lastName")
+  if (get("email")) prefilled.email = get("email")
+  if (get("phone")) prefilled.phone = get("phone")
+  if (get("countryCode")) prefilled.countryCode = get("countryCode").toUpperCase()
+
+  const studioParam = get("studio").toLowerCase()
+  if (studioParam) {
+    const matched = studios.find(
+      (s) => s.name.toLowerCase().includes(studioParam) || s.backendName.toLowerCase().includes(studioParam)
+    )
+    if (matched) {
+      prefilled.studio = matched.name
+    }
+  }
+
+  const formatParam = get("format").toLowerCase()
+  if (formatParam) {
+    const matched = formats.find(
+      (f) => f.id.toLowerCase() === formatParam || f.subtitle.toLowerCase().replace(/\s+/g, "") === formatParam.replace(/\s+/g, "")
+    )
+    if (matched) {
+      prefilled.format = matched.id
+    }
+  }
+
+  return prefilled
+}
+
 function createEventId() {
   return `lead_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`
 }
@@ -306,7 +346,7 @@ export function Physique57SignUpForm({ onSubmit, testMode = false }: Physique57S
   const hasRestoredStateRef = useRef(false)
   const hasProcessedCheckoutReturnRef = useRef(false)
   const isAutoSubmittingRef = useRef(false)
-  const [formData, setFormData] = useState<Physique57FormData>({
+  const [formData, setFormData] = useState<Physique57FormData>(() => ({
     firstName: "",
     lastName: "",
     email: "",
@@ -315,7 +355,8 @@ export function Physique57SignUpForm({ onSubmit, testMode = false }: Physique57S
     studio: "",
     format: "powercycle",
     acceptedTerms: false,
-  })
+    ...getInitialFormDataFromParams(),
+  }))
   const [errors, setErrors] = useState<Partial<Record<FormErrorKey, string>>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isCreatingCheckout, setIsCreatingCheckout] = useState(false)
