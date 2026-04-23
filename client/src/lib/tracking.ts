@@ -6,6 +6,7 @@ export interface PublicClientConfig {
   googleAdsConversionCurrency: string
   metaPixelId: string
   snapPixelId: string
+  gtmId: string
   apiBaseUrl: string
   scheduleUrl: string
   redirectUrl: string
@@ -81,6 +82,12 @@ export async function loadPublicClientConfig(): Promise<PublicClientConfig> {
 export function initializeTracking(config: PublicClientConfig) {
   if (typeof window === "undefined") {
     return
+  }
+
+  if (config.gtmId) {
+    window.dataLayer = window.dataLayer || []
+    window.dataLayer.push({ "gtm.start": new Date().getTime(), event: "gtm.js" })
+    loadExternalScript(`https://www.googletagmanager.com/gtm.js?id=${encodeURIComponent(config.gtmId)}`)
   }
 
   if (config.gaMeasurementId || config.googleAdsId) {

@@ -660,6 +660,7 @@ function getPublicClientConfig() {
     googleAdsConversionCurrency: process.env.GOOGLE_ADS_CONVERSION_CURRENCY || 'INR',
     metaPixelId: process.env.META_PIXEL_ID || '',
     snapPixelId: process.env.SNAP_PIXEL_ID || '',
+    gtmId: process.env.GTM_ID || '',
     apiBaseUrl: process.env.FORM_API_BASE_URL || '',
     scheduleUrl: process.env.FORM_SCHEDULE_URL || process.env.FORM_REDIRECT_URL || 'https://momence.com/u/physique-57-india-fffoSp',
     redirectUrl: process.env.FORM_REDIRECT_URL || 'https://momence.com/u/physique-57-india-fffoSp',
