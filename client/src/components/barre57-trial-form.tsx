@@ -964,6 +964,7 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
                     )}
 
                     <Button
+                      id="barre-submit-button"
                       type="submit"
                       size="lg"
                       className="h-14 w-full bg-gradient-to-r from-blue-950 to-blue-900 text-lg shadow-lg transition-all duration-300 hover:from-slate-950 hover:to-blue-950 hover:shadow-xl"

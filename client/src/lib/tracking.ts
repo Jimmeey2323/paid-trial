@@ -85,9 +85,13 @@ export function initializeTracking(config: PublicClientConfig) {
   }
 
   if (config.gtmId) {
-    window.dataLayer = window.dataLayer || []
-    window.dataLayer.push({ "gtm.start": new Date().getTime(), event: "gtm.js" })
-    loadExternalScript(`https://www.googletagmanager.com/gtm.js?id=${encodeURIComponent(config.gtmId)}`)
+    const existingGtmScript = document.querySelector(`script[src="https://www.googletagmanager.com/gtm.js?id=${encodeURIComponent(config.gtmId)}"]`)
+
+    if (!existingGtmScript) {
+      window.dataLayer = window.dataLayer || []
+      window.dataLayer.push({ "gtm.start": new Date().getTime(), event: "gtm.js" })
+      loadExternalScript(`https://www.googletagmanager.com/gtm.js?id=${encodeURIComponent(config.gtmId)}`)
+    }
   }
 
   if (config.gaMeasurementId || config.googleAdsId) {
