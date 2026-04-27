@@ -53,6 +53,10 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 
 const DEFAULT_REDIRECT_URL = "https://momence.com/u/physique-57-india-fffoSp"
 
+function createEventId() {
+  return `lead_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`
+}
+
 interface Barre57TrialFormProps {
   onSubmit?: (data: any) => void
 }
@@ -370,9 +374,13 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
   const [showWaiverModal, setShowWaiverModal] = useState(false)
   const confettiCanvasRef = useRef<HTMLCanvasElement | null>(null)
   const confettiInstanceRef = useRef<ReturnType<typeof confetti.create> | null>(null)
+  const redirectTimeoutRef = useRef<number | null>(null)
+  const eventIdRef = useRef<string>(createEventId())
+  const publicConfigRef = useRef<PublicClientConfig | null>(null)
   const [currentHeroImage, setCurrentHeroImage] = useState(0)
   const [loadedHeroImages, setLoadedHeroImages] = useState<Set<number>>(new Set())
   const [publicConfig, setPublicConfig] = useState<PublicClientConfig | null>(null)
+  const [resolvedRedirectUrl, setResolvedRedirectUrl] = useState(DEFAULT_REDIRECT_URL)
   const [showAllFaqsModal, setShowAllFaqsModal] = useState(false)
   const [openFaq, setOpenFaq] = useState<number | null>(0)
   const [selectedWorkoutSection, setSelectedWorkoutSection] = useState<number>(0)
@@ -380,7 +388,45 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
   const [currentReview, setCurrentReview] = useState<number>(Math.floor(clientReviews.length / 2))
 
   const selectedStudio = studios.find((studio) => studio.name === formData.studio)
-  const redirectUrl = publicConfig?.redirectUrl || DEFAULT_REDIRECT_URL
+  const redirectUrl = resolvedRedirectUrl || publicConfig?.redirectUrl || DEFAULT_REDIRECT_URL
+
+  function scheduleRedirectToMomence(url = redirectUrl, delay = 1400) {
+    if (typeof window === "undefined") {
+      return
+    }
+
+    if (redirectTimeoutRef.current) {
+      window.clearTimeout(redirectTimeoutRef.current)
+    }
+
+    redirectTimeoutRef.current = window.setTimeout(() => {
+      window.location.assign(url)
+    }, delay)
+  }
+
+  async function ensureTrackingReady() {
+    let config = publicConfigRef.current
+
+    if (!config) {
+      try {
+        config = await loadPublicClientConfig()
+        publicConfigRef.current = config
+        setPublicConfig((current) => current ?? config)
+        const resolvedConfigRedirectUrl = config?.redirectUrl || DEFAULT_REDIRECT_URL
+        setResolvedRedirectUrl((current) => current || resolvedConfigRedirectUrl)
+        initializeTracking(config)
+      } catch {
+        return null
+      }
+    }
+
+    return config
+  }
+
+  async function trackSuccessfulSubmission(leadPayload: { event_id?: string; utm_campaign?: string; utm_source?: string }) {
+    const config = await ensureTrackingReady()
+    trackLeadSubmission(config, leadPayload)
+  }
 
   useEffect(() => {
     const imageNodes = BARRE_HERO_IMAGES.map((src, index) => {
@@ -433,7 +479,9 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
       try {
         const config = await loadPublicClientConfig()
         if (!cancelled) {
+          publicConfigRef.current = config
           setPublicConfig(config)
+          setResolvedRedirectUrl(config.redirectUrl || DEFAULT_REDIRECT_URL)
           initializeTracking(config)
         }
       } catch {
@@ -459,6 +507,14 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
     return () => {
       confettiInstanceRef.current?.reset()
       confettiInstanceRef.current = null
+    }
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      if (redirectTimeoutRef.current && typeof window !== "undefined") {
+        window.clearTimeout(redirectTimeoutRef.current)
+      }
     }
   }, [])
 
@@ -551,6 +607,7 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
         center: selectedStudio?.backendName ?? formData.studio,
         type: "Barre 57",
         waiverAccepted: formData.acceptedTerms ? "accepted" : "",
+        event_id: eventIdRef.current,
         source_form: "barre-trial-form",
         ...trackingPayload,
       }
@@ -575,11 +632,13 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
       }
 
       // Track successful submission
-      trackLeadSubmission(publicConfig, payload as { event_id?: string; utm_campaign?: string; utm_source?: string })
+      await trackSuccessfulSubmission(payload as { event_id?: string; utm_campaign?: string; utm_source?: string })
 
       // Show success celebration
       celebrateSuccess()
 
+      const nextRedirectUrl = result.redirectUrl || publicConfigRef.current?.redirectUrl || DEFAULT_REDIRECT_URL
+      setResolvedRedirectUrl(nextRedirectUrl)
       setShowSuccessModal(true)
       setFormData({
         firstName: "",
@@ -590,6 +649,8 @@ export function Barre57TrialForm({ onSubmit }: Barre57TrialFormProps) {
         studio: "",
         acceptedTerms: false,
       })
+      eventIdRef.current = createEventId()
+      scheduleRedirectToMomence(nextRedirectUrl)
 
       if (onSubmit) {
         onSubmit(result)

@@ -343,6 +343,7 @@ export function Physique57SignUpForm({ onSubmit, testMode = false }: Physique57S
   const draftIdRef = useRef<string>(createEventId())
   const lastPartialPayloadRef = useRef("")
   const eventIdRef = useRef<string>(createEventId())
+  const publicConfigRef = useRef<PublicClientConfig | null>(null)
   const hasRestoredStateRef = useRef(false)
   const hasProcessedCheckoutReturnRef = useRef(false)
   const isAutoSubmittingRef = useRef(false)
@@ -462,6 +463,28 @@ export function Physique57SignUpForm({ onSubmit, testMode = false }: Physique57S
     }, delay)
   }
 
+  async function ensureTrackingReady() {
+    let config = publicConfigRef.current
+
+    if (!config) {
+      try {
+        config = await loadPublicClientConfig()
+        publicConfigRef.current = config
+        setPublicConfig((current) => current ?? config)
+        initializeTracking(config)
+      } catch {
+        return null
+      }
+    }
+
+    return config
+  }
+
+  async function trackSuccessfulSubmission(leadPayload: { event_id?: string; utm_campaign?: string; utm_source?: string }) {
+    const config = await ensureTrackingReady()
+    trackLeadSubmission(config, leadPayload)
+  }
+
   function buildPartialLeadPayload(): Record<string, string> {
     const trackingPayload = getSubmissionTrackingPayload() as Record<string, string>
 
@@ -570,6 +593,7 @@ export function Physique57SignUpForm({ onSubmit, testMode = false }: Physique57S
       try {
         const config = await loadPublicClientConfig()
         if (!cancelled) {
+          publicConfigRef.current = config
           setPublicConfig(config)
           initializeTracking(config)
         }
@@ -583,6 +607,10 @@ export function Physique57SignUpForm({ onSubmit, testMode = false }: Physique57S
     }
   }, [])
 
+
+            const cachedPayloadRaw = window.sessionStorage.getItem(STORAGE_KEYS.submitPayload)
+            const cachedPayload = cachedPayloadRaw ? JSON.parse(cachedPayloadRaw) : null
+            const fallbackPayload = cachedPayload ?? buildLeadPayload()
   useEffect(() => {
     if (typeof window === "undefined") {
       return
@@ -857,7 +885,11 @@ export function Physique57SignUpForm({ onSubmit, testMode = false }: Physique57S
           lastPartialPayloadRef.current = ""
           setPaymentVerified(false)
           setPaymentSessionId("")
-          trackLeadSubmission(publicConfig, { event_id: result.paymentSessionId || returnedSessionId })
+          await trackSuccessfulSubmission({
+            event_id: result.paymentSessionId || returnedSessionId,
+            utm_campaign: typeof fallbackPayload?.utm_campaign === "string" ? fallbackPayload.utm_campaign : undefined,
+            utm_source: typeof fallbackPayload?.utm_source === "string" ? fallbackPayload.utm_source : undefined,
+          })
           await celebrateSuccess()
           setStatusMessage({
             tone: "success",
@@ -868,10 +900,6 @@ export function Physique57SignUpForm({ onSubmit, testMode = false }: Physique57S
           scheduleRedirectToMomence()
           return
         }
-
-        const cachedPayloadRaw = window.sessionStorage.getItem(STORAGE_KEYS.submitPayload)
-        const cachedPayload = cachedPayloadRaw ? JSON.parse(cachedPayloadRaw) : null
-        const fallbackPayload = cachedPayload ?? buildLeadPayload()
 
         if ((cachedPayload || hasPendingCheckout || isFormValid) && !isAutoSubmittingRef.current) {
           isAutoSubmittingRef.current = true
@@ -983,7 +1011,7 @@ export function Physique57SignUpForm({ onSubmit, testMode = false }: Physique57S
           lastPartialPayloadRef.current = ""
           setPaymentVerified(false)
           setPaymentSessionId("")
-          trackLeadSubmission(publicConfig, payload as { event_id?: string; utm_campaign?: string; utm_source?: string })
+          await trackSuccessfulSubmission(payload as { event_id?: string; utm_campaign?: string; utm_source?: string })
           await celebrateSuccess()
 
           if (onSubmit) {
@@ -1019,7 +1047,7 @@ export function Physique57SignUpForm({ onSubmit, testMode = false }: Physique57S
         return
       }
 
-      trackLeadSubmission(publicConfig, payload as { event_id?: string; utm_campaign?: string; utm_source?: string })
+      await trackSuccessfulSubmission(payload as { event_id?: string; utm_campaign?: string; utm_source?: string })
 
       try {
         window.sessionStorage.removeItem(STORAGE_KEYS.formState)
